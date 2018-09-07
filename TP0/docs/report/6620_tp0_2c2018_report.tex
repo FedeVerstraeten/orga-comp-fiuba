@@ -14,59 +14,59 @@
 \begin{titlepage}
 	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for horizontal lines, change thickness here
 	\center % Centre everything on the page
-	
+
 	\thispagestyle{empty}
 	\begin{center}
 		\includegraphics[scale=1]{includes/banner_fiuba.pdf}\\
 	\end{center}
-	
+
 	\vspace*{\stretch{1}}
-	
+
 	\textsc{\LARGE \textsc{[66.20] Organización de Computadoras}}\\[1cm]
 	\textsc{\Large \textsc{Trabajo Práctico 0}}\\[0.5cm]
 	\textsc{\large 2\textsuperscript{do} Cuatrimestre 2018}\\[0.5cm]
-	
+
 	\HRule\\[0.5cm]
 	{\huge\bfseries Infraestructura básica}\\[0.2cm]
 	\HRule\\[0.5cm]
-	
+
 	\begin{tabbing}
 		\hspace{2cm}\=\+
 		\underline{AUTORES}\hspace{-1cm}\=\+\hspace{1cm}\=\hspace{6cm}\=\\[0.2cm]
-		
-		Álvarez, Natalia Nayla.	\>\>- \#xx.xxx\\
-		\>\footnotesize{$<$xxxx@xx.xx$>$}\\
-		
+
+    Álvarez, Natalia Nayla.	\>\>- \#90.928\\
+		\>\footnotesize{$<$natalia.nayla.alvarez@gmail.com$>$}\\
+
 		Husain, Ignacio Santiago.	\>\>- \#90.117\\
 		\>\footnotesize{$<$santiago.husain@gmail.com$>$}\\
-		
+
 		Verstraeten, Federico.	\>\>- \#92.892\\
 		\>\footnotesize{$<$federico.verstraeten@gmail.com$>$}\\
-		
+
 		\<\underline{CÁTEDRA}\\[0.2cm]
 		Dr. Ing. Hamkalo, José Luis. \\
-		
+
 		\<\underline{CURSO}\\[0.2cm]
 		Ing. Santi, Leandro. \\[1cm]
-		
+
 		\<\underline{FECHA DE ENTREGA}\>\>\> xx/xx/2018
 		\\[0.2cm]
-		
-		\<\underline{FECHA DE APROBACIÓN}\>\>\> 
+
+		\<\underline{FECHA DE APROBACIÓN}\>\>\>
 		\\[0.2cm]
-		
-		\<\underline{CALIFICACIÓN}\>\>\> 
+
+		\<\underline{CALIFICACIÓN}\>\>\>
 		\\[0.2cm]
-		
+
 		\<\underline{FIRMA DE APROBACIÓN}
 		\\[0.5cm]
-		
+
 	\end{tabbing}
-	
-	
+
+
 	\vspace*{\stretch{1}}
-	
-	
+
+
 \end{titlepage}
 
 %-----------------------------------%
@@ -76,7 +76,7 @@
 %-----------------------------------%
 \clearpage
 
-\tableofcontents							
+\tableofcontents
 
 \clearpage
 
@@ -171,19 +171,19 @@ A continuación se muestran las salidas de los tests automatizados, concluyendo 
 \clearpage
 
 \subsection{Prueba de fuga de memoria}
-El último tipo de prueba es el de la verificación de fugas de memoria. Debido al uso de memoria dinámica en el programa, se utilizó la herramienta \texttt{valgrind} \cite{valgrind} para verificar la existencia de dichas fugas. El comando utilizado fue 
+El último tipo de prueba es el de la verificación de fugas de memoria. Debido al uso de memoria dinámica en el programa, se utilizó la herramienta \texttt{valgrind} \cite{valgrind} para verificar la existencia de dichas fugas. El comando utilizado fue
 \begin{lstlisting}
 valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v ./tp0 ARGUMENTOS
 \end{lstlisting}
-y el resultado del mismo fue 
+y el resultado del mismo fue
 \begin{lstlisting}
-==21530== 
+==21530==
 ==21530== HEAP SUMMARY:
 ==21530==     in use at exit: 0 bytes in 0 blocks
 ==21530==   total heap usage: 3 allocs, 3 frees, 3,691,048 bytes allocated
-==21530== 
+==21530==
 ==21530== All heap blocks were freed -- no leaks are possible
-==21530== 
+==21530==
 ==21530== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ==21530== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 \end{lstlisting}
