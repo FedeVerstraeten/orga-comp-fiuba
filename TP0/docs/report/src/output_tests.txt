@@ -1,0 +1,8 @@
+#####################################
+TEST VALIDACION PARAMETRO 'FILE'
+#####################################
+  ./tp0 -o .
+PASSED :
+ERROR: Can't open output stream.
+ERROR: Program exited with errors. =  ERROR: Can't open output stream.
+ERROR: Program exited with errors.
