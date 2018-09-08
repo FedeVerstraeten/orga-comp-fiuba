@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Sep-2018 12:36:49 pm
+ @Last modified time: 08-Sep-2018 5:53:43 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -49,7 +49,11 @@ struct option cmdOptions[] = {
 
 #define STD_STREAM_TOKEN "-"
 
-typedef struct params_t { FILE *outputStream; } params_t;
+typedef struct params_t {
+  char *action;
+  FILE *inputStream;
+  FILE *outputStream;
+} params_t;
 
 /* Functions declarations. */
 typedef enum outputCodes_ { outOK, outERROR } outputCode;
@@ -86,11 +90,24 @@ outputCode optHelp(char *arg) {
 
   return outOK;
 }
+
 outputCode optInput(char *arg, params_t *params) {
   if (arg == NULL) {
-    fprintf(stderr, "ERROR: Invalid argument.\n");
+    fprintf(stderr, "ERROR: Invalid input stream.\n");
     return outERROR;
   }
+
+  if (strcmp(arg, STD_STREAM_TOKEN) == 0) {
+    params->inputStream = stdin;
+  } else {
+    params->inputStream = fopen(arg, "r"); /* TODO */
+  }
+
+  if ((params->inputStream) == NULL) {
+    fprintf(stderr, "ERROR: Can't open input stream.\n");
+    return outERROR;
+  }
+
   return outOK;
 }
 
@@ -122,13 +139,22 @@ outputCode optAction(char *arg, params_t *params) {
   return outOK;
 }
 
-char *shortOpts = "Vhi:o:a:";
-
 outputCode parseCmdline(int argc, char **argv,
                         params_t *params) {
   int indexptr = 0;
   int optCode;
+
   outputCode optOutCode = outERROR;
+  char *programName = argv[0];
+
+  /* Set the default values. */
+  params->action = "encode";
+  params->inputStream = stdin;
+  params->outputStream = stdout;
+
+  /* 'version' and 'help' have no arguments. The rest, do
+   * have, and are mandatory.*/
+  char *shortOpts = "Vhi:o:a:";
 
   while ((optCode = getopt_long(argc, argv, shortOpts,
                                 cmdOptions, &indexptr)) !=
@@ -138,7 +164,7 @@ outputCode parseCmdline(int argc, char **argv,
         optOutCode = optVersion();
         break;
       case 'h':
-        optOutCode = optHelp(argv[0]);
+        optOutCode = optHelp(programName);
         break;
       case 'i':
         optOutCode = optInput(optarg, params);
@@ -162,19 +188,36 @@ outputCode parseCmdline(int argc, char **argv,
   return outOK;
 }
 
+outputCode applyTransformation(params_t *params) {
+  /* TODO: code this function. Assume that 'params' are
+   * already well initialized. */
+  return outOK;
+}
+
 int main(int argc, char **argv) {
-  /* Set the default values. */
-  params_t params = {stdout};
+  params_t params;
+  /* Initialize memory block with zeroes.*/
+  memset(&params, 0, sizeof(params));
 
   /* We parse the command line and check for errors. */
-  outputCode cmdParsingState = outERROR;
-  cmdParsingState = parseCmdline(argc, argv, &params);
+  outputCode cmdParsingState =
+      parseCmdline(argc, argv, &params);
   if (cmdParsingState == outERROR) {
     fprintf(stderr, "ERROR: Program exited with errors.\n");
     exit(EXIT_FAILURE);
   }
 
+  outputCode transformationState =
+      applyTransformation(&params);
+
+  if (transformationState == outERROR) {
+    fprintf(stderr,
+            "ERROR: Transformation exited with errors.\n");
+    exit(EXIT_FAILURE);
+  }
+
   /* Close and free what is left. */
+  fclose(params.inputStream);
   fclose(params.outputStream);
 
   return EXIT_SUCCESS;
