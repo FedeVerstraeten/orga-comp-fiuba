@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 07-Sep-2018 4:03:52 pm
+# @Last modified time: 08-Sep-2018 11:38:22 am
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura básica.'.
@@ -72,7 +72,7 @@ EXPECTED_OUTPUT_VALID_PARAMETERS=("SUCCESS: Output file has been written success
 function test_parameter_file(){
   header "TEST VALIDACION PARAMETRO 'FILE'"
 
-	commands=(	"-o .")
+	commands=("-o .")
 
 	for i in "${commands[@]}"
 	do

@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Sep-2018 11:33:24 am
+ @Last modified time: 08-Sep-2018 12:36:49 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -32,19 +32,20 @@ valgrind --tool=memcheck --leak-check=full \
 #include <stdlib.h>
 #include <string.h>
 
-/* Data structures and miscellaneous definitions. */
+#ifndef VERSION
+#define VERSION "1.0.0"
+#endif
 
+/* Data structures and miscellaneous definitions. */
 /* The options are distinguished by the ASCII code of the
  * 'char' variables. */
 struct option cmdOptions[] = {
-    {"version", required_argument, NULL, 'V'},
-    {"help", required_argument, NULL, 'h'},
+    {"version", no_argument, NULL, 'V'},
+    {"help", no_argument, NULL, 'h'},
     {"input", required_argument, NULL, 'i'},
     {"output", required_argument, NULL, 'o'},
     {"action", required_argument, NULL, 'a'},
     {0, 0, 0, 0}};
-
-char *shortOpts = "V:h:i:o:a:";
 
 #define STD_STREAM_TOKEN "-"
 
@@ -54,23 +55,40 @@ typedef struct params_t { FILE *outputStream; } params_t;
 typedef enum outputCodes_ { outOK, outERROR } outputCode;
 
 /* Functions definitions. */
-outputCode optVersion(char *arg, params_t *params) {
-  if (arg == NULL) {
-    fprintf(stderr, "ERROR: Invalid output stream.\n");
-    return outERROR;
-  }
+outputCode optVersion(void) {
+  fprintf(stderr, "%s\n", VERSION);
+
   return outOK;
 }
-outputCode optHelp(char *arg, params_t *params) {
+
+outputCode optHelp(char *arg) {
   if (arg == NULL) {
-    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    fprintf(stderr, "ERROR: Invalid argument.\n");
     return outERROR;
   }
+  fprintf(stderr, "Usage:\n");
+  fprintf(stderr, "  %s -h\n", arg);
+  fprintf(stderr, "  %s -V\n", arg);
+  fprintf(stderr, "  %s [options]\n", arg);
+  fprintf(stderr, "Options:\n");
+  fprintf(stderr, "-V, --version\tPrint version and quit.\n");
+  fprintf(stderr,
+          "-i, --input\tLocation of the input file.\n");
+  fprintf(stderr,
+          "-o, --output\tLocation of the output file.\n");
+  fprintf(stderr,
+          "-a, --action\tProgram action: encode (default) or "
+          "decode.\n");
+  fprintf(stderr, "Examples:\n");
+  fprintf(stderr, "  %s -a encode -i ~/input -o ~/output\n",
+          arg);
+  fprintf(stderr, "  %s -a decode\n", arg);
+
   return outOK;
 }
 outputCode optInput(char *arg, params_t *params) {
   if (arg == NULL) {
-    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    fprintf(stderr, "ERROR: Invalid argument.\n");
     return outERROR;
   }
   return outOK;
@@ -98,11 +116,13 @@ outputCode optOutput(char *arg, params_t *params) {
 
 outputCode optAction(char *arg, params_t *params) {
   if (arg == NULL) {
-    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    fprintf(stderr, "ERROR: Invalid argument.\n");
     return outERROR;
   }
   return outOK;
 }
+
+char *shortOpts = "Vhi:o:a:";
 
 outputCode parseCmdline(int argc, char **argv,
                         params_t *params) {
@@ -115,10 +135,10 @@ outputCode parseCmdline(int argc, char **argv,
          -1) {
     switch (optCode) {
       case 'V':
-        optOutCode = optVersion(optarg, params);
+        optOutCode = optVersion();
         break;
       case 'h':
-        optOutCode = optHelp(optarg, params);
+        optOutCode = optHelp(argv[0]);
         break;
       case 'i':
         optOutCode = optInput(optarg, params);
