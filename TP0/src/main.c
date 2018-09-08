@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Sep-2018 11:29:27 am
+ @Last modified time: 08-Sep-2018 11:31:02 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -24,7 +24,7 @@
 
 Check memory leaks with the following command:
 valgrind --tool=memcheck --leak-check=full \
---show-leak-kinds=all -v ./tp0 --output image1.pgm
+--show-leak-kinds=all -v ./tp0
 
 ----------------------------------------------------------- */
 #include <getopt.h>
