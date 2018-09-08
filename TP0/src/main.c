@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Sep-2018 11:31:02 am
+ @Last modified time: 08-Sep-2018 11:33:24 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -54,6 +54,28 @@ typedef struct params_t { FILE *outputStream; } params_t;
 typedef enum outputCodes_ { outOK, outERROR } outputCode;
 
 /* Functions definitions. */
+outputCode optVersion(char *arg, params_t *params) {
+  if (arg == NULL) {
+    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    return outERROR;
+  }
+  return outOK;
+}
+outputCode optHelp(char *arg, params_t *params) {
+  if (arg == NULL) {
+    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    return outERROR;
+  }
+  return outOK;
+}
+outputCode optInput(char *arg, params_t *params) {
+  if (arg == NULL) {
+    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    return outERROR;
+  }
+  return outOK;
+}
+
 outputCode optOutput(char *arg, params_t *params) {
   if (arg == NULL) {
     fprintf(stderr, "ERROR: Invalid output stream.\n");
@@ -71,6 +93,14 @@ outputCode optOutput(char *arg, params_t *params) {
     return outERROR;
   }
 
+  return outOK;
+}
+
+outputCode optAction(char *arg, params_t *params) {
+  if (arg == NULL) {
+    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    return outERROR;
+  }
   return outOK;
 }
 
