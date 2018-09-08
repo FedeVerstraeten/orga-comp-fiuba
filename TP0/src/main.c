@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Sep-2018 5:53:43 pm
+ @Last modified time: 08-Sep-2018 7:38:06 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -31,6 +31,7 @@ valgrind --tool=memcheck --leak-check=full \
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifndef VERSION
 #define VERSION "1.0.0"
@@ -39,20 +40,27 @@ valgrind --tool=memcheck --leak-check=full \
 /* Data structures and miscellaneous definitions. */
 /* The options are distinguished by the ASCII code of the
  * 'char' variables. */
-struct option cmdOptions[] = {
-    {"version", no_argument, NULL, 'V'},
-    {"help", no_argument, NULL, 'h'},
-    {"input", required_argument, NULL, 'i'},
-    {"output", required_argument, NULL, 'o'},
-    {"action", required_argument, NULL, 'a'},
-    {0, 0, 0, 0}};
+struct option cmdOptions[] = {{"version", no_argument, NULL, 'V'},
+                              {"help", no_argument, NULL, 'h'},
+                              {"input", required_argument, NULL, 'i'},
+                              {"output", required_argument, NULL, 'o'},
+                              {"action", required_argument, NULL, 'a'},
+                              {0, 0, 0, 0}};
 
-#define STD_STREAM_TOKEN "-"
+typedef struct {
+  /* TODO: or an 'unsigned char' or an 'unsigned int'? */
+  char *bufferArray;
+  int bufferIndex;
+  int bufferSize;
+  int fileDescriptor;
+} output_buffer_t;
 
+/* TODO: do the same for an input buffer. */
 typedef struct params_t {
   char *action;
   FILE *inputStream;
   FILE *outputStream;
+  output_buffer_t *outputBuffer;
 } params_t;
 
 /* Functions declarations. */
@@ -76,21 +84,18 @@ outputCode optHelp(char *arg) {
   fprintf(stderr, "  %s [options]\n", arg);
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "-V, --version\tPrint version and quit.\n");
+  fprintf(stderr, "-i, --input\tLocation of the input file.\n");
+  fprintf(stderr, "-o, --output\tLocation of the output file.\n");
   fprintf(stderr,
-          "-i, --input\tLocation of the input file.\n");
-  fprintf(stderr,
-          "-o, --output\tLocation of the output file.\n");
-  fprintf(stderr,
-          "-a, --action\tProgram action: encode (default) or "
-          "decode.\n");
+          "-a, --action\tProgram action: encode (default) or decode.\n");
   fprintf(stderr, "Examples:\n");
-  fprintf(stderr, "  %s -a encode -i ~/input -o ~/output\n",
-          arg);
+  fprintf(stderr, "  %s -a encode -i ~/input -o ~/output\n", arg);
   fprintf(stderr, "  %s -a decode\n", arg);
 
   return outOK;
 }
 
+#define STD_STREAM_TOKEN "-"
 outputCode optInput(char *arg, params_t *params) {
   if (arg == NULL) {
     fprintf(stderr, "ERROR: Invalid input stream.\n");
@@ -100,7 +105,8 @@ outputCode optInput(char *arg, params_t *params) {
   if (strcmp(arg, STD_STREAM_TOKEN) == 0) {
     params->inputStream = stdin;
   } else {
-    params->inputStream = fopen(arg, "r"); /* TODO */
+    /* TODO: 'r' or 'rb'? */
+    params->inputStream = fopen(arg, "r");
   }
 
   if ((params->inputStream) == NULL) {
@@ -131,16 +137,30 @@ outputCode optOutput(char *arg, params_t *params) {
   return outOK;
 }
 
+#define ENCODE_STR_TOKEN "encode"
+#define DECODE_STR_TOKEN "decode"
+
 outputCode optAction(char *arg, params_t *params) {
   if (arg == NULL) {
     fprintf(stderr, "ERROR: Invalid argument.\n");
     return outERROR;
   }
+
+  if (strcmp(arg, ENCODE_STR_TOKEN) == 0) {
+    params->action = ENCODE_STR_TOKEN;
+  } else if (strcmp(arg, DECODE_STR_TOKEN) == 0) {
+    params->action = DECODE_STR_TOKEN;
+  } else {
+    fprintf(stderr, "ERROR: Invalid argument.\n");
+    return outERROR;
+  }
+
   return outOK;
 }
 
-outputCode parseCmdline(int argc, char **argv,
-                        params_t *params) {
+#define N_BUFFER_SIZE 1024
+
+outputCode parseCmdline(int argc, char **argv, params_t *params) {
   int indexptr = 0;
   int optCode;
 
@@ -151,14 +171,19 @@ outputCode parseCmdline(int argc, char **argv,
   params->action = "encode";
   params->inputStream = stdin;
   params->outputStream = stdout;
+  params->outputBuffer->bufferIndex = 0;
+  params->outputBuffer->bufferSize = N_BUFFER_SIZE;
+  /* TODO: or an 'unsigned char' or an 'unsigned int'? */
+  params->outputBuffer->bufferArray =
+      (char *)calloc(params->outputBuffer->bufferSize, sizeof(char));
+  params->outputBuffer->fileDescriptor = fileno(params->outputStream);
 
   /* 'version' and 'help' have no arguments. The rest, do
    * have, and are mandatory.*/
   char *shortOpts = "Vhi:o:a:";
 
-  while ((optCode = getopt_long(argc, argv, shortOpts,
-                                cmdOptions, &indexptr)) !=
-         -1) {
+  while ((optCode = getopt_long(argc, argv, shortOpts, cmdOptions,
+                                &indexptr)) != -1) {
     switch (optCode) {
       case 'V':
         optOutCode = optVersion();
@@ -194,31 +219,78 @@ outputCode applyTransformation(params_t *params) {
   return outOK;
 }
 
+void outputChar(params_t *params, int c) {
+  output_buffer_t *outputBuffer = params->outputBuffer;
+  outputBuffer->bufferArray[outputBuffer->bufferIndex] = (unsigned)c;
+  outputBuffer->bufferIndex++;
+
+  size_t bytesToWrite = outputBuffer->bufferIndex;
+
+  if (outputBuffer->bufferIndex == outputBuffer->bufferSize) {
+    size_t bytesWriten = 0;
+
+    char *auxIndex = outputBuffer->bufferArray;
+
+    while (bytesWriten < bytesToWrite) {
+      bytesToWrite = bytesToWrite - bytesWriten;
+      auxIndex = auxIndex + bytesWriten;
+      bytesWriten = write(outputBuffer->fileDescriptor, auxIndex, bytesToWrite);
+    }
+
+    outputBuffer->bufferIndex = 0;
+  }
+}
+
+/* TODO: do the same for the input buffer?. */
+void flushBuffers(params_t *params) {
+  /*
+  if (fflush(parms->fp) != 0) {
+          fprintf(stderr, "cannot flush output file.\n");
+          exit(1);
+  }
+  */
+  output_buffer_t *outputBuffer = params->outputBuffer;
+  size_t bytesToWrite = outputBuffer->bufferIndex;
+  size_t bytesWriten = 0;
+
+  char *auxIndex = outputBuffer->bufferArray;
+
+  while (bytesWriten < bytesToWrite) {
+    bytesToWrite = bytesToWrite - bytesWriten;
+    auxIndex = auxIndex + bytesWriten;
+    bytesWriten = write(outputBuffer->fileDescriptor, auxIndex, bytesToWrite);
+  }
+
+  outputBuffer->bufferIndex = 0;
+}
+
 int main(int argc, char **argv) {
   params_t params;
+  output_buffer_t outputBufferInfo;
+
   /* Initialize memory block with zeroes.*/
-  memset(&params, 0, sizeof(params));
+  memset(&params, 0, sizeof(params_t));
+  params.outputBuffer = memset(&outputBufferInfo, 0, sizeof(output_buffer_t));
 
   /* We parse the command line and check for errors. */
-  outputCode cmdParsingState =
-      parseCmdline(argc, argv, &params);
+  outputCode cmdParsingState = parseCmdline(argc, argv, &params);
   if (cmdParsingState == outERROR) {
     fprintf(stderr, "ERROR: Program exited with errors.\n");
     exit(EXIT_FAILURE);
   }
 
-  outputCode transformationState =
-      applyTransformation(&params);
+  outputCode transformationState = applyTransformation(&params);
 
   if (transformationState == outERROR) {
-    fprintf(stderr,
-            "ERROR: Transformation exited with errors.\n");
+    fprintf(stderr, "ERROR: Transformation exited with errors.\n");
     exit(EXIT_FAILURE);
   }
 
   /* Close and free what is left. */
+  flushBuffers(&params);
   fclose(params.inputStream);
   fclose(params.outputStream);
+  free(params.outputBuffer->bufferArray);
 
   return EXIT_SUCCESS;
 }
