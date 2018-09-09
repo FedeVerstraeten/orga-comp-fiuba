@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Sep-2018 3:46:28 pm
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 09-Sep-2018 4:25:03 pm
+ @Last modified by:   pluto
+ @Last modified time: 09-Sep-2018 5:20:44 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -47,7 +47,8 @@ struct option cmdOptions[] = {{"version", no_argument, NULL, 'V'},
                               {"action", required_argument, NULL, 'a'},
                               {0, 0, 0, 0}};
 
-typedef struct params_t {
+typedef struct params_t
+{
   char *action;
   FILE *inputStream;
   FILE *outputStream;
@@ -65,14 +66,17 @@ void optHelp(char *arg);
 void optVersion(void);
 
 /* Functions definitions. */
-void optVersion(void) {
+void optVersion(void)
+{
   fprintf(stderr, "%s\n", VERSION);
 
   exit(EXIT_SUCCESS);
 }
 
-void optHelp(char *arg) {
-  if (arg == NULL) {
+void optHelp(char *arg)
+{
+  if (arg == NULL)
+  {
     fprintf(stderr, "ERROR: Invalid argument.\n");
     exit(EXIT_FAILURE);
   }
@@ -94,20 +98,26 @@ void optHelp(char *arg) {
 }
 
 #define STD_STREAM_TOKEN "-"
-outputCode optInput(char *arg, params_t *params) {
-  if (arg == NULL) {
+outputCode optInput(char *arg, params_t *params)
+{
+  if (arg == NULL)
+  {
     fprintf(stderr, "ERROR: Invalid input stream.\n");
     return outERROR;
   }
 
-  if (strcmp(arg, STD_STREAM_TOKEN) == 0) {
+  if (strcmp(arg, STD_STREAM_TOKEN) == 0)
+  {
     params->inputStream = stdin;
-  } else {
+  }
+  else
+  {
     /* TODO: 'r' or 'rb'? */
     params->inputStream = fopen(arg, "rb");
   }
 
-  if ((params->inputStream) == NULL) {
+  if ((params->inputStream) == NULL)
+  {
     fprintf(stderr, "ERROR: Can't open input stream.\n");
     return outERROR;
   }
@@ -115,19 +125,25 @@ outputCode optInput(char *arg, params_t *params) {
   return outOK;
 }
 
-outputCode optOutput(char *arg, params_t *params) {
-  if (arg == NULL) {
+outputCode optOutput(char *arg, params_t *params)
+{
+  if (arg == NULL)
+  {
     fprintf(stderr, "ERROR: Invalid output stream.\n");
     return outERROR;
   }
 
-  if (strcmp(arg, STD_STREAM_TOKEN) == 0) {
+  if (strcmp(arg, STD_STREAM_TOKEN) == 0)
+  {
     params->outputStream = stdout;
-  } else {
+  }
+  else
+  {
     params->outputStream = fopen(arg, "wb");
   }
 
-  if ((params->outputStream) == NULL) {
+  if ((params->outputStream) == NULL)
+  {
     fprintf(stderr, "ERROR: Can't open output stream.\n");
     return outERROR;
   }
@@ -138,17 +154,24 @@ outputCode optOutput(char *arg, params_t *params) {
 #define ENCODE_STR_TOKEN "encode"
 #define DECODE_STR_TOKEN "decode"
 
-outputCode optAction(char *arg, params_t *params) {
-  if (arg == NULL) {
+outputCode optAction(char *arg, params_t *params)
+{
+  if (arg == NULL)
+  {
     fprintf(stderr, "ERROR: Invalid argument.\n");
     return outERROR;
   }
 
-  if (strcmp(arg, ENCODE_STR_TOKEN) == 0) {
+  if (strcmp(arg, ENCODE_STR_TOKEN) == 0)
+  {
     params->action = ENCODE_STR_TOKEN;
-  } else if (strcmp(arg, DECODE_STR_TOKEN) == 0) {
+  }
+  else if (strcmp(arg, DECODE_STR_TOKEN) == 0)
+  {
     params->action = DECODE_STR_TOKEN;
-  } else {
+  }
+  else
+  {
     fprintf(stderr, "ERROR: Invalid argument.\n");
     return outERROR;
   }
@@ -156,7 +179,8 @@ outputCode optAction(char *arg, params_t *params) {
   return outOK;
 }
 
-outputCode parseCmdline(int argc, char **argv, params_t *params) {
+outputCode parseCmdline(int argc, char **argv, params_t *params)
+{
   int indexptr = 0;
   int optCode;
 
@@ -172,9 +196,11 @@ outputCode parseCmdline(int argc, char **argv, params_t *params) {
    * have, and are mandatory.*/
   char *shortOpts = "Vhi:o:a:";
 
-  while ((optCode = getopt_long(argc, argv, shortOpts, cmdOptions,
-                                &indexptr)) != -1) {
-    switch (optCode) {
+  while ((optCode =
+              getopt_long(argc, argv, shortOpts, cmdOptions, &indexptr)) != -1)
+  {
+    switch (optCode)
+    {
       case 'V':
         optVersion();
         break;
@@ -195,7 +221,8 @@ outputCode parseCmdline(int argc, char **argv, params_t *params) {
         optOutCode = outERROR;
         break;
     }
-    if (optOutCode == outERROR) {
+    if (optOutCode == outERROR)
+    {
       return outERROR;
     }
   }
@@ -203,21 +230,25 @@ outputCode parseCmdline(int argc, char **argv, params_t *params) {
   return outOK;
 }
 
-outputCode applyTransformation(params_t *params) {
+outputCode applyTransformation(params_t *params)
+{
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
   int inChar, outChar;
 
-  while ((inChar = getc(params->inputStream)) != EOF) {
+  while ((inChar = getc(params->inputStream)) != EOF)
+  {
     outChar = inChar;
     putc(outChar, params->outputStream);
-    if (ferror(params->outputStream)) {
+    if (ferror(params->outputStream))
+    {
       fprintf(stderr, "Output error when writing.\n");
       exit(EXIT_FAILURE);
     }
   }
 
-  if (ferror(params->inputStream)) {
+  if (ferror(params->inputStream))
+  {
     fprintf(stderr, "Input error when reading.\n");
     exit(EXIT_FAILURE);
   }
@@ -225,7 +256,8 @@ outputCode applyTransformation(params_t *params) {
   return outOK;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   params_t params;
 
   /* Initialize memory block with zeroes.*/
@@ -233,13 +265,15 @@ int main(int argc, char **argv) {
 
   /* We parse the command line and check for errors. */
   outputCode cmdParsingState = parseCmdline(argc, argv, &params);
-  if (cmdParsingState == outERROR) {
+  if (cmdParsingState == outERROR)
+  {
     fprintf(stderr, "ERROR: Program exited with errors.\n");
     exit(EXIT_FAILURE);
   }
 
   outputCode transformationState = applyTransformation(&params);
-  if (transformationState == outERROR) {
+  if (transformationState == outERROR)
+  {
     fprintf(stderr, "ERROR: Transformation exited with errors.\n");
     exit(EXIT_FAILURE);
   }
