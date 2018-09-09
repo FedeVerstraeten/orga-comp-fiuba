@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 09-Sep-2018 1:05:29 am
+ @Last modified time: 09-Sep-2018 2:57:28 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -158,6 +158,7 @@ outputCode optAction(char *arg, params_t *params) {
   return outOK;
 }
 
+/* We encode/decode 24bits = 3 chars. */
 #define N_BUFFER_SIZE 3 * 1000
 
 outputCode parseCmdline(int argc, char **argv, params_t *params) {
