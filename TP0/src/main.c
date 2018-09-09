@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 09-Sep-2018 1:05:29 am
+ @Last modified time: 09-Sep-2018 3:10:02 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -47,20 +47,10 @@ struct option cmdOptions[] = {{"version", no_argument, NULL, 'V'},
                               {"action", required_argument, NULL, 'a'},
                               {0, 0, 0, 0}};
 
-typedef struct {
-  /* TODO: or an 'unsigned char' or an 'unsigned int'? */
-  char *bufferArray;
-  int bufferIndex;
-  int bufferSize;
-  int fileDescriptor;
-} buffer_t;
-
 typedef struct params_t {
   char *action;
   FILE *inputStream;
   FILE *outputStream;
-  buffer_t *inputBuffer;
-  buffer_t *outputBuffer;
 } params_t;
 
 /* Functions declarations. */
@@ -158,8 +148,6 @@ outputCode optAction(char *arg, params_t *params) {
   return outOK;
 }
 
-#define N_BUFFER_SIZE 3 * 1000
-
 outputCode parseCmdline(int argc, char **argv, params_t *params) {
   int indexptr = 0;
   int optCode;
@@ -171,19 +159,6 @@ outputCode parseCmdline(int argc, char **argv, params_t *params) {
   params->action = "encode";
   params->inputStream = stdin;
   params->outputStream = stdout;
-  params->outputBuffer->bufferIndex = 0;
-  params->outputBuffer->bufferSize = N_BUFFER_SIZE;
-  /* TODO: or an 'unsigned char' or an 'unsigned int'? */
-  params->outputBuffer->bufferArray =
-      (char *)calloc(params->outputBuffer->bufferSize, sizeof(char));
-  params->outputBuffer->fileDescriptor = fileno(params->outputStream);
-
-  params->inputBuffer->bufferIndex = 0;
-  params->inputBuffer->bufferSize = N_BUFFER_SIZE;
-  /* TODO: or an 'unsigned char' or an 'unsigned int'? */
-  params->inputBuffer->bufferArray =
-      (char *)calloc(params->inputBuffer->bufferSize, sizeof(char));
-  params->inputBuffer->fileDescriptor = fileno(params->outputStream);
 
   /* 'version' and 'help' have no arguments. The rest, do
    * have, and are mandatory.*/
@@ -226,60 +201,11 @@ outputCode applyTransformation(params_t *params) {
   return outOK;
 }
 
-void outputChar(params_t *params, int c) {
-  buffer_t *outputBuffer = params->outputBuffer;
-  outputBuffer->bufferArray[outputBuffer->bufferIndex] = (unsigned)c;
-  outputBuffer->bufferIndex++;
-
-  size_t bytesToWrite = outputBuffer->bufferIndex;
-
-  if (outputBuffer->bufferIndex == outputBuffer->bufferSize) {
-    size_t bytesWriten = 0;
-
-    char *auxIndex = outputBuffer->bufferArray;
-
-    while (bytesWriten < bytesToWrite) {
-      bytesToWrite = bytesToWrite - bytesWriten;
-      auxIndex = auxIndex + bytesWriten;
-      bytesWriten = write(outputBuffer->fileDescriptor, auxIndex, bytesToWrite);
-    }
-
-    outputBuffer->bufferIndex = 0;
-  }
-}
-
-/* TODO: do the same for the input buffer?. */
-void flushOutputBuffer(params_t *params) {
-  /*
-  if (fflush(parms->fp) != 0) {
-          fprintf(stderr, "cannot flush output file.\n");
-          exit(1);
-  }
-  */
-  buffer_t *outputBuffer = params->outputBuffer;
-  size_t bytesToWrite = outputBuffer->bufferIndex;
-  size_t bytesWriten = 0;
-
-  char *auxIndex = outputBuffer->bufferArray;
-
-  while (bytesWriten < bytesToWrite) {
-    bytesToWrite = bytesToWrite - bytesWriten;
-    auxIndex = auxIndex + bytesWriten;
-    bytesWriten = write(outputBuffer->fileDescriptor, auxIndex, bytesToWrite);
-  }
-
-  outputBuffer->bufferIndex = 0;
-}
-
 int main(int argc, char **argv) {
   params_t params;
-  buffer_t inputBufferInfo;
-  buffer_t outputBufferInfo;
 
   /* Initialize memory block with zeroes.*/
   memset(&params, 0, sizeof(params_t));
-  params.inputBuffer = memset(&inputBufferInfo, 0, sizeof(buffer_t));
-  params.outputBuffer = memset(&outputBufferInfo, 0, sizeof(buffer_t));
 
   /* We parse the command line and check for errors. */
   outputCode cmdParsingState = parseCmdline(argc, argv, &params);
@@ -295,11 +221,8 @@ int main(int argc, char **argv) {
   }
 
   /* Close and free what is left. */
-  flushOutputBuffer(&params);
   fclose(params.inputStream);
   fclose(params.outputStream);
-  free(params.inputBuffer->bufferArray);
-  free(params.outputBuffer->bufferArray);
 
   return EXIT_SUCCESS;
 }
