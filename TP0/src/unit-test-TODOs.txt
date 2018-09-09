@@ -12,34 +12,34 @@ A partir de script de BASH, se plantean realizar las siguientes pruebas unitaria
 
 1. Conservación de la entrada/salida.
 
-	A partir de un INPUT cualquier utilizar el programa `tp0` como ENCODER. Con el OUTPUT obtenido ejecutar nuevamente el programa `tp0` como DECODER y generar una nuevo OUTPUT*.
+  A partir de un INPUT cualquier utilizar el programa `tp0` como ENCODER. Con el OUTPUT obtenido ejecutar nuevamente el programa `tp0` como DECODER y generar una nuevo OUTPUT*.
 
-	file-input.txt --> (myUser$ ./tp0 -encode) --> OUTPUT --> (myUser$ ./tp0 -decode) --> OUTPUT*
+  file-input.txt --> (myUser$ ./tp0 -encode) --> OUTPUT --> (myUser$ ./tp0 -decode) --> OUTPUT*
 
-	Debe verificarse que INPUT == OUTPUT*
+  Debe verificarse que INPUT == OUTPUT*
 
-	Se puede utilizar el comando `diff` para hacer la verificación.
+  Se puede utilizar el comando `diff` para hacer la verificación.
 
-	Ejemplo:
+  Ejemplo:
 
-	diff file1.txt file2.txt
+  diff file1.txt file2.txt
 
-	Pueden encontrarse más ejemplos en https://www.computerhope.com/unix/udiff.htm
+  Pueden encontrarse más ejemplos en https://www.computerhope.com/unix/udiff.htm
 
 
 2. Validación entrada/salida.
 
-	2.1. Ejecutar programa con argumentos inválidos.
-	2.2. Ejecutar programa con argumentos incompletos.
-	2.3. Ejecutar programa con entradas y salidas estándar.
-	2.4. Ejecutar programa con entradas y salidas redirigidas a un archivo.
-	2.5. Ejecutar programa con stream de entrada o hacer piping (ver ejemplo enunciado TP0 usando comando `yes`).
-	2.6. Ejecutar programa con entradas vacía.
+  2.1. Ejecutar programa con argumentos inválidos.
+  2.2. Ejecutar programa con argumentos incompletos.
+  2.3. Ejecutar programa con entradas y salidas estándar.
+  2.4. Ejecutar programa con entradas y salidas redirigidas a un archivo.
+  2.5. Ejecutar programa con stream de entrada o hacer piping (ver ejemplo enunciado TP0 usando comando `yes`).
+  2.6. Ejecutar programa con entradas vacía.
 
 3. Eficiencia.
 
-	Ejecutar el programa con entradas de diverso tamaño y calcular el tiempo de ejecución (comando `time`). Para ello armar diversos archivos random para la entrada (revisar enunciado del TP0).
+  Ejecutar el programa con entradas de diverso tamaño y calcular el tiempo de ejecución (comando `time`). Para ello armar diversos archivos random para la entrada (revisar enunciado del TP0).
 
 
-	
+  
 
