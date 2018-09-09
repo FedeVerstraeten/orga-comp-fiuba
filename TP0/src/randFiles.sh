@@ -16,7 +16,7 @@
 #
 # @Date:               08-Sep-2018 10:06:05 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 08-Sep-2018 10:54:27 pm
+# @Last modified time: 09-Sep-2018 12:15:11 am
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura básica.'.
@@ -30,12 +30,13 @@
 
 TESTS_DIR="../tests";
 mkdir $TESTS_DIR;
+PROGRAM_NAME="tp0";
 n=1;
 while :; do
 
 	head -c $n </dev/urandom >$TESTS_DIR/in.bin;
-	./tp0 -a encode -i $TESTS_DIR/in.bin -o $TESTS_DIR/out.b64;
-	./tp0 -a decode -i $TESTS_DIR/out.b64 -o $TESTS_DIR/out.bin;
+	./$PROGRAM_NAME -a encode -i $TESTS_DIR/in.bin -o $TESTS_DIR/out.b64;
+	./$PROGRAM_NAME -a decode -i $TESTS_DIR/out.b64 -o $TESTS_DIR/out.bin;
 
 	if diff $TESTS_DIR/in.bin $TESTS_DIR/out.bin; then :; else
 		echo ERROR: $n;
