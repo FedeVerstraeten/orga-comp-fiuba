@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   pluto
- @Last modified time: 09-Sep-2018 5:20:44 pm
+ @Last modified time: 09-Sep-2018 5:37:10 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -57,7 +57,8 @@ typedef struct params_t
 typedef enum outputCodes_ { outOK, outERROR } outputCode;
 
 /* Functions declarations. */
-outputCode applyTransformation(params_t *params);
+outputCode encode(params_t *params);
+outputCode decode(params_t *params);
 outputCode parseCmdline(int argc, char **argv, params_t *params);
 outputCode optAction(char *arg, params_t *params);
 outputCode optOutput(char *arg, params_t *params);
@@ -230,7 +231,35 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
   return outOK;
 }
 
-outputCode applyTransformation(params_t *params)
+static const char translationTableB64[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+outputCode encode(params_t *params)
+{
+  /* TODO: code this function. Assume that 'params' are
+   * already well initialized. */
+  int inChar, outChar;
+
+  while ((inChar = getc(params->inputStream)) != EOF)
+  {
+    outChar = inChar;
+    putc(outChar, params->outputStream);
+    if (ferror(params->outputStream))
+    {
+      fprintf(stderr, "Output error when writing.\n");
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if (ferror(params->inputStream))
+  {
+    fprintf(stderr, "Input error when reading.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return outOK;
+}
+
+outputCode decode(params_t *params)
 {
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
@@ -271,7 +300,15 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  outputCode transformationState = applyTransformation(&params);
+  outputCode transformationState;
+  if (strcmp(params.action, ENCODE_STR_TOKEN) == 0)
+  {
+    transformationState = encode(&params);
+  }
+  else
+  {
+    transformationState = decode(&params);
+  }
   if (transformationState == outERROR)
   {
     fprintf(stderr, "ERROR: Transformation exited with errors.\n");
