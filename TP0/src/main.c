@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 09-Sep-2018 3:10:02 pm
+ @Last modified time: 09-Sep-2018 4:25:03 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -53,20 +53,28 @@ typedef struct params_t {
   FILE *outputStream;
 } params_t;
 
-/* Functions declarations. */
 typedef enum outputCodes_ { outOK, outERROR } outputCode;
 
+/* Functions declarations. */
+outputCode applyTransformation(params_t *params);
+outputCode parseCmdline(int argc, char **argv, params_t *params);
+outputCode optAction(char *arg, params_t *params);
+outputCode optOutput(char *arg, params_t *params);
+outputCode optInput(char *arg, params_t *params);
+void optHelp(char *arg);
+void optVersion(void);
+
 /* Functions definitions. */
-outputCode optVersion(void) {
+void optVersion(void) {
   fprintf(stderr, "%s\n", VERSION);
 
-  return outOK;
+  exit(EXIT_SUCCESS);
 }
 
-outputCode optHelp(char *arg) {
+void optHelp(char *arg) {
   if (arg == NULL) {
     fprintf(stderr, "ERROR: Invalid argument.\n");
-    return outERROR;
+    exit(EXIT_FAILURE);
   }
   fprintf(stderr, "Usage:\n");
   fprintf(stderr, "  %s -h\n", arg);
@@ -82,7 +90,7 @@ outputCode optHelp(char *arg) {
   fprintf(stderr, "  %s -a encode -i ~/input -o ~/output\n", arg);
   fprintf(stderr, "  %s -a decode\n", arg);
 
-  return outOK;
+  exit(EXIT_SUCCESS);
 }
 
 #define STD_STREAM_TOKEN "-"
@@ -116,7 +124,7 @@ outputCode optOutput(char *arg, params_t *params) {
   if (strcmp(arg, STD_STREAM_TOKEN) == 0) {
     params->outputStream = stdout;
   } else {
-    params->outputStream = fopen(arg, "w");
+    params->outputStream = fopen(arg, "wb");
   }
 
   if ((params->outputStream) == NULL) {
@@ -168,10 +176,10 @@ outputCode parseCmdline(int argc, char **argv, params_t *params) {
                                 &indexptr)) != -1) {
     switch (optCode) {
       case 'V':
-        optOutCode = optVersion();
+        optVersion();
         break;
       case 'h':
-        optOutCode = optHelp(programName);
+        optHelp(programName);
         break;
       case 'i':
         optOutCode = optInput(optarg, params);
@@ -198,6 +206,22 @@ outputCode parseCmdline(int argc, char **argv, params_t *params) {
 outputCode applyTransformation(params_t *params) {
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
+  int inChar, outChar;
+
+  while ((inChar = getc(params->inputStream)) != EOF) {
+    outChar = inChar;
+    putc(outChar, params->outputStream);
+    if (ferror(params->outputStream)) {
+      fprintf(stderr, "Output error when writing.\n");
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if (ferror(params->inputStream)) {
+    fprintf(stderr, "Input error when reading.\n");
+    exit(EXIT_FAILURE);
+  }
+
   return outOK;
 }
 

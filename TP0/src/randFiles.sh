@@ -16,7 +16,7 @@
 #
 # @Date:               08-Sep-2018 10:06:05 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 09-Sep-2018 12:15:11 am
+# @Last modified time: 09-Sep-2018 4:28:28 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura básica.'.
@@ -24,7 +24,9 @@
 #    is strictly prohibited.
 # ------------------------------------------------------------
 #
-# PUT DESCRIPTION HERE.
+# Script that generates random binary files of increasing size
+# (doubling size in each step) and then coded and decoded
+# using our codec tool to check if it is working fine.
 #
 # ------------------------------------------------------------
 
@@ -44,6 +46,6 @@ while :; do
 	fi
 
 	echo ok: $n;
-	n="'expr $n + 1'";
+	n=$((n*2));
 	rm -f $TESTS_DIR/in.bin $TESTS_DIR/out.b64 $TESTS_DIR/out.bin
 done
