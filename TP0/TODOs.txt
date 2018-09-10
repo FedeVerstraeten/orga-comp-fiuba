@@ -1,0 +1,12 @@
+@Title:   FIUBA - 66.20 Organización de Computadoras.
+@Project: TP0 - Infraestructura básica.
+------------------------------------------------------------
+@Filename: TODOs.txt
+------------------------------------------------------------
+
+1. Hacemos pruebas de tiempo de ejecución? Si llegamos a hacer lo del buffer,
+capaz es buena idea, y lo pondríamos en el informe.
+
+2. Parametrizar los strings de errores.
+
+3. Al string del error de optAction(), ponerlo como "ERROR: Invalid action argument.".

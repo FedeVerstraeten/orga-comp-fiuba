@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Sep-2018 3:46:28 pm
- @Last modified by:   pluto
- @Last modified time: 09-Sep-2018 5:37:10 pm
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 10-Sep-2018 10:56:49 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -35,6 +35,29 @@ valgrind --tool=memcheck --leak-check=full \
 
 #ifndef VERSION
 #define VERSION "1.0.0"
+#endif
+
+/* Program messages definitions. */
+#ifndef ERROR_INVALID_INPUT_STREAM
+#define ERROR_INVALID_INPUT_STREAM "ERROR: Invalid input stream.\n"
+#endif
+#ifndef ERROR_OPENING_INPUT_STREAM
+#define ERROR_OPENING_INPUT_STREAM "ERROR: Can't open input stream.\n"
+#endif
+#ifndef ERROR_INVALID_OUTPUT_STREAM
+#define ERROR_INVALID_OUTPUT_STREAM "ERROR: Invalid output stream.\n"
+#endif
+#ifndef ERROR_OPENING_OUTPUT_STREAM
+#define ERROR_OPENING_OUTPUT_STREAM "ERROR: Can't open output stream.\n"
+#endif
+#ifndef ERROR_ACTION_INVALID_ARGUMENT
+#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid argument.\n"
+#endif
+#ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
+#define ERROR_OUTPUT_STREAM_WRITING_MSG "Output error when writing stream.\n"
+#endif
+#ifndef ERROR_INPUT_STREAM_READING_MSG
+#define ERROR_INPUT_STREAM_READING_MSG "Input error when reading stream.\n"
 #endif
 
 /* Data structures and miscellaneous definitions. */
@@ -78,7 +101,7 @@ void optHelp(char *arg)
 {
   if (arg == NULL)
   {
-    fprintf(stderr, "ERROR: Invalid argument.\n");
+    fprintf(stderr, ERROR_ACTION_INVALID_ARGUMENT);
     exit(EXIT_FAILURE);
   }
   fprintf(stderr, "Usage:\n");
@@ -98,12 +121,15 @@ void optHelp(char *arg)
   exit(EXIT_SUCCESS);
 }
 
+#ifndef STD_STREAM_TOKEN
 #define STD_STREAM_TOKEN "-"
+#endif
+
 outputCode optInput(char *arg, params_t *params)
 {
   if (arg == NULL)
   {
-    fprintf(stderr, "ERROR: Invalid input stream.\n");
+    fprintf(stderr, ERROR_INVALID_INPUT_STREAM);
     return outERROR;
   }
 
@@ -113,13 +139,12 @@ outputCode optInput(char *arg, params_t *params)
   }
   else
   {
-    /* TODO: 'r' or 'rb'? */
     params->inputStream = fopen(arg, "rb");
   }
 
   if ((params->inputStream) == NULL)
   {
-    fprintf(stderr, "ERROR: Can't open input stream.\n");
+    fprintf(stderr, ERROR_OPENING_INPUT_STREAM);
     return outERROR;
   }
 
@@ -130,7 +155,7 @@ outputCode optOutput(char *arg, params_t *params)
 {
   if (arg == NULL)
   {
-    fprintf(stderr, "ERROR: Invalid output stream.\n");
+    fprintf(stderr, ERROR_INVALID_OUTPUT_STREAM);
     return outERROR;
   }
 
@@ -145,21 +170,26 @@ outputCode optOutput(char *arg, params_t *params)
 
   if ((params->outputStream) == NULL)
   {
-    fprintf(stderr, "ERROR: Can't open output stream.\n");
+    fprintf(stderr, ERROR_OPENING_OUTPUT_STREAM);
     return outERROR;
   }
 
   return outOK;
 }
 
+/* Actions definitions */
+#ifndef ENCODE_STR_TOKEN
 #define ENCODE_STR_TOKEN "encode"
+#endif
+#ifndef DECODE_STR_TOKEN
 #define DECODE_STR_TOKEN "decode"
+#endif
 
 outputCode optAction(char *arg, params_t *params)
 {
   if (arg == NULL)
   {
-    fprintf(stderr, "ERROR: Invalid argument.\n");
+    fprintf(stderr, ERROR_ACTION_INVALID_ARGUMENT);
     return outERROR;
   }
 
@@ -173,7 +203,7 @@ outputCode optAction(char *arg, params_t *params)
   }
   else
   {
-    fprintf(stderr, "ERROR: Invalid argument.\n");
+    fprintf(stderr, ERROR_ACTION_INVALID_ARGUMENT);
     return outERROR;
   }
 
@@ -189,7 +219,7 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
   char *programName = argv[0];
 
   /* Set the default values. */
-  params->action = "encode";
+  params->action = ENCODE_STR_TOKEN;
   params->inputStream = stdin;
   params->outputStream = stdout;
 
@@ -233,6 +263,7 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
 
 static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
 outputCode encode(params_t *params)
 {
   /* TODO: code this function. Assume that 'params' are
@@ -245,15 +276,15 @@ outputCode encode(params_t *params)
     putc(outChar, params->outputStream);
     if (ferror(params->outputStream))
     {
-      fprintf(stderr, "Output error when writing.\n");
-      exit(EXIT_FAILURE);
+      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+      return outERROR;
     }
   }
 
   if (ferror(params->inputStream))
   {
-    fprintf(stderr, "Input error when reading.\n");
-    exit(EXIT_FAILURE);
+    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+    return outERROR;
   }
 
   return outOK;
@@ -271,15 +302,15 @@ outputCode decode(params_t *params)
     putc(outChar, params->outputStream);
     if (ferror(params->outputStream))
     {
-      fprintf(stderr, "Output error when writing.\n");
-      exit(EXIT_FAILURE);
+      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+      return outERROR;
     }
   }
 
   if (ferror(params->inputStream))
   {
-    fprintf(stderr, "Input error when reading.\n");
-    exit(EXIT_FAILURE);
+    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+    return outERROR;
   }
 
   return outOK;
@@ -296,7 +327,6 @@ int main(int argc, char **argv)
   outputCode cmdParsingState = parseCmdline(argc, argv, &params);
   if (cmdParsingState == outERROR)
   {
-    fprintf(stderr, "ERROR: Program exited with errors.\n");
     exit(EXIT_FAILURE);
   }
 
@@ -311,7 +341,6 @@ int main(int argc, char **argv)
   }
   if (transformationState == outERROR)
   {
-    fprintf(stderr, "ERROR: Transformation exited with errors.\n");
     exit(EXIT_FAILURE);
   }
 
