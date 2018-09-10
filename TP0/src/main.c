@@ -231,17 +231,65 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
   return outOK;
 }
 
+#define BYTE_INIT_MASK 0xFF
+
 static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+
+char charToBase64(const char inChar)
+{
+  unsigned char headByte = 0x00;
+  unsigned char prevByte = 0x00;
+  static unsigned char tailByte = 0x00;
+  static unsigned char bitMask=BYTE_INIT_MASK;
+  static unsigned int shiftBit=0;
+  unsigned char encBase64 = 0x00;
+
+  /* Backup the previous tailByte*/
+  prevByte=tailByte;
+  //fprintf(stderr, "prevByte: %x\n",prevByte);
+
+  /*Shift right the mask 2 bits.*/
+  shiftBit+=2;
+  if(!(bitMask<<=2))
+  { 
+    // Restart mask at the beginning
+    bitMask=BYTE_INIT_MASK;
+    bitMask<<=2;
+    shiftBit=2;
+  };
+  
+  fprintf(stderr, "inChar: %c.\n",inChar);
+
+  /* Save the first input char*/
+  headByte = inChar & bitMask;
+  headByte >>= shiftBit; // shift right 2bit
+  //fprintf(stderr, "headByte: %x\n",headByte);
+
+  /* Save the last input char*/
+  tailByte = inChar & (~bitMask);
+  tailByte <<= (6 - shiftBit);
+  //fprintf(stderr, "tailByte: %x\n",tailByte);
+
+  /* Translation headByte to Base64*/
+  headByte = (prevByte | headByte);
+  //fprintf(stderr, "headByte: %x\n",headByte);
+  encBase64 = translationTableB64[headByte];
+  fprintf(stderr, "encBase64: %c\n",encBase64);
+
+  return encBase64;
+}
+
 outputCode encode(params_t *params)
 {
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
-  int inChar, outChar;
+  char inChar, outChar;
 
   while ((inChar = getc(params->inputStream)) != EOF)
   {
-    outChar = inChar;
+    outChar = charToBase64(inChar);
     putc(outChar, params->outputStream);
     if (ferror(params->outputStream))
     {
@@ -268,6 +316,8 @@ outputCode decode(params_t *params)
   while ((inChar = getc(params->inputStream)) != EOF)
   {
     outChar = inChar;
+    fprintf(stderr, "inChar: %c.\n",inChar);
+    fprintf(stderr, "outChar: %c.\n",outChar);
     putc(outChar, params->outputStream);
     if (ferror(params->outputStream))
     {
