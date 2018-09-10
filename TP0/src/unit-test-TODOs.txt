@@ -10,7 +10,7 @@ Unit Test (TODO)
 
 A partir de script de BASH, se plantean realizar las siguientes pruebas unitarias:
 
-1. Conservación de la entrada/salida.
+1. Conservación de la entrada/salida. OK
 
   A partir de un INPUT cualquier utilizar el programa `tp0` como ENCODER. Con el OUTPUT obtenido ejecutar nuevamente el programa `tp0` como DECODER y generar una nuevo OUTPUT*.
 
@@ -29,17 +29,13 @@ A partir de script de BASH, se plantean realizar las siguientes pruebas unitaria
 
 2. Validación entrada/salida.
 
-  2.1. Ejecutar programa con argumentos inválidos.
-  2.2. Ejecutar programa con argumentos incompletos.
+  2.1. Ejecutar programa con argumentos inválidos. OK
+  2.2. Ejecutar programa con argumentos incompletos. OK
   2.3. Ejecutar programa con entradas y salidas estándar.
   2.4. Ejecutar programa con entradas y salidas redirigidas a un archivo.
   2.5. Ejecutar programa con stream de entrada o hacer piping (ver ejemplo enunciado TP0 usando comando `yes`).
-  2.6. Ejecutar programa con entradas vacía.
+  2.6. Ejecutar programa con entradas vacía. OK
 
-3. Eficiencia.
+3. Eficiencia. OK
 
   Ejecutar el programa con entradas de diverso tamaño y calcular el tiempo de ejecución (comando `time`). Para ello armar diversos archivos random para la entrada (revisar enunciado del TP0).
-
-
-  
-
