@@ -231,72 +231,99 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
   return outOK;
 }
 
+
+////////////// ENCODE //////////////////
+
 #define BYTE_INIT_MASK 0xFF
+#define MAX6BIT 6 
+#define PADDING "="
 
 static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 
-char charToBase64(const char inChar)
+void charToBase64(char* outChar,char inChar)
 {
   unsigned char headByte = 0x00;
   unsigned char prevByte = 0x00;
   static unsigned char tailByte = 0x00;
   static unsigned char bitMask=BYTE_INIT_MASK;
-  static unsigned int shiftBit=0;
-  unsigned char encBase64 = 0x00;
+  static unsigned int shiftRightBit=0;
 
   /* Backup the previous tailByte*/
   prevByte=tailByte;
-  //fprintf(stderr, "prevByte: %x\n",prevByte);
+
+  /*Padding: The last encoded block contain less 6bit*/
+  if (inChar == EOF)
+  {
+    headByte = (prevByte | 0x00);
+    strncpy(outChar,&translationTableB64[headByte],1);
+    if (shiftRightBit==4)
+    {
+      strncat(outChar,PADDING,1);
+      return;
+    }
+    else if (shiftRightBit==2)
+    {
+      strncat(outChar,PADDING,1);
+      strncat(outChar,PADDING,1);
+      return;
+    }
+  }
+
 
   /*Shift right the mask 2 bits.*/
-  shiftBit+=2;
+  shiftRightBit+=2;
+
   if(!(bitMask<<=2))
   { 
     // Restart mask at the beginning
     bitMask=BYTE_INIT_MASK;
     bitMask<<=2;
-    shiftBit=2;
-  };
+    shiftRightBit=2;
+// TODO: revisar porque en el restartmask se esta perdiendo el ultimo prevByte, como almacenarlo
+/*    headByte=prevByte>>2;
+    strncpy(outChar,&translationTableB64[headByte],1);
+    prevByte=0x00;
+*/  };
   
   fprintf(stderr, "inChar: %c.\n",inChar);
 
   /* Save the first input char*/
   headByte = inChar & bitMask;
-  headByte >>= shiftBit; // shift right 2bit
-  //fprintf(stderr, "headByte: %x\n",headByte);
+  headByte >>= shiftRightBit; // shift right 2,4 or 6 bit
 
   /* Save the last input char*/
   tailByte = inChar & (~bitMask);
-  tailByte <<= (6 - shiftBit);
-  //fprintf(stderr, "tailByte: %x\n",tailByte);
+  tailByte <<= (MAX6BIT - shiftRightBit);
 
   /* Translation headByte to Base64*/
   headByte = (prevByte | headByte);
-  //fprintf(stderr, "headByte: %x\n",headByte);
-  encBase64 = translationTableB64[headByte];
-  fprintf(stderr, "encBase64: %c\n",encBase64);
 
-  return encBase64;
+  /*Print translation in outChar*/
+  strncat(outChar,&translationTableB64[headByte],1);
 }
+
 
 outputCode encode(params_t *params)
 {
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
-  char inChar, outChar;
+  char inChar;
+  char outChar[4]={};
 
-  while ((inChar = getc(params->inputStream)) != EOF)
+  do
   {
-    outChar = charToBase64(inChar);
-    putc(outChar, params->outputStream);
+    inChar = getc(params->inputStream);
+    charToBase64(outChar,inChar);
+    fprintf(stderr,"outChar: %s\n",outChar);
+    fputs(outChar,params->outputStream);
     if (ferror(params->outputStream))
     {
       fprintf(stderr, "Output error when writing.\n");
       exit(EXIT_FAILURE);
     }
-  }
+  }while (inChar != EOF);
 
   if (ferror(params->inputStream))
   {
@@ -306,6 +333,8 @@ outputCode encode(params_t *params)
 
   return outOK;
 }
+
+//////////////////////////////////////////////////////
 
 outputCode decode(params_t *params)
 {
