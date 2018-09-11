@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Sep-2018 10:56:49 am
+ @Last modified time: 10-Sep-2018 2:33:30 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -51,7 +51,7 @@ valgrind --tool=memcheck --leak-check=full \
 #define ERROR_OPENING_OUTPUT_STREAM "ERROR: Can't open output stream.\n"
 #endif
 #ifndef ERROR_ACTION_INVALID_ARGUMENT
-#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid argument.\n"
+#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid action argument.\n"
 #endif
 #ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
 #define ERROR_OUTPUT_STREAM_WRITING_MSG "Output error when writing stream.\n"
@@ -125,9 +125,25 @@ void optHelp(char *arg)
 #define STD_STREAM_TOKEN "-"
 #endif
 
+outputCode validateStreamName(char *streamName)
+{
+  if (streamName == NULL)
+  {
+    return outERROR;
+  }
+  /* TODO: we could refactor this in a more elegant way. */
+  if (!strcmp(streamName, ".") || !strcmp(streamName, "..") ||
+      !strcmp(streamName, "/") || !strcmp(streamName, "//"))
+  {
+    return outERROR;
+  }
+
+  return outOK;
+}
+
 outputCode optInput(char *arg, params_t *params)
 {
-  if (arg == NULL)
+  if (validateStreamName(arg) == outERROR)
   {
     fprintf(stderr, ERROR_INVALID_INPUT_STREAM);
     return outERROR;
@@ -153,7 +169,7 @@ outputCode optInput(char *arg, params_t *params)
 
 outputCode optOutput(char *arg, params_t *params)
 {
-  if (arg == NULL)
+  if (validateStreamName(arg) == outERROR)
   {
     fprintf(stderr, ERROR_INVALID_OUTPUT_STREAM);
     return outERROR;
