@@ -15,8 +15,8 @@
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
-# @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 10-Sep-2018 2:34:41 pm
+# @Last modified by:   pluto
+# @Last modified time: 11-Sep-2018 11:36:37 am
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura básica.'.
@@ -25,6 +25,12 @@
 # ------------------------------------------------------------
 #
 # Script to test errors in the program arguments.
+#
+# To remove newlines from a textfile, use
+# printf %s "$(cat file)" > file
+#
+# To print contents of a file, including control characters, do:
+# oc -c file
 #
 # ------------------------------------------------------------
 
@@ -51,7 +57,7 @@ function msg_true () {
 }
 
 function msg_false () {
-  echo -e "$RED\0NOT PASSED \n $DEFAULT PROGRAM OUTPUT:\n\t$1"
+  echo -e "$RED\0FAILED \n $DEFAULT PROGRAM OUTPUT:\n\t$1"
 }
 
 function msg_testing() {
@@ -286,8 +292,8 @@ function test4_valid_parameters(){
 function IO_validation_passed(){
 	echo -e "$GREEN\0PASSED: $DEFAULT $1"
 }
-function IO_validation_not_passed(){
-	echo -e "$RED\0NOT PASSED $DEFAULT $1"
+function IO_validation_failed(){
+	echo -e "$RED\0FAILED $DEFAULT $1"
 }
 
 TESTS_DIR="../tests";
@@ -305,10 +311,12 @@ function test5_IO_validation(){
   	$PROGRAM_NAME -a encode -i $TESTS_DIR/in.bin -o $TESTS_DIR/out.b64;
   	$PROGRAM_NAME -a decode -i $TESTS_DIR/out.b64 -o $TESTS_DIR/out.bin;
 
-  	if diff $TESTS_DIR/in.bin $TESTS_DIR/out.bin; then :;
+    diff_result="$(diff $TESTS_DIR/in.bin $TESTS_DIR/out.bin)";
+
+  	if [[ -z ${diff_result} ]]; then :;
   		IO_validation_passed "n = $n";
   	else
-  		IO_validation_not_passed "n = $n";
+  		IO_validation_failed "n = $n";
   		break;
   	fi
 
@@ -316,6 +324,121 @@ function test5_IO_validation(){
 
   	rm -f $TESTS_DIR/in.bin $TESTS_DIR/out.b64 $TESTS_DIR/out.bin
   done
+}
+
+function test51_IO_validation(){
+  header "TEST51: input known text with known encoding."
+
+  $PROGRAM_NAME -a encode -i $TESTS_DIR/leviathan.input -o $TESTS_DIR/leviathan_out.b64;
+
+  diff_result="$(diff $TESTS_DIR/leviathan_out.b64 $TESTS_DIR/leviathan_out_truth.b64)";
+
+  if [[ -z ${diff_result} ]]; then :;
+    IO_validation_passed "No differences.";
+  else
+    IO_validation_failed "Differences: \n${diff_result}";
+  fi
+}
+
+function test52_IO_validation(){
+  header "TEST52: Encode letter 'M'."
+
+  program_output="$(echo -n M | $PROGRAM_NAME)";
+  correct_output="TQ==";
+  diff_result="$(diff  <(echo "$program_output" ) <(echo "$correct_output"))";
+
+  if [[ -z ${diff_result} ]]; then :;
+    IO_validation_passed "No differences.";
+  else
+    IO_validation_failed "Differences: \n${diff_result}";
+  fi
+}
+
+function test53_IO_validation(){
+  header "TEST53: Encode 'Ma'."
+
+  program_output="$(echo -n Ma | $PROGRAM_NAME)";
+  correct_output="TWE=";
+  diff_result="$(diff  <(echo "$program_output" ) <(echo "$correct_output"))";
+
+  if [[ -z ${diff_result} ]]; then :;
+    IO_validation_passed "No differences.";
+  else
+    IO_validation_failed "Differences: \n${diff_result}";
+  fi
+}
+
+function test54_IO_validation(){
+  header "TEST54: Encode 'Man'."
+
+  program_output="$(echo -n Man | $PROGRAM_NAME)";
+  correct_output="TWFu";
+  diff_result="$(diff  <(echo "$program_output" ) <(echo "$correct_output"))";
+
+  if [[ -z ${diff_result} ]]; then :;
+    IO_validation_passed "No differences.";
+  else
+    IO_validation_failed "Differences: \n${diff_result}";
+  fi
+}
+
+function test55_IO_validation(){
+  header "TEST55: Encode and decode 'Man'."
+
+  program_output="$(echo Man | $PROGRAM_NAME | $PROGRAM_NAME -a decode)";
+  correct_output="Man";
+  diff_result="$(diff  <(echo "$program_output" ) <(echo "$correct_output"))";
+
+  if [[ -z ${diff_result} ]]; then :;
+    IO_validation_passed "No differences.";
+  else
+    IO_validation_failed "Differences: \n${diff_result}";
+  fi
+}
+
+function test56_IO_validation(){
+  header "TEST56: Check bit by bit."
+
+  program_output="$(echo xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
+  correct_output="
+  0000000 x y z \n
+  0000004";
+  diff_result="$(diff  <(echo "$program_output" ) <(echo "$correct_output"))";
+
+  if [[ -z ${diff_result} ]]; then :;
+    IO_validation_passed "No differences.";
+  else
+    IO_validation_failed "Differences: \n${diff_result}";
+  fi
+}
+
+function test57_IO_validation(){
+  header "TEST57: Check max line length and number of encoded bytes."
+
+  program_output_line_count="$(echo -n "$(yes | head -c 1024 | $PROGRAM_NAME -a encode)" | wc -l)";
+  # TODO: No estoy seguro de este número.
+  correct_output_line_count="13";
+  diff_result_line_count="$(diff  <(echo "$program_output_line_count" ) <(echo "$correct_output_line_count"))";
+
+  if [[ -z ${diff_result_line_count} ]]; then :;
+    IO_validation_passed "No differences in line count.";
+  else
+    IO_validation_failed "Differences in line count:
+    Program output:${program_output_line_count}
+    Correct output:${correct_output_line_count}";
+  fi
+
+  program_output_word_count="$(yes | head -c 1024 | $PROGRAM_NAME -a encode | $PROGRAM_NAME -a decode | wc -c)";
+  correct_output_word_count="1024";
+  diff_result_word_count="$(diff  <(echo "$program_output_word_count" ) <(echo "$correct_output_word_count"))";
+
+  if [[ -z ${diff_result_word_count} ]]; then :;
+    IO_validation_passed "No differences in word count.";
+  else
+    IO_validation_failed "Differences in word count:
+    Program output:${program_output_word_count}
+    Correct output:${correct_output_word_count}";
+  fi
 }
 
 # ------------------------------------------------------------
@@ -342,7 +465,7 @@ function test6_encoding_execution_times(){
 }
 
 function test7_decoding_execution_times(){
-  header "TEST7: encoding execution times."
+  header "TEST7: decoding execution times."
 
   n=1;
   nLimit=$((1024*10000));
@@ -374,7 +497,14 @@ test3_parameter_action
 test31_parameter_action_no_argument
 test4_valid_parameters
 test5_IO_validation
-test6_encoding_execution_times
-test7_decoding_execution_times
+test51_IO_validation
+test52_IO_validation
+test53_IO_validation
+test54_IO_validation
+test55_IO_validation
+test56_IO_validation
+test57_IO_validation
+#test6_encoding_execution_times
+#test7_decoding_execution_times
 
 header "Test suite ended."

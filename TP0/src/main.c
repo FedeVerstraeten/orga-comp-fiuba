@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Sep-2018 3:46:28 pm
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Sep-2018 2:33:30 pm
+ @Last modified by:   pluto
+ @Last modified time: 11-Sep-2018 11:46:11 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -81,7 +81,11 @@ typedef enum outputCodes_ { outOK, outERROR } outputCode;
 
 /* Functions declarations. */
 outputCode encode(params_t *params);
+/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
+outputCode encodeIdentity(params_t *params);
 outputCode decode(params_t *params);
+/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
+outputCode decodeIdentity(params_t *params);
 outputCode parseCmdline(int argc, char **argv, params_t *params);
 outputCode optAction(char *arg, params_t *params);
 outputCode optOutput(char *arg, params_t *params);
@@ -281,14 +285,13 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
 
 #define BYTE_INIT_MASK 0xFC
 #define BYTE_ZEROS 0x00
-#define MAX6BIT 6 
+#define MAX6BIT 6
 #define PADDING "="
 
 static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-
-void base256ToBase64(char* outChar,const char inChar)
+void base256ToBase64(char *outChar, const char inChar)
 {
   unsigned char headByte = BYTE_ZEROS;
   unsigned char prevByte = BYTE_ZEROS;
@@ -297,23 +300,23 @@ void base256ToBase64(char* outChar,const char inChar)
   static unsigned int shiftRightBit = 2;
 
   /* Backup the previous tailByte*/
-  prevByte=tailByte;
+  prevByte = tailByte;
 
   /*Padding: The last encoded block contain less 6bit*/
   if ((inChar == EOF))
   {
     headByte = (prevByte | BYTE_ZEROS);
-    strncpy(outChar,&translationTableB64[headByte],1);
+    strncpy(outChar, &translationTableB64[headByte], 1);
 
-    if (shiftRightBit==6)
-    { 
-      strncat(outChar,PADDING,1);
+    if (shiftRightBit == 6)
+    {
+      strncat(outChar, PADDING, 1);
       return;
     }
-    else if (shiftRightBit==4)
+    else if (shiftRightBit == 4)
     {
-      strncat(outChar,PADDING,1);
-      strncat(outChar,PADDING,1);
+      strncat(outChar, PADDING, 1);
+      strncat(outChar, PADDING, 1);
       return;
     }
   }
@@ -334,43 +337,43 @@ void base256ToBase64(char* outChar,const char inChar)
   headByte = (prevByte | headByte);
 
   /*Print translation in outChar*/
-  strncpy(outChar,&translationTableB64[headByte],1);
+  strncpy(outChar, &translationTableB64[headByte], 1);
 
-  shiftRightBit+=2;
+  shiftRightBit += 2;
 
-  /* Shift left 2 bits the mask */ 
-  if(!(bitMask<<=2))
-  { 
+  /* Shift left 2 bits the mask */
+  // TODO: nunca entrarías en este if xq nunca modificás la máscara?
+  if (!(bitMask <<= 2))
+  {
     /* Restart mask at the beginning */
-    bitMask=BYTE_INIT_MASK;
-    shiftRightBit=2;
+    bitMask = BYTE_INIT_MASK;
+    shiftRightBit = 2;
 
     /* Print tailByte and clear*/
-    strncat(outChar,&translationTableB64[tailByte],1);
-    tailByte=BYTE_ZEROS;
-  };  
+    strncat(outChar, &translationTableB64[tailByte], 1);
+    tailByte = BYTE_ZEROS;
+  };
 }
-
 
 outputCode encode(params_t *params)
 {
-  /* TODO:  revisar si estos char pueden o deben ser unsigned  
+  /* TODO:  revisar si estos char pueden o deben ser unsigned
   */
   char inChar;
-  char outChar[4]={};
+  char outChar[4] = {};
 
   do
   {
-    memset(outChar,0,sizeof(outChar)); //clear outChar
+    memset(outChar, 0, sizeof(outChar));  // clear outChar
     inChar = getc(params->inputStream);
-    base256ToBase64(outChar,inChar);
-    fputs(outChar,params->outputStream);
+    base256ToBase64(outChar, inChar);
+    fputs(outChar, params->outputStream);
     if (ferror(params->outputStream))
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
       return outERROR;
-     }
-  }while (inChar != EOF);
+    }
+  } while (inChar != EOF);
 
   if (ferror(params->inputStream))
   {
@@ -428,11 +431,11 @@ int main(int argc, char **argv)
   outputCode transformationState;
   if (strcmp(params.action, ENCODE_STR_TOKEN) == 0)
   {
-    transformationState = encode(&params);
+    transformationState = encode(&params);  // encodeIdentity encode
   }
   else
   {
-    transformationState = decode(&params);
+    transformationState = decode(&params);  // decodeIdentity decode
   }
   if (transformationState == outERROR)
   {
@@ -444,4 +447,56 @@ int main(int argc, char **argv)
   fclose(params.outputStream);
 
   return EXIT_SUCCESS;
+}
+
+/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
+outputCode encodeIdentity(params_t *params)
+{
+  int inChar, outChar;
+
+  while ((inChar = getc(params->inputStream)) != EOF)
+  {
+    outChar = inChar;
+    putc(outChar, params->outputStream);
+    if (ferror(params->outputStream))
+    {
+      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+      return outERROR;
+    }
+  }
+
+  if (ferror(params->inputStream))
+  {
+    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+    return outERROR;
+  }
+
+  return outOK;
+}
+
+/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
+outputCode decodeIdentity(params_t *params)
+{
+  /* TODO: code this function. Assume that 'params' are
+   * already well initialized. */
+  int inChar, outChar;
+
+  while ((inChar = getc(params->inputStream)) != EOF)
+  {
+    outChar = inChar;
+    putc(outChar, params->outputStream);
+    if (ferror(params->outputStream))
+    {
+      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+      return outERROR;
+    }
+  }
+
+  if (ferror(params->inputStream))
+  {
+    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+    return outERROR;
+  }
+
+  return outOK;
 }
