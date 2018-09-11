@@ -234,7 +234,8 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
 
 ////////////// ENCODE //////////////////
 
-#define BYTE_INIT_MASK 0xFF
+#define BYTE_INIT_MASK 0xFC
+#define BYTE_ZEROS 0x00
 #define MAX6BIT 6 
 #define PADDING "="
 
@@ -242,28 +243,29 @@ static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 
-void charToBase64(char* outChar,char inChar)
+void base256ToBase64(char* outChar,const char inChar)
 {
-  unsigned char headByte = 0x00;
-  unsigned char prevByte = 0x00;
-  static unsigned char tailByte = 0x00;
-  static unsigned char bitMask=BYTE_INIT_MASK;
-  static unsigned int shiftRightBit=0;
+  unsigned char headByte = BYTE_ZEROS;
+  unsigned char prevByte = BYTE_ZEROS;
+  static unsigned char tailByte = BYTE_ZEROS;
+  static unsigned char bitMask = BYTE_INIT_MASK;
+  static unsigned int shiftRightBit = 2;
 
   /* Backup the previous tailByte*/
   prevByte=tailByte;
 
   /*Padding: The last encoded block contain less 6bit*/
-  if (inChar == EOF)
+  if ((inChar == EOF))
   {
-    headByte = (prevByte | 0x00);
+    headByte = (prevByte | BYTE_ZEROS);
     strncpy(outChar,&translationTableB64[headByte],1);
-    if (shiftRightBit==4)
-    {
+
+    if (shiftRightBit==6)
+    { 
       strncat(outChar,PADDING,1);
       return;
     }
-    else if (shiftRightBit==2)
+    else if (shiftRightBit==4)
     {
       strncat(outChar,PADDING,1);
       strncat(outChar,PADDING,1);
@@ -272,36 +274,37 @@ void charToBase64(char* outChar,char inChar)
   }
 
 
-  /*Shift right the mask 2 bits.*/
-  shiftRightBit+=2;
-
-  if(!(bitMask<<=2))
-  { 
-    // Restart mask at the beginning
-    bitMask=BYTE_INIT_MASK;
-    bitMask<<=2;
-    shiftRightBit=2;
-// TODO: revisar porque en el restartmask se esta perdiendo el ultimo prevByte, como almacenarlo
-/*    headByte=prevByte>>2;
-    strncpy(outChar,&translationTableB64[headByte],1);
-    prevByte=0x00;
-*/  };
-  
-  fprintf(stderr, "inChar: %c.\n",inChar);
-
-  /* Save the first input char*/
+  /* Save the head of input char*/
   headByte = inChar & bitMask;
-  headByte >>= shiftRightBit; // shift right 2,4 or 6 bit
 
-  /* Save the last input char*/
+  /* Shift right 2, 4 or 6bit the headByte*/
+  headByte >>= shiftRightBit;
+
+  /* Save the tail input char*/
   tailByte = inChar & (~bitMask);
+
+  /* Shift left 4, 2 or 0bit the tailByte*/
   tailByte <<= (MAX6BIT - shiftRightBit);
 
-  /* Translation headByte to Base64*/
+  /* Merge previous tailByte and current headByte*/
   headByte = (prevByte | headByte);
 
   /*Print translation in outChar*/
-  strncat(outChar,&translationTableB64[headByte],1);
+  strncpy(outChar,&translationTableB64[headByte],1);
+
+  shiftRightBit+=2;
+
+  /* Shift left 2 bits the mask */ 
+  if(!(bitMask<<=2))
+  { 
+    /* Restart mask at the beginning */
+    bitMask=BYTE_INIT_MASK;
+    shiftRightBit=2;
+
+    /* Print tailByte and clear*/
+    strncat(outChar,&translationTableB64[tailByte],1);
+    tailByte=BYTE_ZEROS;
+  };
 }
 
 
@@ -314,9 +317,9 @@ outputCode encode(params_t *params)
 
   do
   {
+    memset(outChar, 0, sizeof(outChar)); //clear outChar
     inChar = getc(params->inputStream);
-    charToBase64(outChar,inChar);
-    fprintf(stderr,"outChar: %s\n",outChar);
+    base256ToBase64(outChar,inChar);
     fputs(outChar,params->outputStream);
     if (ferror(params->outputStream))
     {
