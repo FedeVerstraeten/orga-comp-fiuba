@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   pluto
- @Last modified time: 11-Sep-2018 11:46:11 am
+ @Last modified time: 11-Sep-2018 4:25:39 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -283,107 +283,134 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
 
 //////////////////// ENCODER //////////////////////////
 
-#define BYTE_INIT_MASK 0xFC
-#define BYTE_ZEROS 0x00
-#define MAX6BIT 6
-#define PADDING "="
+//#define MASK_6bits 0x0000003F
+#define PADDING '='
 
 static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-void base256ToBase64(char *outChar, const char inChar)
+void base256ToBase64(unsigned char *inChars, unsigned char *outChars)
 {
-  unsigned char headByte = BYTE_ZEROS;
-  unsigned char prevByte = BYTE_ZEROS;
-  static unsigned char tailByte = BYTE_ZEROS;
-  static unsigned char bitMask = BYTE_INIT_MASK;
-  static unsigned int shiftRightBit = 2;
+  int allInChars = 0;
+  int auxWord = 0;
+  int MASK_6bits = 0x0000003F;
 
-  /* Backup the previous tailByte*/
-  prevByte = tailByte;
-
-  /*Padding: The last encoded block contain less 6bit*/
-  if ((inChar == EOF))
+  size_t i = 0;
+  for (i = 0; i < 3; i++)
   {
-    headByte = (prevByte | BYTE_ZEROS);
-    strncpy(outChar, &translationTableB64[headByte], 1);
-
-    if (shiftRightBit == 6)
-    {
-      strncat(outChar, PADDING, 1);
-      return;
-    }
-    else if (shiftRightBit == 4)
-    {
-      strncat(outChar, PADDING, 1);
-      strncat(outChar, PADDING, 1);
-      return;
-    }
+    allInChars = ((auxWord | ((int)(*inChars + i)))
+                  << (2 - i) * 8 * sizeof(unsigned char)) |
+                 allInChars;
   }
-
-  /* Save the head of input char*/
-  headByte = inChar & bitMask;
-
-  /* Shift right 2, 4 or 6bit the headByte*/
-  headByte >>= shiftRightBit;
-
-  /* Save the tail input char*/
-  tailByte = inChar & (~bitMask);
-
-  /* Shift left 4, 2 or 0bit the tailByte*/
-  tailByte <<= (MAX6BIT - shiftRightBit);
-
-  /* Merge previous tailByte and current headByte*/
-  headByte = (prevByte | headByte);
-
-  /*Print translation in outChar*/
-  strncpy(outChar, &translationTableB64[headByte], 1);
-
-  shiftRightBit += 2;
-
-  /* Shift left 2 bits the mask */
-  // TODO: nunca entrarías en este if xq nunca modificás la máscara?
-  if (!(bitMask <<= 2))
+  int tableIndex = 0;
+  for (i = 0; i < 4; i++)
   {
-    /* Restart mask at the beginning */
-    bitMask = BYTE_INIT_MASK;
-    shiftRightBit = 2;
-
-    /* Print tailByte and clear*/
-    strncat(outChar, &translationTableB64[tailByte], 1);
-    tailByte = BYTE_ZEROS;
-  };
+    tableIndex = (allInChars & (MASK_6bits << (6 * i))) >> (6 * i);
+    strncpy(outChars + i, &translationTableB64[tableIndex], 1);
+  }
+  // static unsigned char prevTailByte = BYTE_ZEROS;
+  // unsigned char headByte = BYTE_ZEROS;
+  // unsigned char tableIndex = BYTE_ZEROS;
+  //
+  // /*Padding: The last encoded block contain less 6bit*/
+  // if ((inChar == EOF))
+  // {
+  //   headByte = (prevByte | BYTE_ZEROS);
+  //   strncpy(outChar, &translationTableB64[headByte], 1);
+  //
+  //   if (shiftRightBit == 6)
+  //   {
+  //     strncat(outChar, PADDING, 1);
+  //     return;
+  //   }
+  //   else if (shiftRightBit == 4)
+  //   {
+  //     strncat(outChar, PADDING, 1);
+  //     strncat(outChar, PADDING, 1);
+  //     return;
+  //   }
+  // }
+  //
+  // /* Get the 6 MSBs of the input char and shift to get the table index. */
+  // headByte = (inChar & HEAD_MASK) >> 2;
+  // /* Merge the prevTailByte of the previous input char with the headByte of
+  // the
+  //  * current char and then get the coding table index. */
+  // tableIndex = ((prevTailByte | headByte) & HEAD_MASK) >> 2;
+  // /* Save the corresponding char in the translation table as the output
+  // encoded
+  //  * char. */
+  // strncpy(outChar, &translationTableB64[tableIndex], 1);
+  // /* Save the tail of the input char for the next iteration (the last 2 MSB).
+  // */
+  // prevTailByte = inChar << 6;
 }
-
+outputCode flushConversionBuffer(unsigned char *buffer, params_t *params);
 outputCode encode(params_t *params)
 {
-  /* TODO:  revisar si estos char pueden o deben ser unsigned
-  */
-  char inChar;
-  char outChar[4] = {};
+  unsigned char inChars[3];
+  unsigned char outChars[4];
+  memset(inChars, 0, sizeof(inChars));
+  memset(outChars, 0, sizeof(outChars));
 
-  do
+  int readChars = 0;
+
+  while (1)
   {
-    memset(outChar, 0, sizeof(outChar));  // clear outChar
-    inChar = getc(params->inputStream);
-    base256ToBase64(outChar, inChar);
-    fputs(outChar, params->outputStream);
+    inChars[readChars] = (unsigned char)fgetc(params->inputStream);
+
+    if (ferror(params->inputStream))
+    {
+      fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+      return outERROR;
+    }
+
+    if (inChars[readChars] == EOF)
+    {
+      inChars[readChars] = PADDING;
+      base256ToBase64(inChars, outChars);
+      if (flushConversionBuffer(outChars, params) == outERROR)
+      {
+        return outERROR;
+      }
+      return outOK;
+    }
+    else
+    {
+      if (readChars == 2)
+      {
+        base256ToBase64(inChars, outChars);
+        if (flushConversionBuffer(outChars, params) == outERROR)
+        {
+          return outERROR;
+        }
+        readChars = 0;
+        memset(inChars, 0, sizeof(inChars));
+        memset(outChars, 0, sizeof(outChars));
+      }
+    }
+    readChars++;
+  }
+  /* If for any reason we reach this point, then there must be a not
+   * contemplated error. */
+  return outERROR;
+}
+
+outputCode flushConversionBuffer(unsigned char *buffer, params_t *params)
+{
+  int k = 0;
+  for (k = 0; k < 4; k++)
+  {
+    putc(buffer[k], params->outputStream);
     if (ferror(params->outputStream))
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
       return outERROR;
     }
-  } while (inChar != EOF);
-
-  if (ferror(params->inputStream))
-  {
-    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
-    return outERROR;
   }
 
   return outOK;
 }
-
 //////////////////// DECODER //////////////////////////
 
 outputCode decode(params_t *params)
