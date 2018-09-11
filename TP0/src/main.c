@@ -305,20 +305,23 @@ void base256ToBase64(char *outChar, const char inChar)
   /*Padding: The last encoded block contain less 6bit*/
   if ((inChar == EOF))
   {
-    headByte = (prevByte | BYTE_ZEROS);
-    strncpy(outChar, &translationTableB64[headByte], 1);
-
     if (shiftRightBit == 6)
     {
+      headByte = (prevByte | BYTE_ZEROS);
+      strncpy(outChar, &translationTableB64[headByte], 1);
       strncat(outChar, PADDING, 1);
       return;
     }
     else if (shiftRightBit == 4)
     {
+      headByte = (prevByte | BYTE_ZEROS);
+      strncpy(outChar, &translationTableB64[headByte], 1);
       strncat(outChar, PADDING, 1);
       strncat(outChar, PADDING, 1);
       return;
     }
+    else
+      return;
   }
 
   /* Save the head of input char*/
