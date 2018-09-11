@@ -273,7 +273,6 @@ void base256ToBase64(char* outChar,const char inChar)
     }
   }
 
-
   /* Save the head of input char*/
   headByte = inChar & bitMask;
 
@@ -304,20 +303,19 @@ void base256ToBase64(char* outChar,const char inChar)
     /* Print tailByte and clear*/
     strncat(outChar,&translationTableB64[tailByte],1);
     tailByte=BYTE_ZEROS;
-  };
+  };  
 }
 
 
 outputCode encode(params_t *params)
 {
-  /* TODO: code this function. Assume that 'params' are
-   * already well initialized. */
+  /* TODO:  revisar si estos char pueden o deben ser unsigned  */
   char inChar;
   char outChar[4]={};
 
   do
   {
-    memset(outChar, 0, sizeof(outChar)); //clear outChar
+    memset(outChar,0,sizeof(outChar)); //clear outChar
     inChar = getc(params->inputStream);
     base256ToBase64(outChar,inChar);
     fputs(outChar,params->outputStream);
