@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Sep-2018 2:33:30 pm
+ @Last modified time: 10-Sep-2018 10:56:49 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -51,7 +51,7 @@ valgrind --tool=memcheck --leak-check=full \
 #define ERROR_OPENING_OUTPUT_STREAM "ERROR: Can't open output stream.\n"
 #endif
 #ifndef ERROR_ACTION_INVALID_ARGUMENT
-#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid action argument.\n"
+#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid argument.\n"
 #endif
 #ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
 #define ERROR_OUTPUT_STREAM_WRITING_MSG "Output error when writing stream.\n"
@@ -125,25 +125,9 @@ void optHelp(char *arg)
 #define STD_STREAM_TOKEN "-"
 #endif
 
-outputCode validateStreamName(char *streamName)
-{
-  if (streamName == NULL)
-  {
-    return outERROR;
-  }
-  /* TODO: we could refactor this in a more elegant way. */
-  if (!strcmp(streamName, ".") || !strcmp(streamName, "..") ||
-      !strcmp(streamName, "/") || !strcmp(streamName, "//"))
-  {
-    return outERROR;
-  }
-
-  return outOK;
-}
-
 outputCode optInput(char *arg, params_t *params)
 {
-  if (validateStreamName(arg) == outERROR)
+  if (arg == NULL)
   {
     fprintf(stderr, ERROR_INVALID_INPUT_STREAM);
     return outERROR;
@@ -169,7 +153,7 @@ outputCode optInput(char *arg, params_t *params)
 
 outputCode optOutput(char *arg, params_t *params)
 {
-  if (validateStreamName(arg) == outERROR)
+  if (arg == NULL)
   {
     fprintf(stderr, ERROR_INVALID_OUTPUT_STREAM);
     return outERROR;
@@ -277,25 +261,100 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
   return outOK;
 }
 
+//////////////////// ENCODER //////////////////////////
+
+#define BYTE_INIT_MASK 0xFC
+#define BYTE_ZEROS 0x00
+#define MAX6BIT 6 
+#define PADDING "="
+
 static const char translationTableB64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+
+void base256ToBase64(char* outChar,const char inChar)
+{
+  unsigned char headByte = BYTE_ZEROS;
+  unsigned char prevByte = BYTE_ZEROS;
+  static unsigned char tailByte = BYTE_ZEROS;
+  static unsigned char bitMask = BYTE_INIT_MASK;
+  static unsigned int shiftRightBit = 2;
+
+  /* Backup the previous tailByte*/
+  prevByte=tailByte;
+
+  /*Padding: The last encoded block contain less 6bit*/
+  if ((inChar == EOF))
+  {
+    headByte = (prevByte | BYTE_ZEROS);
+    strncpy(outChar,&translationTableB64[headByte],1);
+
+    if (shiftRightBit==6)
+    { 
+      strncat(outChar,PADDING,1);
+      return;
+    }
+    else if (shiftRightBit==4)
+    {
+      strncat(outChar,PADDING,1);
+      strncat(outChar,PADDING,1);
+      return;
+    }
+  }
+
+  /* Save the head of input char*/
+  headByte = inChar & bitMask;
+
+  /* Shift right 2, 4 or 6bit the headByte*/
+  headByte >>= shiftRightBit;
+
+  /* Save the tail input char*/
+  tailByte = inChar & (~bitMask);
+
+  /* Shift left 4, 2 or 0bit the tailByte*/
+  tailByte <<= (MAX6BIT - shiftRightBit);
+
+  /* Merge previous tailByte and current headByte*/
+  headByte = (prevByte | headByte);
+
+  /*Print translation in outChar*/
+  strncpy(outChar,&translationTableB64[headByte],1);
+
+  shiftRightBit+=2;
+
+  /* Shift left 2 bits the mask */ 
+  if(!(bitMask<<=2))
+  { 
+    /* Restart mask at the beginning */
+    bitMask=BYTE_INIT_MASK;
+    shiftRightBit=2;
+
+    /* Print tailByte and clear*/
+    strncat(outChar,&translationTableB64[tailByte],1);
+    tailByte=BYTE_ZEROS;
+  };  
+}
+
+
 outputCode encode(params_t *params)
 {
-  /* TODO: code this function. Assume that 'params' are
-   * already well initialized. */
-  int inChar, outChar;
+  /* TODO:  revisar si estos char pueden o deben ser unsigned  
+  */
+  char inChar;
+  char outChar[4]={};
 
-  while ((inChar = getc(params->inputStream)) != EOF)
+  do
   {
-    outChar = inChar;
-    putc(outChar, params->outputStream);
+    memset(outChar,0,sizeof(outChar)); //clear outChar
+    inChar = getc(params->inputStream);
+    base256ToBase64(outChar,inChar);
+    fputs(outChar,params->outputStream);
     if (ferror(params->outputStream))
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
       return outERROR;
-    }
-  }
+     }
+  }while (inChar != EOF);
 
   if (ferror(params->inputStream))
   {
@@ -305,6 +364,8 @@ outputCode encode(params_t *params)
 
   return outOK;
 }
+
+//////////////////// DECODER //////////////////////////
 
 outputCode decode(params_t *params)
 {
@@ -331,6 +392,8 @@ outputCode decode(params_t *params)
 
   return outOK;
 }
+
+//////////////////// MAIN //////////////////////////
 
 int main(int argc, char **argv)
 {
