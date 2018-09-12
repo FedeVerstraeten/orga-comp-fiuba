@@ -282,13 +282,17 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
 }
 
 //////////////////// ENCODER //////////////////////////
-
-#define BYTE_INIT_MASK 0xFC
+#define BYTE_ENC_MASK 0xFC
+#define BYTE_DEC_MASK 0xF000
 #define BYTE_ZEROS 0x00
 #define MAX6BIT 6
 #define PADDING "="
+#define PADDING_DEC '='
+#define MAXOUTBUFFER 5
+#define SIZETABLEB64 64
+#define SIZEINDEX 4
 
-static const char translationTableB64[] =
+static const char translationTableB64[SIZETABLEB64] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 void base256ToBase64(char *outChar, const char inChar)
@@ -296,8 +300,9 @@ void base256ToBase64(char *outChar, const char inChar)
   unsigned char headByte = BYTE_ZEROS;
   unsigned char prevByte = BYTE_ZEROS;
   static unsigned char tailByte = BYTE_ZEROS;
-  static unsigned char bitMask = BYTE_INIT_MASK;
+  static unsigned char bitMask = BYTE_ENC_MASK;
   static unsigned int shiftRightBit = 2;
+  // static size_t counter76char=0;
 
   /* Backup the previous tailByte*/
   prevByte = tailByte;
@@ -345,17 +350,24 @@ void base256ToBase64(char *outChar, const char inChar)
   shiftRightBit += 2;
 
   /* Shift left 2 bits the mask */
-  // TODO: nunca entrarías en este if xq nunca modificás la máscara?
   if (!(bitMask <<= 2))
   {
     /* Restart mask at the beginning */
-    bitMask = BYTE_INIT_MASK;
+    bitMask = BYTE_ENC_MASK;
     shiftRightBit = 2;
 
     /* Print tailByte and clear*/
     strncat(outChar, &translationTableB64[tailByte], 1);
     tailByte = BYTE_ZEROS;
+
   };
+
+  // counter76char++;
+  // if (counter76char > 76)
+  // {
+  //   strncat(outChar,'\n', 1);
+  //   counter76char=0;
+  // }
 }
 
 outputCode encode(params_t *params)
@@ -363,7 +375,7 @@ outputCode encode(params_t *params)
   /* TODO:  revisar si estos char pueden o deben ser unsigned
   */
   char inChar;
-  char outChar[4] = {};
+  char outChar[MAXOUTBUFFER] = {};
 
   do
   {
@@ -389,28 +401,121 @@ outputCode encode(params_t *params)
 
 //////////////////// DECODER //////////////////////////
 
+outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
+{
+  unsigned int bitMask = BYTE_DEC_MASK;
+  size_t i = 0;
+  size_t j = 0;
+  unsigned char indexTable[SIZEINDEX] = {0,0,0,0};
+  unsigned int charHolder = 0;
+  unsigned int bitPattern = 0;
+  size_t accumBit = 0;
+  
+  /* Search char index in translationTableB64 */
+  for (i = 0; i < 4; i++)
+  {
+    fprintf(stderr, "%c\n",inChar[i]);
+    for ( j = 0; j < SIZETABLEB64; j++)
+    {
+      if (inChar[i] == translationTableB64[j])
+      {  
+        indexTable[i] = j;
+        fprintf(stderr, "%c\n",indexTable[i]);
+        break;
+      }
+      else if (inChar[i] == PADDING_DEC)
+      {
+        indexTable[i] = BYTE_ZEROS;
+        break;
+      }
+    }
+    if (j >= SIZETABLEB64)
+    {
+      fprintf(stderr, "ERROR: Character is not in Base64 Table\n");
+      return outERROR;
+    }
+  }
+  
+  
+  for (i = 0; i < SIZEINDEX; i++)
+  {
+    accumBit+=2;
+    charHolder = (unsigned int)indexTable[i];
+    charHolder <<= ((SIZEINDEX-1-i)*sizeof(unsigned char)*8);
+    charHolder <<= accumBit;
+    bitPattern = (bitPattern | charHolder);
+  }
+  
+
+  i=0;
+  do
+  {
+    bitMask >>= i*sizeof(unsigned char)*8;
+    charHolder = (bitPattern & bitMask);
+    charHolder >>= (SIZEINDEX-1-i)*sizeof(unsigned char)*8;
+    outChar[i] = (unsigned char)charHolder;
+    i++;
+  }while(charHolder!=0 && (i < SIZEINDEX));
+
+  return outOK;
+  
+}
+
 outputCode decode(params_t *params)
 {
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
-  int inChar, outChar;
-
-  while ((inChar = getc(params->inputStream)) != EOF)
+  unsigned char auxChar;
+  unsigned char inChar[4];
+  unsigned char outChar[3] = {};
+  int i = 0;
+  
+  while (1)
   {
-    outChar = inChar;
-    putc(outChar, params->outputStream);
+    memset(outChar, 0, sizeof(outChar));  // clear outChar
+    for (i = 0; i < 4; ++i)
+    { 
+
+      auxChar = getc(params->inputStream);
+      if (ferror(params->inputStream))
+      {
+        fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+        return outERROR;
+      }
+      if (auxChar==EOF)
+      {
+        if (i == 0)
+        {
+          return outOK;
+        }
+        else
+        {
+          fprintf(stderr, "ERROR: Reach EOF before 4 byte block read\n");
+          return outERROR;
+        }
+        
+      }
+      if (auxChar != '\n')
+      {
+        inChar[i] = auxChar;
+      }
+      else
+      {
+        i--;
+      }
+    }
+    if(base64ToBase256(outChar, inChar)==outERROR)
+    {
+      return outERROR;
+    };
+
+    fputs(outChar, params->outputStream);
     if (ferror(params->outputStream))
     {
-      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
-      return outERROR;
+        fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+        return outERROR;
     }
-  }
-
-  if (ferror(params->inputStream))
-  {
-    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
-    return outERROR;
-  }
+  } 
 
   return outOK;
 }
