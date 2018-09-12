@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:21:26 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 12:44:32 pm
+ @Last modified time: 12-Sep-2018 1:11:10 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -27,15 +27,12 @@ PUT DESCRIPTION HERE.
 ----------------------------------------------------------- */
 #include "encoder.h"
 
-static const char translationTableB64[] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
 void base256ToBase64(char *outChar, const char inChar)
 {
   unsigned char headByte = BYTE_ZEROS;
   unsigned char prevByte = BYTE_ZEROS;
   static unsigned char tailByte = BYTE_ZEROS;
-  static unsigned char bitMask = BYTE_INIT_MASK;
+  static unsigned char bitMask = BYTE_ENC_MASK;
   static unsigned int shiftRightBit = 2;
 
   /* Backup the previous tailByte*/
@@ -84,11 +81,10 @@ void base256ToBase64(char *outChar, const char inChar)
   shiftRightBit += 2;
 
   /* Shift left 2 bits the mask */
-  // TODO: nunca entrarías en este if xq nunca modificás la máscara?
   if (!(bitMask <<= 2))
   {
     /* Restart mask at the beginning */
-    bitMask = BYTE_INIT_MASK;
+    bitMask = BYTE_ENC_MASK;
     shiftRightBit = 2;
 
     /* Print tailByte and clear*/
@@ -99,10 +95,9 @@ void base256ToBase64(char *outChar, const char inChar)
 
 outputCode encode(params_t *params)
 {
-  /* TODO:  revisar si estos char pueden o deben ser unsigned
-  */
+  /* TODO:  revisar si estos char pueden o deben ser unsigned. */
   char inChar;
-  char outChar[4] = {};
+  char outChar[MAXOUTBUFFER] = {};
 
   do
   {

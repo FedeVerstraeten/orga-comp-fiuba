@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:36:31 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 11:46:43 am
+ @Last modified time: 12-Sep-2018 1:12:23 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -31,6 +31,11 @@ Common program structures.
 #ifndef VERSION
 #define VERSION "1.0.0"
 #endif
+
+#define SIZETABLEB64 64
+
+static const char translationTableB64[SIZETABLEB64] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 typedef struct params_t
 {

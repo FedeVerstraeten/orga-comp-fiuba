@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:52:58 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 12:43:49 pm
+ @Last modified time: 12-Sep-2018 1:12:26 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -33,11 +33,13 @@ PUT DESCRIPTION HERE.
 #include "common.h"
 #include "messages.h"
 
-#define BYTE_INIT_MASK 0xFC
+#define BYTE_ENC_MASK 0xFC
 #define BYTE_ZEROS 0x00
 #define MAX6BIT 6
 #define PADDING "="
+#define MAXOUTBUFFER 5
 
+void base256ToBase64(char *outChar, const char inChar);
 outputCode encode(params_t *params);
 /* TODO: SOLO PARA PRUEBAS. BORRARLA. */
 outputCode encodeIdentity(params_t *params);
