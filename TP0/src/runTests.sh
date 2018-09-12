@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # ------------------------------------------------------------
-# @Title:   FIUBA - 66.20 Organización de Computadoras.
-# @Project: TP0 - Infraestructura básica.
+# @Title:   FIUBA - 66.20 Organizacion de Computadoras.
+# @Project: TP0 - Infraestructura basica.
 # ------------------------------------------------------------
 # @Filename: runTests.sh
 # ------------------------------------------------------------
 # @Authors:
 #    Husain, Ignacio Santiago.
 #          santiago.husain at gmail dot com
-#		 Pesado, Lucía.
+#		 Pesado, Lucia.
 #		 			 xxx at xxx dot xxx
 #    Verstraeten, Federico.
 #          federico.verstraeten at gmail dot com
@@ -19,7 +19,7 @@
 # @Last modified time: 12-Sep-2018 1:19:56 pm
 #
 # @Copyright (C):
-#    This file is part of 'TP0 - Infraestructura básica.'.
+#    This file is part of 'TP0 - Infraestructura basica.'.
 #    Unauthorized copying or use of this file via any medium
 #    is strictly prohibited.
 # ------------------------------------------------------------

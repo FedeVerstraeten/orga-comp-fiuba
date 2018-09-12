@@ -1,6 +1,6 @@
 -----------------------------------------------------------
- @Title:   FIUBA - 66.20 Organización de Computadoras.
- @Project: TP0 - Infraestructura básica.
+ @Title:   FIUBA - 66.20 Organizacion de Computadoras.
+ @Project: TP0 - Infraestructura basica.
 ------------------------------------------------------------
  @Filename: unit-test-TODOs.txt
 ------------------------------------------------------------
@@ -10,7 +10,7 @@ Unit Test (TODO)
 
 A partir de script de BASH, se plantean realizar las siguientes pruebas unitarias:
 
-1. Conservación de la entrada/salida. OK
+1. Conservacion de la entrada/salida. OK
 
   A partir de un INPUT cualquier utilizar el programa `tp0` como ENCODER. Con el OUTPUT obtenido ejecutar nuevamente el programa `tp0` como DECODER y generar una nuevo OUTPUT*.
 
@@ -18,24 +18,24 @@ A partir de script de BASH, se plantean realizar las siguientes pruebas unitaria
 
   Debe verificarse que INPUT == OUTPUT*
 
-  Se puede utilizar el comando `diff` para hacer la verificación.
+  Se puede utilizar el comando `diff` para hacer la verificacion.
 
   Ejemplo:
 
   diff file1.txt file2.txt
 
-  Pueden encontrarse más ejemplos en https://www.computerhope.com/unix/udiff.htm
+  Pueden encontrarse mas ejemplos en https://www.computerhope.com/unix/udiff.htm
 
 
-2. Validación entrada/salida.
+2. Validacion entrada/salida.
 
-  2.1. Ejecutar programa con argumentos inválidos. OK
+  2.1. Ejecutar programa con argumentos invalidos. OK
   2.2. Ejecutar programa con argumentos incompletos. OK
-  2.3. Ejecutar programa con entradas y salidas estándar.
+  2.3. Ejecutar programa con entradas y salidas estandar.
   2.4. Ejecutar programa con entradas y salidas redirigidas a un archivo.
   2.5. Ejecutar programa con stream de entrada o hacer piping (ver ejemplo enunciado TP0 usando comando `yes`).
-  2.6. Ejecutar programa con entradas vacía. OK
+  2.6. Ejecutar programa con entradas vacia. OK
 
 3. Eficiencia. OK
 
-  Ejecutar el programa con entradas de diverso tamaño y calcular el tiempo de ejecución (comando `time`). Para ello armar diversos archivos random para la entrada (revisar enunciado del TP0).
+  Ejecutar el programa con entradas de diverso tamaño y calcular el tiempo de ejecucion (comando `time`). Para ello armar diversos archivos random para la entrada (revisar enunciado del TP0).
