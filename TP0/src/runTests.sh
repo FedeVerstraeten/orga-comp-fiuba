@@ -7,16 +7,16 @@
 # @Filename: runTests.sh
 # ------------------------------------------------------------
 # @Authors:
-#    Álvarez, Natalia Nayla.
-#          xxx at xxx dot xxx
 #    Husain, Ignacio Santiago.
 #          santiago.husain at gmail dot com
+#		 Pesado, Lucía.
+#		 			 xxx at xxx dot xxx
 #    Verstraeten, Federico.
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
-# @Last modified by:   pluto
-# @Last modified time: 11-Sep-2018 11:36:37 am
+# @Last modified by:   Ignacio Santiago Husain
+# @Last modified time: 12-Sep-2018 11:15:40 am
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura básica.'.

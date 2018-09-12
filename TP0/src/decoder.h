@@ -2,19 +2,19 @@
  @Title:   FIUBA - 66.20 Organización de Computadoras.
  @Project: TP0 - Infraestructura básica.
 --------------------------------------------------------------
- @Filename: {{filename}}
+ @Filename: decoder.h
 --------------------------------------------------------------
  @Authors:
-    Álvarez, Natalia Nayla.
-          xxx at xxx dot xxx
     Husain, Ignacio Santiago.
           santiago.husain at gmail dot com
+    Pesado, Lucía.
+          xxx at xxx dot xxx
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
- @Date:               {{create_time}}
- @Last modified by:   {{last_modified_by}}
- @Last modified time: {{last_modified_time}}
+ @Date:               12-Sep-2018 11:53:31 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 12-Sep-2018 11:55:43 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -25,3 +25,16 @@
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
+#ifndef DECODER__H
+#define DECODER__H
+
+#include <stdio.h>
+#include <string.h>
+#include "common.h"
+#include "messages.h"
+
+outputCode decode(params_t *params);
+/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
+outputCode decodeIdentity(params_t *params);
+
+#endif
