@@ -283,14 +283,11 @@ outputCode parseCmdline(int argc, char **argv, params_t *params)
 
 //////////////////// ENCODER //////////////////////////
 #define BYTE_ENC_MASK 0xFC
-#define BYTE_DEC_MASK 0xF000
 #define BYTE_ZEROS 0x00
 #define MAX6BIT 6
 #define PADDING "="
-#define PADDING_DEC '='
 #define MAXOUTBUFFER 5
 #define SIZETABLEB64 64
-#define SIZEINDEX 4
 
 static const char translationTableB64[SIZETABLEB64] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -401,6 +398,10 @@ outputCode encode(params_t *params)
 
 //////////////////// DECODER //////////////////////////
 
+#define BYTE_DEC_MASK 0xF000
+#define SIZEINDEX 4
+#define PADDING_DEC '='
+
 outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
 {
   unsigned int bitMask = BYTE_DEC_MASK;
@@ -409,30 +410,31 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
   unsigned char indexTable[SIZEINDEX] = {0,0,0,0};
   unsigned int charHolder = 0;
   unsigned int bitPattern = 0;
-  size_t accumBit = 0;
+  unsigned char accumBit = 0;
   
   /* Search char index in translationTableB64 */
   for (i = 0; i < 4; i++)
   {
-    fprintf(stderr, "%c\n",inChar[i]);
+    // fprintf(stderr, "%c\n",inChar[i]);
     for ( j = 0; j < SIZETABLEB64; j++)
     {
       if (inChar[i] == translationTableB64[j])
       {  
         indexTable[i] = j;
-        fprintf(stderr, "%c\n",indexTable[i]);
+        // fprintf(stderr, "%c\n",indexTable[i]);
         break;
       }
-      else if (inChar[i] == PADDING_DEC)
-      {
-        indexTable[i] = BYTE_ZEROS;
-        break;
-      }
+      // else if (inChar[i] == PADDING_DEC)
+      // {
+      //   indexTable[i] = BYTE_ZEROS;
+      //   break;
+      // }
     }
     if (j >= SIZETABLEB64)
     {
       fprintf(stderr, "ERROR: Character is not in Base64 Table\n");
-      return outERROR;
+      fprintf(stderr, "j=%d\n",j);
+      return outOK;
     }
   }
   
@@ -467,12 +469,12 @@ outputCode decode(params_t *params)
    * already well initialized. */
   unsigned char auxChar;
   unsigned char inChar[4];
-  unsigned char outChar[3] = {};
-  int i = 0;
+  unsigned char outChar[3] = {0,0,0};
+  char i = 0;
   
   while (1)
   {
-    memset(outChar, 0, sizeof(outChar));  // clear outChar
+    memset(outChar, 0, 3*sizeof(outChar));  // clear outChar
     for (i = 0; i < 4; ++i)
     { 
 
@@ -507,7 +509,7 @@ outputCode decode(params_t *params)
     if(base64ToBase256(outChar, inChar)==outERROR)
     {
       return outERROR;
-    };
+    }
 
     fputs(outChar, params->outputStream);
     if (ferror(params->outputStream))
