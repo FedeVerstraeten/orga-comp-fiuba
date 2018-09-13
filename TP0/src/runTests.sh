@@ -10,7 +10,7 @@
 #    Husain, Ignacio Santiago.
 #          santiago.husain at gmail dot com
 #		 Pesado, Lucia.
-#		 			 xxx at xxx dot xxx
+#	   luupesado at gmail dot com
 #    Verstraeten, Federico.
 #          federico.verstraeten at gmail dot com
 #
