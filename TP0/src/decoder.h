@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:53:31 am
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 1:12:13 pm
+ @Last modified by:   pluto
+ @Last modified time: 13-Sep-2018 11:29:04 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -36,6 +36,7 @@ PUT DESCRIPTION HERE.
 #define BYTE_DEC_MASK 0xF000
 #define SIZEINDEX 4
 #define PADDING_DEC '='
+#define OUTPUT_BLOCK_SIZE 3
 
 outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[]);
 outputCode decode(params_t *params);

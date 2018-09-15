@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:21:30 am
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 1:03:55 pm
+ @Last modified by:   pluto
+ @Last modified time: 13-Sep-2018 11:46:31 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -38,11 +38,12 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
   unsigned char accumBit = 0;
 
   /* Search char index in translationTableB64 */
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < SIZEINDEX; i++)
   {
-    // fprintf(stderr, "%c\n",inChar[i]);
+    fprintf(stderr, "inChar[%d]: %c\n", i, inChar[i]);
     for (j = 0; j < SIZETABLEB64; j++)
     {
+      // fprintf(stderr, "j=%d\n", j);
       if (inChar[i] == translationTableB64[j])
       {
         indexTable[i] = j;
@@ -55,11 +56,11 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
       //   break;
       // }
     }
-    if (j >= SIZETABLEB64)
+    if (j > SIZETABLEB64)
     {
       fprintf(stderr, "ERROR: Character is not in Base64 Table\n");
       fprintf(stderr, "j=%d\n", j);
-      return outOK;
+      return outERROR;
     }
   }
 
@@ -82,6 +83,8 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     i++;
   } while (charHolder != 0 && (i < SIZEINDEX));
 
+  fprintf(stderr, "Finished block decoding.\n");
+
   return outOK;
 }
 
@@ -89,40 +92,58 @@ outputCode decode(params_t *params)
 {
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
-  unsigned char auxChar;
-  unsigned char inChar[4];
-  unsigned char outChar[3] = {0, 0, 0};
-  char i = 0;
+  unsigned char readChar;
+  unsigned char inChar[SIZEINDEX];
+  unsigned char outChar[OUTPUT_BLOCK_SIZE] = {};
+  int i = 0;
 
   while (1)
   {
-    memset(outChar, 0, 3 * sizeof(outChar));  // clear outChar
-    for (i = 0; i < 4; ++i)
+    memset(inChar, 0, SIZEINDEX * sizeof(inChar));
+    memset(outChar, 0, OUTPUT_BLOCK_SIZE * sizeof(outChar));
+    for (i = 0; i < SIZEINDEX; i++)
     {
-      auxChar = getc(params->inputStream);
+      readChar = (unsigned int)getc(params->inputStream);
       if (ferror(params->inputStream))
       {
         fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
         return outERROR;
       }
-      if (auxChar == EOF)
+      if (feof(params->inputStream))
       {
-        if (i == 0)
+        fprintf(stderr, "Is EOF.\n");
+        if (i != 0)
         {
-          return outOK;
+          if (base64ToBase256(outChar, inChar) == outERROR)
+          {
+            return outERROR;
+          }
+
+          fputs(outChar, params->outputStream);
+          if (ferror(params->outputStream))
+          {
+            fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+            return outERROR;
+          }
         }
-        else
-        {
-          fprintf(stderr, "ERROR: Reach EOF before 4 byte block read\n");
-          return outERROR;
-        }
+        return outOK;
       }
-      if (auxChar != '\n')
+      // {
+      //   return outOK;
+      // }
+      // else
+      // {
+      //   fprintf(stderr, "ERROR: Reach EOF before 4 byte block read\n");
+      //   return outERROR;
+      // }
+
+      if (readChar != '\n')
       {
-        inChar[i] = auxChar;
+        inChar[i] = readChar;
       }
       else
       {
+        fprintf(stderr, "Newline detected.\n");
         i--;
       }
     }
@@ -139,7 +160,7 @@ outputCode decode(params_t *params)
     }
   }
 
-  return outOK;
+  return outERROR;
 }
 
 /* TODO: SOLO PARA PRUEBAS. BORRARLA. */
