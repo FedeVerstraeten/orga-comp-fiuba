@@ -8,7 +8,7 @@
     Husain, Ignacio Santiago.
           santiago.husain at gmail dot com
     Pesado, Lucia.
-          xxx at xxx dot xxx
+          luupesado at gmail dot com
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
@@ -38,6 +38,7 @@ PUT DESCRIPTION HERE.
 #define MAX6BIT 6
 #define PADDING "="
 #define MAXOUTBUFFER 5
+#define MAXLINELENGHT 70
 
 void base256ToBase64(char *outChar, const char inChar);
 outputCode encode(params_t *params);

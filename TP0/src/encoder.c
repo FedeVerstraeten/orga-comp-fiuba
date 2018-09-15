@@ -98,13 +98,24 @@ outputCode encode(params_t *params)
   /* TODO:  revisar si estos char pueden o deben ser unsigned. */
   char inChar;
   char outChar[MAXOUTBUFFER] = {};
+  unsigned int count = 0;
 
   do
   {
     memset(outChar, 0, sizeof(outChar));  // clear outChar
     inChar = getc(params->inputStream);
     base256ToBase64(outChar, inChar);
+    if ((count + strlen(outChar)) <= MAXLINELENGHT)
+    {
+        fputs(outChar, params->outputStream);
+        count = count + strlen(outChar);
+    }else
+    {
+    fputs("\n", params->outputStream);
     fputs(outChar, params->outputStream);
+    count = 0;
+    }
+
     if (ferror(params->outputStream))
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
