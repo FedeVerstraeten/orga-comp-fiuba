@@ -41,13 +41,11 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
   for (i = 0; i < SIZEINDEX; i++)
   {
     fprintf(stderr, "inChar[%d]: %c\n", i, inChar[i]);
-    for (j = 0; j < SIZETABLEB64; j++)
+    for (j = 0; j < SIZETABLEB64; ++j)
     {
-      // fprintf(stderr, "j=%d\n", j);
       if (inChar[i] == translationTableB64[j])
       {
         indexTable[i] = j;
-        // fprintf(stderr, "%c\n",indexTable[i]);
         break;
       }
       // else if (inChar[i] == PADDING_DEC)
@@ -56,10 +54,9 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
       //   break;
       // }
     }
-    if (j > SIZETABLEB64)
+    if (j >= SIZETABLEB64)
     {
       fprintf(stderr, "ERROR: Character is not in Base64 Table\n");
-      fprintf(stderr, "j=%d\n", j);
       return outERROR;
     }
   }
@@ -73,13 +70,17 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     bitPattern = (bitPattern | charHolder);
   }
 
+  fprintf(stderr, "bitPattern: %x\n",bitPattern);
   i = 0;
   do
   {
     bitMask >>= i * sizeof(unsigned char) * 8;
+    fprintf(stderr, "bitMask: %x\n",bitMask); 
     charHolder = (bitPattern & bitMask);
     charHolder >>= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * 8;
+    fprintf(stderr, "charHolder: %x\n",charHolder);
     outChar[i] = (unsigned char)charHolder;
+    fprintf(stderr, "outChar[%d]: %c\n", i, outChar[i]);
     i++;
   } while (charHolder != 0 && (i < SIZEINDEX));
 
@@ -93,15 +94,13 @@ outputCode decode(params_t *params)
   /* TODO: code this function. Assume that 'params' are
    * already well initialized. */
   unsigned char readChar;
-  unsigned char inChar[SIZEINDEX];
+  unsigned char inChar[SIZEINDEX] = {};
   unsigned char outChar[OUTPUT_BLOCK_SIZE] = {};
   int i = 0;
 
   while (1)
   {
-    memset(inChar, 0, SIZEINDEX * sizeof(inChar));
-    memset(outChar, 0, OUTPUT_BLOCK_SIZE * sizeof(outChar));
-    for (i = 0; i < SIZEINDEX; i++)
+    for (i = 0; i < SIZEINDEX; ++i)
     {
       readChar = (unsigned int)getc(params->inputStream);
       if (ferror(params->inputStream))
