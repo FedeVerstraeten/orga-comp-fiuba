@@ -33,10 +33,12 @@ PUT DESCRIPTION HERE.
 #include "common.h"
 #include "messages.h"
 
-#define BYTE_DEC_MASK 0xF000 //revisar si debe ser BYTE_DEC_MASK 0xFF000000
+#define BYTE_DEC_MASK 0xFF000000
 #define SIZEINDEX 4
 #define PADDING_DEC '='
+#define PADD_INDEX 0
 #define OUTPUT_BLOCK_SIZE 3
+#define BIT_PER_BYTE 8
 
 outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[]);
 outputCode decode(params_t *params);

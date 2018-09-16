@@ -41,6 +41,12 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
   for (i = 0; i < SIZEINDEX; i++)
   {
     fprintf(stderr, "inChar[%d]: %c\n", i, inChar[i]);
+    if (inChar[i] == PADDING_DEC)
+    {
+      indexTable[i] = PADD_INDEX;
+      continue;
+    }
+
     for (j = 0; j < SIZETABLEB64; ++j)
     {
       if (inChar[i] == translationTableB64[j])
@@ -48,11 +54,6 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
         indexTable[i] = j;
         break;
       }
-      // else if (inChar[i] == PADDING_DEC)
-      // {
-      //   indexTable[i] = BYTE_ZEROS;
-      //   break;
-      // }
     }
     if (j >= SIZETABLEB64)
     {
@@ -61,11 +62,12 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     }
   }
 
+
   for (i = 0; i < SIZEINDEX; i++)
   {
     accumBit += 2;
     charHolder = (unsigned int)indexTable[i];
-    charHolder <<= ((SIZEINDEX - 1 - i) * sizeof(unsigned char) * 8);
+    charHolder <<= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * BIT_PER_BYTE;
     charHolder <<= accumBit;
     bitPattern = (bitPattern | charHolder);
   }
@@ -74,13 +76,21 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
   i = 0;
   do
   {
-    bitMask >>= i * sizeof(unsigned char) * 8;
     fprintf(stderr, "bitMask: %x\n",bitMask); 
+
+    /* Extract the decoded character from bitPattern */
     charHolder = (bitPattern & bitMask);
-    charHolder >>= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * 8;
+
+    /* Shift right the decoded character to the correct position. */
+    charHolder >>= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * BIT_PER_BYTE;
     fprintf(stderr, "charHolder: %x\n",charHolder);
+
+    /* Store in outChar */
     outChar[i] = (unsigned char)charHolder;
     fprintf(stderr, "outChar[%d]: %c\n", i, outChar[i]);
+   
+    /* Shift right 0,8,16...bits the bitMask */ 
+    bitMask >>=  sizeof(unsigned char) * BIT_PER_BYTE;
     i++;
   } while (charHolder != 0 && (i < SIZEINDEX));
 
