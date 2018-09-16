@@ -35,6 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
+TP0/src/tp0
 
 # Debug files
 *.dSYM/
