@@ -42,7 +42,5 @@ PUT DESCRIPTION HERE.
 
 outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[]);
 outputCode decode(params_t *params);
-/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
-outputCode decodeIdentity(params_t *params);
 
 #endif

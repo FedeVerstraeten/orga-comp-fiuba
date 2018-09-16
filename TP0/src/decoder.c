@@ -40,7 +40,6 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
   /* Search char index in translationTableB64 */
   for (i = 0; i < SIZEINDEX; i++)
   {
-    fprintf(stderr, "inChar[%d]: %c\n", i, inChar[i]);
     if (inChar[i] == PADDING_DEC)
     {
       indexTable[i] = PADD_INDEX;
@@ -72,29 +71,22 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     bitPattern = (bitPattern | charHolder);
   }
 
-  fprintf(stderr, "bitPattern: %x\n",bitPattern);
   i = 0;
   do
   {
-    fprintf(stderr, "bitMask: %x\n",bitMask); 
-
     /* Extract the decoded character from bitPattern */
     charHolder = (bitPattern & bitMask);
 
     /* Shift right the decoded character to the correct position. */
     charHolder >>= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * BIT_PER_BYTE;
-    fprintf(stderr, "charHolder: %x\n",charHolder);
-
+ 
     /* Store in outChar */
     outChar[i] = (unsigned char)charHolder;
-    fprintf(stderr, "outChar[%d]: %c\n", i, outChar[i]);
    
     /* Shift right 0,8,16...bits the bitMask */ 
     bitMask >>=  sizeof(unsigned char) * BIT_PER_BYTE;
     i++;
   } while (charHolder != 0 && (i < SIZEINDEX));
-
-  fprintf(stderr, "Finished block decoding.\n");
 
   return outOK;
 }
@@ -120,7 +112,6 @@ outputCode decode(params_t *params)
       }
       if (feof(params->inputStream))
       {
-        fprintf(stderr, "Is EOF.\n");
         if (i != 0)
         {
           if (base64ToBase256(outChar, inChar) == outERROR)
@@ -146,13 +137,13 @@ outputCode decode(params_t *params)
       //   return outERROR;
       // }
 
+      /* Discards NewLines detected */
       if (readChar != '\n')
       {
         inChar[i] = readChar;
       }
       else
       {
-        fprintf(stderr, "Newline detected.\n");
         i--;
       }
     }
@@ -170,31 +161,4 @@ outputCode decode(params_t *params)
   }
 
   return outERROR;
-}
-
-/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
-outputCode decodeIdentity(params_t *params)
-{
-  /* TODO: code this function. Assume that 'params' are
-   * already well initialized. */
-  int inChar, outChar;
-
-  while ((inChar = getc(params->inputStream)) != EOF)
-  {
-    outChar = inChar;
-    putc(outChar, params->outputStream);
-    if (ferror(params->outputStream))
-    {
-      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
-      return outERROR;
-    }
-  }
-
-  if (ferror(params->inputStream))
-  {
-    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
-    return outERROR;
-  }
-
-  return outOK;
 }
