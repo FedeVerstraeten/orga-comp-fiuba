@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Sep-2018 3:46:28 pm
- @Last modified by:   pluto
- @Last modified time: 13-Sep-2018 11:13:09 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 17-Sep-2018 12:12:16 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -53,11 +53,11 @@ int main(int argc, char **argv)
   outputCode transformationState;
   if (strcmp(params.action, ENCODE_STR_TOKEN) == 0)
   {
-    transformationState = encode(&params);  // encodeIdentity encode
+    transformationState = encode(&params);
   }
   else
   {
-    transformationState = decode(&params);  // decodeIdentity decode
+    transformationState = decode(&params);
   }
   if (transformationState == outERROR)
   {

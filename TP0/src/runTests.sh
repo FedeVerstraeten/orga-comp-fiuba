@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 12-Sep-2018 1:19:56 pm
+# @Last modified time: 17-Sep-2018 2:14:00 am
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -161,10 +161,10 @@ function test2_parameter_output_stream(){
   header "TEST2: invalid 'output' stream."
 
 	commands=(
-  "-i ../tests/test1.bin -o ."
-  "-i ../tests/test1.bin -o .."
-  "-i ../tests/test1.bin -o /"
-  "-i ../tests/test1.bin -o //"
+  "-i ../tests/leviathan.input -o ."
+  "-i ../tests/leviathan.input -o .."
+  "-i ../tests/leviathan.input -o /"
+  "-i ../tests/leviathan.input -o //"
   )
 
 	for i in "${commands[@]}"
@@ -303,11 +303,12 @@ function test5_IO_validation(){
   header "TEST5: input-output should be the same."
 
   n=1;
-  nLimit=$((1024*2));
+  nLimit=$((1024*1000));
 
   while [ $n -le $nLimit ]
   do
-  	head -c $n </dev/urandom >$TESTS_DIR/in.bin;
+  	# head -c $n </dev/urandom >$TESTS_DIR/in.bin;
+    yes | head -c $n >$TESTS_DIR/in.bin;
   	$PROGRAM_NAME -a encode -i $TESTS_DIR/in.bin -o $TESTS_DIR/out.b64;
   	$PROGRAM_NAME -a decode -i $TESTS_DIR/out.b64 -o $TESTS_DIR/out.bin;
 
@@ -320,7 +321,7 @@ function test5_IO_validation(){
   		break;
   	fi
 
-  	n=$((n*2));
+  	n=$(($n*2));
 
   	rm -f $TESTS_DIR/in.bin $TESTS_DIR/out.b64 $TESTS_DIR/out.bin
   done
@@ -399,11 +400,10 @@ function test55_IO_validation(){
 function test56_IO_validation(){
   header "TEST56: Check bit by bit."
 
-  program_output="$(echo xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
-  correct_output="
-  0000000 x y z \n
-  0000004";
-  diff_result="$(diff  <(echo "$program_output" ) <(echo "$correct_output"))";
+  program_output="$(echo -E xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
+  correct_output="0000000   x   y   z  \n
+0000004";
+  diff_result="$(diff  <(echo -E "$program_output" ) <(echo -E "$correct_output"))";
 
   if [[ -z ${diff_result} ]]; then :;
     IO_validation_passed "No differences.";
@@ -504,7 +504,7 @@ test54_IO_validation
 test55_IO_validation
 test56_IO_validation
 test57_IO_validation
-#test6_encoding_execution_times
-#test7_decoding_execution_times
+test6_encoding_execution_times
+test7_decoding_execution_times
 
 header "Test suite ended."

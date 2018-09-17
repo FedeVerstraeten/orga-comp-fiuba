@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:21:26 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 1:11:10 pm
+ @Last modified time: 17-Sep-2018 1:21:18 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -27,13 +27,14 @@ PUT DESCRIPTION HERE.
 ----------------------------------------------------------- */
 #include "encoder.h"
 
-void base256ToBase64(char *outChar, const char inChar)
+unsigned char base256ToBase64(char *outChar, const char inChar)
 {
   unsigned char headByte = BYTE_ZEROS;
   unsigned char prevByte = BYTE_ZEROS;
   static unsigned char tailByte = BYTE_ZEROS;
   static unsigned char bitMask = BYTE_ENC_MASK;
   static unsigned int shiftRightBit = 2;
+  unsigned char encodedCharsCount = 0;
 
   /* Backup the previous tailByte*/
   prevByte = tailByte;
@@ -46,7 +47,7 @@ void base256ToBase64(char *outChar, const char inChar)
       headByte = (prevByte | BYTE_ZEROS);
       strncpy(outChar, &translationTableB64[headByte], 1);
       strncat(outChar, PADDING, 1);
-      return;
+      return (encodedCharsCount + 2);
     }
     else if (shiftRightBit == 4)
     {
@@ -54,10 +55,10 @@ void base256ToBase64(char *outChar, const char inChar)
       strncpy(outChar, &translationTableB64[headByte], 1);
       strncat(outChar, PADDING, 1);
       strncat(outChar, PADDING, 1);
-      return;
+      return (encodedCharsCount + 3);
     }
     else
-      return;
+      return encodedCharsCount;
   }
 
   /* Save the head of input char*/
@@ -77,6 +78,7 @@ void base256ToBase64(char *outChar, const char inChar)
 
   /*Print translation in outChar*/
   strncpy(outChar, &translationTableB64[headByte], 1);
+  encodedCharsCount++;
 
   shiftRightBit += 2;
 
@@ -89,70 +91,54 @@ void base256ToBase64(char *outChar, const char inChar)
 
     /* Print tailByte and clear*/
     strncat(outChar, &translationTableB64[tailByte], 1);
+    encodedCharsCount++;
+
     tailByte = BYTE_ZEROS;
-  };
+  }
+
+  return encodedCharsCount;
 }
 
 outputCode encode(params_t *params)
 {
   /* TODO:  revisar si estos char pueden o deben ser unsigned. */
   char inChar;
-  char outChar[MAXOUTBUFFER] = {};
-  unsigned int count = 0;
+  char outChar[MAX_OUT_BUFFER] = {};
+  unsigned char totalEncodedCharsCount = 0, encodedCharsCount = 0;
 
   do
   {
     memset(outChar, 0, sizeof(outChar));  // clear outChar
     inChar = getc(params->inputStream);
-    base256ToBase64(outChar, inChar);
-    if ((count + strlen(outChar)) <= MAXLINELENGHT)
+    if (ferror(params->inputStream))
     {
-        fputs(outChar, params->outputStream);
-        count = count + strlen(outChar);
-    }else
+      fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
+      return outERROR;
+    }
+    encodedCharsCount = base256ToBase64(outChar, inChar);
+    if ((totalEncodedCharsCount + encodedCharsCount) <= MAX_LINE_LENGHT)
     {
-    fputs("\n", params->outputStream);
+      totalEncodedCharsCount += encodedCharsCount;
+    }
+    else
+    {
+      fputs("\n", params->outputStream);
+      if (ferror(params->outputStream))
+      {
+        fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
+        return outERROR;
+      }
+      totalEncodedCharsCount = 0;
+    }
+
     fputs(outChar, params->outputStream);
-    count = 0;
-    }
-
     if (ferror(params->outputStream))
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
       return outERROR;
     }
+
   } while (inChar != EOF);
-
-  if (ferror(params->inputStream))
-  {
-    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
-    return outERROR;
-  }
-
-  return outOK;
-}
-
-/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
-outputCode encodeIdentity(params_t *params)
-{
-  int inChar, outChar;
-
-  while ((inChar = getc(params->inputStream)) != EOF)
-  {
-    outChar = inChar;
-    putc(outChar, params->outputStream);
-    if (ferror(params->outputStream))
-    {
-      fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
-      return outERROR;
-    }
-  }
-
-  if (ferror(params->inputStream))
-  {
-    fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
-    return outERROR;
-  }
 
   return outOK;
 }

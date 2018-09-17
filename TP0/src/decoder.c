@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:21:30 am
- @Last modified by:   pluto
- @Last modified time: 13-Sep-2018 11:46:31 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 17-Sep-2018 12:12:06 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -61,7 +61,6 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     }
   }
 
-
   for (i = 0; i < SIZEINDEX; i++)
   {
     accumBit += 2;
@@ -79,12 +78,12 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
 
     /* Shift right the decoded character to the correct position. */
     charHolder >>= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * BIT_PER_BYTE;
- 
+
     /* Store in outChar */
     outChar[i] = (unsigned char)charHolder;
-   
-    /* Shift right 0,8,16...bits the bitMask */ 
-    bitMask >>=  sizeof(unsigned char) * BIT_PER_BYTE;
+
+    /* Shift right 0,8,16...bits the bitMask */
+    bitMask >>= sizeof(unsigned char) * BIT_PER_BYTE;
     i++;
   } while (charHolder != 0 && (i < SIZEINDEX));
 

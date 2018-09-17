@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:52:58 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 1:12:26 pm
+ @Last modified time: 17-Sep-2018 1:27:04 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -37,12 +37,10 @@ PUT DESCRIPTION HERE.
 #define BYTE_ZEROS 0x00
 #define MAX6BIT 6
 #define PADDING "="
-#define MAXOUTBUFFER 5
-#define MAXLINELENGHT 70
+#define MAX_OUT_BUFFER 5
+#define MAX_LINE_LENGHT 76
 
-void base256ToBase64(char *outChar, const char inChar);
+unsigned char base256ToBase64(char *outChar, const char inChar);
 outputCode encode(params_t *params);
-/* TODO: SOLO PARA PRUEBAS. BORRARLA. */
-outputCode encodeIdentity(params_t *params);
 
 #endif
