@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:21:26 am
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 17-Sep-2018 1:21:18 am
+ @Last modified by:   pluto
+ @Last modified time: 17-Sep-2018 11:53:59 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -116,6 +116,7 @@ outputCode encode(params_t *params)
       return outERROR;
     }
     encodedCharsCount = base256ToBase64(outChar, inChar);
+    // fprintf(stderr, "encodedCharsCount: %d\n", encodedCharsCount);
     if ((totalEncodedCharsCount + encodedCharsCount) <= MAX_LINE_LENGHT)
     {
       totalEncodedCharsCount += encodedCharsCount;
