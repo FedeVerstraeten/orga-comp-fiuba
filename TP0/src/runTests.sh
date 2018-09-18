@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 18-Sep-2018 1:18:22 pm
+# @Last modified time: 18-Sep-2018 2:03:02 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -329,6 +329,12 @@ function test5_IO_validation(){
   		IO_validation_passed "n = $n";
   	else
   		IO_validation_failed "n = $n";
+      error_msg "in.bin";
+      cat $TESTS_DIR/in.bin | od -v -t c;
+      error_msg "out.b64";
+      cat $TESTS_DIR/out.b64 | od -v -t c;
+      error_msg "out.bin";
+      cat $TESTS_DIR/out.bin | od -v -t c;
       failedTests=$(($failedTests+1));
   		break;
   	fi
@@ -511,24 +517,24 @@ function test7_decoding_execution_times(){
 # ------------------------------------------------------------
 # Run the tests.
 # ------------------------------------------------------------
-# test1_parameter_input_inexistent_stream
-# test11_parameter_input_no_argument
-# test12_parameter_input_invalid_stream
-# test2_parameter_output_stream
-# test21_parameter_output_no_argument
-# test3_parameter_action
-# test31_parameter_action_no_argument
-# test4_valid_parameters
+test1_parameter_input_inexistent_stream
+test11_parameter_input_no_argument
+test12_parameter_input_invalid_stream
+test2_parameter_output_stream
+test21_parameter_output_no_argument
+test3_parameter_action
+test31_parameter_action_no_argument
+test4_valid_parameters
 test5_IO_validation
-# test51_IO_validation
-# test52_IO_validation
-# test53_IO_validation
-# test54_IO_validation
-# test55_IO_validation
-# test56_IO_validation
-# test57_IO_validation
-# test6_encoding_execution_times
-# test7_decoding_execution_times
+test51_IO_validation
+test52_IO_validation
+test53_IO_validation
+test54_IO_validation
+test55_IO_validation
+test56_IO_validation
+test57_IO_validation
+test6_encoding_execution_times
+test7_decoding_execution_times
 
 header "Test suite ended."
 

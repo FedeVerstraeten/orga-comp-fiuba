@@ -16,7 +16,7 @@
 #
 # @Date:               18-Sep-2018 1:40:09 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 18-Sep-2018 1:47:33 pm
+# @Last modified time: 18-Sep-2018 2:02:18 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura básica.'.
@@ -37,6 +37,9 @@ RED="\e[31m"
 GREEN="\e[32m"
 DEFAULT="\e[0m"
 
+function error_msg() {
+  echo -e "  $RED$1$DEFAULT"
+}
 
 function IO_validation_passed(){
 	echo -e "$GREEN\0PASSED: $DEFAULT $1"
@@ -45,6 +48,7 @@ function IO_validation_failed(){
 	echo -e "$RED\0FAILED $DEFAULT $1"
 }
 
+# --------------------------------------------------------------------------
 n=200;
 
 head -c $n </dev/urandom >$TESTS_DIR/in.bin;
@@ -58,4 +62,10 @@ if [[ -z ${diff_result} ]]; then :;
 	IO_validation_passed "n = $n";
 else
 	IO_validation_failed "n = $n";
+  error_msg "in.bin";
+  cat $TESTS_DIR/in.bin | od -v -t c;
+  error_msg "out.b64";
+  cat $TESTS_DIR/out.b64 | od -v -t c;
+  error_msg "out.bin";
+  cat $TESTS_DIR/out.bin | od -v -t c;
 fi
