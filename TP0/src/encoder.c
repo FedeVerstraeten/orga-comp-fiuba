@@ -116,7 +116,7 @@ outputCode encode(params_t *params)
       return outERROR;
     }
     encodedCharsCount = base256ToBase64(outChar, inChar);
-    // fprintf(stderr, "encodedCharsCount: %d\n", encodedCharsCount);
+    
     if ((totalEncodedCharsCount + encodedCharsCount) <= MAX_LINE_LENGHT)
     {
       totalEncodedCharsCount += encodedCharsCount;
@@ -129,7 +129,7 @@ outputCode encode(params_t *params)
         fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
         return outERROR;
       }
-      totalEncodedCharsCount = 0;
+      totalEncodedCharsCount = encodedCharsCount;
     }
 
     fputs(outChar, params->outputStream);
