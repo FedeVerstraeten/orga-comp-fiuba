@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 18-Sep-2018 3:28:57 pm
+# @Last modified time: 18-Sep-2018 5:18:48 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -41,12 +41,12 @@ PROGRAM_NAME='./tp0'
 failedTests=0;
 
 # Colors to be used.
-RED='\e[31m';
-GREEN='\e[32m';
-CYAN='\e[96m';
-YELLOW='\e[93m';
-BOLD='\033[1m';
-DEFAULT='\e[0m';
+RED="\e[31m";
+GREEN="\e[32m";
+CYAN="\e[96m";
+YELLOW="\e[93m";
+BOLD="\033[1m";
+DEFAULT="\e[0m";
 
 # Helper and formatting functions definitions.
 function header() {
@@ -108,7 +108,7 @@ function test1_parameter_input_inexistent_stream(){
 	done
 }
 
-EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("./tp0: option requires an argument -- i")
+EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("./tp0: option requires an argument -- 'i'")
 
 function test11_parameter_input_no_argument(){
   header "TEST11: no 'input' option parameters."
@@ -314,7 +314,8 @@ function test5_IO_validation(){
   header "TEST5: input-output should be the same."
 
   n=1;
-  nLimit=$((1024*1000));
+  # nLimit=$((1024*1000));
+  nLimit=10;
 
   while [ $n -le $nLimit ]
   do
@@ -339,7 +340,8 @@ function test5_IO_validation(){
   		break;
   	fi
 
-  	n=$(($n*2));
+  	# n=$(($n*2));
+    n=$(($n+1));
 
   	rm -f $TESTS_DIR/in.bin $TESTS_DIR/out.b64 $TESTS_DIR/out.bin
   done

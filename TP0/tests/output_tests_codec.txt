@@ -1,0 +1,42 @@
+------------------------------------------------------
+TEST5: input-output should be the same.
+------------------------------------------------------
+PASSED:  n = 1
+PASSED:  n = 2
+PASSED:  n = 3
+PASSED:  n = 4
+PASSED:  n = 5
+PASSED:  n = 6
+PASSED:  n = 7
+PASSED:  n = 8
+PASSED:  n = 9
+PASSED:  n = 10
+------------------------------------------------------
+TEST51: input known text with known encoding.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST52: Encode letter 'M'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST53: Encode 'Ma'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST54: Encode 'Man'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST55: Encode and decode 'Man'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST56: Check bit by bit.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST57: Check max line length and number of encoded bytes.
+------------------------------------------------------
+PASSED:  No differences in line count.
+PASSED:  No differences in word count.
