@@ -27,7 +27,7 @@ PUT DESCRIPTION HERE.
 ----------------------------------------------------------- */
 #include "encoder.h"
 
-unsigned char base256ToBase64(char *outChar, const char inChar)
+unsigned char base256ToBase64(int *outChar, const int inChar)
 {
   unsigned char headByte = BYTE_ZEROS;
   unsigned char prevByte = BYTE_ZEROS;
@@ -102,8 +102,8 @@ unsigned char base256ToBase64(char *outChar, const char inChar)
 outputCode encode(params_t *params)
 {
   /* TODO:  revisar si estos char pueden o deben ser unsigned. */
-  char inChar;
-  char outChar[MAX_OUT_BUFFER] = {};
+  int inChar;
+  int outChar[MAX_OUT_BUFFER] = {};
   unsigned char totalEncodedCharsCount = 0, encodedCharsCount = 0;
 
   do
@@ -111,6 +111,8 @@ outputCode encode(params_t *params)
     // clear outChar
     memset(outChar, 0, sizeof(outChar));
     inChar = getc(params->inputStream);
+    fprintf(stderr, "inChar: %x\n",inChar);
+
     if (ferror(params->inputStream))
     {
       fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
@@ -138,6 +140,13 @@ outputCode encode(params_t *params)
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
       return outERROR;
+    }
+
+    if (inChar == EOF)
+    {
+      fprintf(stderr, "inChar: %x\n",inChar);
+      fprintf(stderr, "EOF: %x\n",EOF);
+      fprintf(stderr, "%d\n",totalEncodedCharsCount);
     }
 
   } while (inChar != EOF);

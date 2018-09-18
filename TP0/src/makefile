@@ -39,7 +39,7 @@ _OBJ = main.o parser.o encoder.o decoder.o
 # ------------------------------------------------------------
 # Configuration.
 CC = gcc
-CFLAGS = -Wall -I. -O0
+CFLAGS = -g -Wall -I. -O0
 OUTPUT1 = tp0
 # ------------------------------------------------------------
 %.o: %.c $(_DEPS)
