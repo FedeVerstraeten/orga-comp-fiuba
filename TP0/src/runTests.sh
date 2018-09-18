@@ -15,8 +15,8 @@
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
-# @Last modified by:   pluto
-# @Last modified time: 17-Sep-2018 11:06:37 am
+# @Last modified by:   Ignacio Santiago Husain
+# @Last modified time: 18-Sep-2018 1:15:59 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -36,6 +36,9 @@
 
 # Program name to test.
 PROGRAM_NAME='./tp0'
+
+# Failed tests counter.
+failedTests=0;
 
 # Colors to be used.
 RED="\e[31m"
@@ -99,6 +102,7 @@ function test1_parameter_input_inexistent_stream(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -122,6 +126,7 @@ function test11_parameter_input_no_argument(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -150,6 +155,7 @@ function test12_parameter_input_invalid_stream(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -178,6 +184,7 @@ function test2_parameter_output_stream(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -201,6 +208,7 @@ function test21_parameter_output_no_argument(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -232,6 +240,7 @@ function test3_parameter_action(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -255,6 +264,7 @@ function test31_parameter_action_no_argument(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -281,6 +291,7 @@ function test4_valid_parameters(){
       msg_true "$PROGRAM_OUTPUT"
     else
       msg_false "$PROGRAM_OUTPUT"
+      failedTests=$(($failedTests+1));
     fi
 
 	done
@@ -307,8 +318,8 @@ function test5_IO_validation(){
 
   while [ $n -le $nLimit ]
   do
-  	# head -c $n </dev/urandom >$TESTS_DIR/in.bin;
-    yes | head -c $n >$TESTS_DIR/in.bin;
+  	 head -c $n </dev/urandom >$TESTS_DIR/in.bin;
+    # yes | head -c $n >$TESTS_DIR/in.bin;
   	$PROGRAM_NAME -a encode -i $TESTS_DIR/in.bin -o $TESTS_DIR/out.b64;
   	$PROGRAM_NAME -a decode -i $TESTS_DIR/out.b64 -o $TESTS_DIR/out.bin;
 
@@ -318,6 +329,7 @@ function test5_IO_validation(){
   		IO_validation_passed "n = $n";
   	else
   		IO_validation_failed "n = $n";
+      failedTests=$(($failedTests+1));
   		break;
   	fi
 
@@ -338,6 +350,7 @@ function test51_IO_validation(){
     IO_validation_passed "No differences.";
   else
     IO_validation_failed "Differences: \n${diff_result}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -352,6 +365,7 @@ function test52_IO_validation(){
     IO_validation_passed "No differences.";
   else
     IO_validation_failed "Differences: \n${diff_result}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -366,6 +380,7 @@ function test53_IO_validation(){
     IO_validation_passed "No differences.";
   else
     IO_validation_failed "Differences: \n${diff_result}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -380,6 +395,7 @@ function test54_IO_validation(){
     IO_validation_passed "No differences.";
   else
     IO_validation_failed "Differences: \n${diff_result}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -394,6 +410,7 @@ function test55_IO_validation(){
     IO_validation_passed "No differences.";
   else
     IO_validation_failed "Differences: \n${diff_result}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -409,6 +426,7 @@ function test56_IO_validation(){
     IO_validation_passed "No differences.";
   else
     IO_validation_failed "Differences: \n${diff_result}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -429,6 +447,7 @@ function test57_IO_validation(){
     IO_validation_failed "Differences in line count:
     Program output:${program_output_line_count}
     Correct output:${correct_output_line_count}";
+    failedTests=$(($failedTests+1));
   fi
 
   program_output_word_count="$(yes | head -c 1024 | $PROGRAM_NAME -a encode | $PROGRAM_NAME -a decode | wc -c)";
@@ -441,6 +460,7 @@ function test57_IO_validation(){
     IO_validation_failed "Differences in word count:
     Program output:${program_output_word_count}
     Correct output:${correct_output_word_count}";
+    failedTests=$(($failedTests+1));
   fi
 }
 
@@ -511,3 +531,9 @@ test6_encoding_execution_times
 test7_decoding_execution_times
 
 header "Test suite ended."
+
+if [[ $failedTests -eq $zero ]]; then
+  success_msg "All tests passed.";
+else
+  error_msg "Failed tests: $failedTests";
+fi

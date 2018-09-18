@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:21:22 am
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 12-Sep-2018 1:20:07 pm
+ @Last modified by:   pluto
+ @Last modified time: 18-Sep-2018 12:47:07 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -73,7 +73,7 @@ outputCode validateStreamName(char *streamName)
   {
     return outERROR;
   }
-  /* TODO: we could refactor this in a more elegant way. */
+
   if (!strcmp(streamName, ".") || !strcmp(streamName, "..") ||
       !strcmp(streamName, "/") || !strcmp(streamName, "//"))
   {

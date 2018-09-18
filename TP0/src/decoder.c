@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:21:30 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 17-Sep-2018 12:12:06 am
+ @Last modified time: 18-Sep-2018 1:12:40 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -30,102 +30,103 @@ PUT DESCRIPTION HERE.
 outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
 {
   unsigned int bitMask = BYTE_DEC_MASK;
-  size_t i = 0;
-  size_t j = 0;
+  size_t index1 = 0;
+  size_t index2 = 0;
   unsigned char indexTable[SIZEINDEX] = {0, 0, 0, 0};
   unsigned int charHolder = 0;
   unsigned int bitPattern = 0;
   unsigned char accumBit = 0;
 
   /* Search char index in translationTableB64 */
-  for (i = 0; i < SIZEINDEX; i++)
+  for (index1 = 0; index1 < SIZEINDEX; index1++)
   {
-    if (inChar[i] == PADDING_DEC)
+    if (inChar[index1] == PADDING_DEC)
     {
-      indexTable[i] = PADD_INDEX;
+      indexTable[index1] = PADD_INDEX;
       continue;
     }
 
-    for (j = 0; j < SIZETABLEB64; ++j)
+    for (index2 = 0; index2 < SIZETABLEB64; ++index2)
     {
-      if (inChar[i] == translationTableB64[j])
+      if (inChar[index1] == translationTableB64[index2])
       {
-        indexTable[i] = j;
+        indexTable[index1] = index2;
         break;
       }
     }
-    if (j >= SIZETABLEB64)
+    if (index2 >= SIZETABLEB64)
     {
       fprintf(stderr, "ERROR: Character is not in Base64 Table\n");
       return outERROR;
     }
   }
 
-  for (i = 0; i < SIZEINDEX; i++)
+  for (index1 = 0; index1 < SIZEINDEX; index1++)
   {
     accumBit += 2;
-    charHolder = (unsigned int)indexTable[i];
-    charHolder <<= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * BIT_PER_BYTE;
+    charHolder = (unsigned int)indexTable[index1];
+    charHolder <<=
+        (SIZEINDEX - 1 - index1) * sizeof(unsigned char) * BIT_PER_BYTE;
     charHolder <<= accumBit;
     bitPattern = (bitPattern | charHolder);
   }
 
-  i = 0;
+  index1 = 0;
   do
   {
     /* Extract the decoded character from bitPattern */
     charHolder = (bitPattern & bitMask);
 
     /* Shift right the decoded character to the correct position. */
-    charHolder >>= (SIZEINDEX - 1 - i) * sizeof(unsigned char) * BIT_PER_BYTE;
+    charHolder >>=
+        (SIZEINDEX - 1 - index1) * sizeof(unsigned char) * BIT_PER_BYTE;
 
     /* Store in outChar */
-    outChar[i] = (unsigned char)charHolder;
+    outChar[index1] = (unsigned char)charHolder;
 
     /* Shift right 0,8,16...bits the bitMask */
     bitMask >>= sizeof(unsigned char) * BIT_PER_BYTE;
-    i++;
-  } while (charHolder != 0 && (i < SIZEINDEX));
+    index1++;
+  } while (charHolder != 0 && (index1 < SIZEINDEX));
 
   return outOK;
 }
 
 outputCode decode(params_t *params)
 {
-  /* TODO: code this function. Assume that 'params' are
-   * already well initialized. */
   unsigned char readChar;
   unsigned char inChar[SIZEINDEX] = {};
   unsigned char outChar[OUTPUT_BLOCK_SIZE] = {};
-  int i = 0;
+  unsigned char index1 = 0;
 
   while (1)
   {
     /* Load input buffer inChar */
-    for (i = 0; i < SIZEINDEX; ++i)
+    for (index1 = 0; index1 < SIZEINDEX; ++index1)
     {
-      readChar = (unsigned int)getc(params->inputStream);
-      
-      /* Discards WhiteSpaces detected */
-      if (readChar == '\n' || readChar=='\t' || readChar==' ')
-      {
-        i--;
-        continue;
-      }
-      else
-      {
-        inChar[i] = readChar;
-      }
-
-      /* EOF */
+      readChar = getc(params->inputStream);
       if (ferror(params->inputStream))
       {
         fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
         return outERROR;
       }
+
+      /* Discards WhiteSpaces detected */
+      if (readChar == '\n' || readChar == '\t' || readChar == ' ')
+      {
+        index1--;
+        continue;
+      }
+      else
+      {
+        inChar[index1] = readChar;
+      }
+
+      /* EOF */
       if (feof(params->inputStream))
       {
-        if (i != 0)
+        /* If there are still chars in the buffer, we flush it. */
+        if (index1 != 0)
         {
           if (base64ToBase256(outChar, inChar) == outERROR)
           {
