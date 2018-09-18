@@ -101,9 +101,23 @@ outputCode decode(params_t *params)
 
   while (1)
   {
+    /* Load input buffer inChar */
     for (i = 0; i < SIZEINDEX; ++i)
     {
       readChar = (unsigned int)getc(params->inputStream);
+      
+      /* Discards WhiteSpaces detected */
+      if (readChar == '\n' || readChar=='\t' || readChar==' ')
+      {
+        i--;
+        continue;
+      }
+      else
+      {
+        inChar[i] = readChar;
+      }
+
+      /* EOF */
       if (ferror(params->inputStream))
       {
         fprintf(stderr, ERROR_INPUT_STREAM_READING_MSG);
@@ -127,25 +141,9 @@ outputCode decode(params_t *params)
         }
         return outOK;
       }
-      // {
-      //   return outOK;
-      // }
-      // else
-      // {
-      //   fprintf(stderr, "ERROR: Reach EOF before 4 byte block read\n");
-      //   return outERROR;
-      // }
-
-      /* Discards NewLines detected */
-      if (readChar != '\n')
-      {
-        inChar[i] = readChar;
-      }
-      else
-      {
-        i--;
-      }
     }
+
+    /* Translate inChar into base256 */
     if (base64ToBase256(outChar, inChar) == outERROR)
     {
       return outERROR;
