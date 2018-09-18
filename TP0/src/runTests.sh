@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 18-Sep-2018 2:03:02 pm
+# @Last modified time: 18-Sep-2018 2:38:17 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -330,11 +330,11 @@ function test5_IO_validation(){
   	else
   		IO_validation_failed "n = $n";
       error_msg "in.bin";
-      cat $TESTS_DIR/in.bin | od -v -t c;
+      cat $TESTS_DIR/in.bin | od -A x -t x1z -v;
       error_msg "out.b64";
-      cat $TESTS_DIR/out.b64 | od -v -t c;
+      cat $TESTS_DIR/out.b64 | od -A x -t x1z -v;
       error_msg "out.bin";
-      cat $TESTS_DIR/out.bin | od -v -t c;
+      cat $TESTS_DIR/out.bin | od -A x -t x1z -v;
       failedTests=$(($failedTests+1));
   		break;
   	fi
