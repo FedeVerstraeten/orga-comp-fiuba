@@ -416,8 +416,11 @@ function test57_IO_validation(){
   header "TEST57: Check max line length and number of encoded bytes."
 
   program_output_line_count="$(echo -n "$(yes | head -c 1024 | $PROGRAM_NAME -a encode)" | wc -l)";
-  # TODO: No estoy seguro de este número.
-  correct_output_line_count="13";
+
+  # 1024 bytes[base256] => (8190+2) bits => 1365 bytes[base64] + 2 bits
+  # 1365 bytes[base64] + 2 bits + '==' =>  1366 bytes[base64]
+  # floor(1366 bytes[base64] / 76 charEachLine) => 17 lines
+  correct_output_line_count="17";
   diff_result_line_count="$(diff  <(echo "$program_output_line_count" ) <(echo "$correct_output_line_count"))";
 
   if [[ -z ${diff_result_line_count} ]]; then :;
@@ -488,23 +491,23 @@ function test7_decoding_execution_times(){
 # ------------------------------------------------------------
 # Run the tests.
 # ------------------------------------------------------------
-# test1_parameter_input_inexistent_stream
-# test11_parameter_input_no_argument
-# test12_parameter_input_invalid_stream
-# test2_parameter_output_stream
-# test21_parameter_output_no_argument
-# test3_parameter_action
-# test31_parameter_action_no_argument
-# test4_valid_parameters
-# test5_IO_validation
-# test51_IO_validation
-# test52_IO_validation
-# test53_IO_validation
-# test54_IO_validation
-# test55_IO_validation
-# test56_IO_validation
+test1_parameter_input_inexistent_stream
+test11_parameter_input_no_argument
+test12_parameter_input_invalid_stream
+test2_parameter_output_stream
+test21_parameter_output_no_argument
+test3_parameter_action
+test31_parameter_action_no_argument
+test4_valid_parameters
+test5_IO_validation
+test51_IO_validation
+test52_IO_validation
+test53_IO_validation
+test54_IO_validation
+test55_IO_validation
+test56_IO_validation
 test57_IO_validation
-# test6_encoding_execution_times
-# test7_decoding_execution_times
+test6_encoding_execution_times
+test7_decoding_execution_times
 
 header "Test suite ended."
