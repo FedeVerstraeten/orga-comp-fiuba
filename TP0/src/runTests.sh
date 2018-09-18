@@ -10,13 +10,13 @@
 #    Husain, Ignacio Santiago.
 #          santiago.husain at gmail dot com
 #		 Pesado, Lucia.
-#	   luupesado at gmail dot com
+#	         luupesado at gmail dot com
 #    Verstraeten, Federico.
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 18-Sep-2018 2:38:17 pm
+# @Last modified time: 18-Sep-2018 3:28:57 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -41,38 +41,38 @@ PROGRAM_NAME='./tp0'
 failedTests=0;
 
 # Colors to be used.
-RED="\e[31m"
-GREEN="\e[32m"
-CYAN="\e[96m"
-YELLOW="\e[93m"
-BOLD="\033[1m"
-DEFAULT="\e[0m"
+RED='\e[31m';
+GREEN='\e[32m';
+CYAN='\e[96m';
+YELLOW='\e[93m';
+BOLD='\033[1m';
+DEFAULT='\e[0m';
 
 # Helper and formatting functions definitions.
 function header() {
-  echo -e "$CYAN------------------------------------------------------$DEFAULT"
-  echo -e "$CYAN$1$DEFAULT"
-  echo -e "$CYAN------------------------------------------------------$DEFAULT"
+  echo -e "$CYAN------------------------------------------------------$DEFAULT";
+  echo -e "$CYAN$1$DEFAULT";
+  echo -e "$CYAN------------------------------------------------------$DEFAULT";
 }
 
-function msg_true () {
-  echo -e "$GREEN\0PASSED \n $DEFAULT PROGRAM OUTPUT:\n\t$1"
+function msg_true() {
+  echo -e "$GREEN\0PASSED \n $DEFAULT PROGRAM OUTPUT:\n\t$1";
 }
 
-function msg_false () {
-  echo -e "$RED\0FAILED \n $DEFAULT PROGRAM OUTPUT:\n\t$1"
+function msg_false() {
+  echo -e "$RED\0FAILED \n $DEFAULT PROGRAM OUTPUT:\n\t$1";
 }
 
 function msg_testing() {
-  echo -e "Testing: $BOLD$1$DEFAULT"
+  echo -e "Testing: $BOLD$1$DEFAULT";
 }
 
 function success_msg() {
-  echo -e "  $GREEN$1$DEFAULT"
+  echo -e "  $GREEN$1$DEFAULT";
 }
 
 function error_msg() {
-  echo -e "  $RED$1$DEFAULT"
+  echo -e "  $RED$1$DEFAULT";
 }
 
 # ------------------------------------------------------------
@@ -108,7 +108,7 @@ function test1_parameter_input_inexistent_stream(){
 	done
 }
 
-EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("./tp0: option requires an argument -- 'i'")
+EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("./tp0: option requires an argument -- i")
 
 function test11_parameter_input_no_argument(){
   header "TEST11: no 'input' option parameters."

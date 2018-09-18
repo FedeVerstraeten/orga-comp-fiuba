@@ -8,13 +8,13 @@
 #    Husain, Ignacio Santiago.
 #          santiago.husain at gmail dot com
 #		 Pesado, Lucia.
-#	   luupesado at gmail dot com
+#	   			 luupesado at gmail dot com
 #    Verstraeten, Federico.
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 12:57:50 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 12-Sep-2018 12:39:52 pm
+# @Last modified time: 18-Sep-2018 3:28:07 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -42,13 +42,10 @@ CC = gcc
 CFLAGS = -Wall -I. -O0
 OUTPUT1 = tp0
 # ------------------------------------------------------------
-%.o: %.c $(_DEPS)
-	$(CC) $(CFLAGS) -c -o $@ $<
-
 all: $(OUTPUT1)
 
 $(OUTPUT1): $(_OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $(OUTPUT1) $(_OBJ)
 
 assembly:
 	$(CC) $(CFLAGS) -S $(_SRC) $(ARGS)

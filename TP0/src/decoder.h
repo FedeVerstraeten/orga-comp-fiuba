@@ -8,13 +8,13 @@
     Husain, Ignacio Santiago.
           santiago.husain at gmail dot com
     Pesado, Lucia.
-          xxx at xxx dot xxx
+          luupesado at gmail dot com
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:53:31 am
- @Last modified by:   pluto
- @Last modified time: 13-Sep-2018 11:29:04 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 18-Sep-2018 3:28:24 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
