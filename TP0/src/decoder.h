@@ -40,7 +40,7 @@ PUT DESCRIPTION HERE.
 #define OUTPUT_BLOCK_SIZE 3
 #define BIT_PER_BYTE 8
 
-outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[]);
+outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[],unsigned char *decCount);
 outputCode decode(params_t *params);
 
 #endif
