@@ -40,7 +40,7 @@ PUT DESCRIPTION HERE.
 #define MAX_OUT_BUFFER 5
 #define MAX_LINE_LENGHT 76
 
-unsigned char base256ToBase64(int *outChar, const int inChar);
+unsigned char base256ToBase64(char *outChar, const int inChar);
 outputCode encode(params_t *params);
 
 #endif
