@@ -27,7 +27,7 @@ PUT DESCRIPTION HERE.
 ----------------------------------------------------------- */
 #include "decoder.h"
 
-outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
+outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[], unsigned char *decCount)
 {
   unsigned int bitMask = BYTE_DEC_MASK;
   size_t index1 = 0;
@@ -51,6 +51,7 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
       if (inChar[index1] == translationTableB64[index2])
       {
         indexTable[index1] = index2;
+        (*decCount)++;
         break;
       }
     }
@@ -61,12 +62,12 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     }
   }
 
+  /* bitPattern generation using indexTable */
   for (index1 = 0; index1 < SIZEINDEX; index1++)
   {
     accumBit += 2;
     charHolder = (unsigned int)indexTable[index1];
-    charHolder <<=
-        (SIZEINDEX - 1 - index1) * sizeof(unsigned char) * BIT_PER_BYTE;
+    charHolder <<= (SIZEINDEX - 1 - index1) * sizeof(unsigned char) * BIT_PER_BYTE;
     charHolder <<= accumBit;
     bitPattern = (bitPattern | charHolder);
   }
@@ -78,8 +79,7 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     charHolder = (bitPattern & bitMask);
 
     /* Shift right the decoded character to the correct position. */
-    charHolder >>=
-        (SIZEINDEX - 1 - index1) * sizeof(unsigned char) * BIT_PER_BYTE;
+    charHolder >>= (SIZEINDEX - 1 - index1) * sizeof(unsigned char) * BIT_PER_BYTE;
 
     /* Store in outChar */
     outChar[index1] = (unsigned char)charHolder;
@@ -87,7 +87,7 @@ outputCode base64ToBase256(unsigned char outChar[], unsigned char inChar[])
     /* Shift right 0,8,16...bits the bitMask */
     bitMask >>= sizeof(unsigned char) * BIT_PER_BYTE;
     index1++;
-  } while (charHolder != 0 && (index1 < SIZEINDEX));
+  } while (index1 < OUTPUT_BLOCK_SIZE);
 
   return outOK;
 }
@@ -98,9 +98,13 @@ outputCode decode(params_t *params)
   unsigned char inChar[SIZEINDEX] = {};
   unsigned char outChar[OUTPUT_BLOCK_SIZE] = {};
   unsigned char index1 = 0;
+  unsigned char decodedCharsCount = 0;
+  unsigned char i = 0;
 
   while (1)
   {
+    decodedCharsCount = 0;
+    
     /* Load input buffer inChar */
     for (index1 = 0; index1 < SIZEINDEX; ++index1)
     {
@@ -128,12 +132,15 @@ outputCode decode(params_t *params)
         /* If there are still chars in the buffer, we flush it. */
         if (index1 != 0)
         {
-          if (base64ToBase256(outChar, inChar) == outERROR)
+          if (base64ToBase256(outChar, inChar,&decodedCharsCount) == outERROR)
           {
             return outERROR;
           }
 
-          fputs(outChar, params->outputStream);
+          for (i = 0; i < decodedCharsCount-1; ++i)
+          {
+            fputc(outChar[i],params->outputStream);
+          }
           if (ferror(params->outputStream))
           {
             fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
@@ -145,12 +152,16 @@ outputCode decode(params_t *params)
     }
 
     /* Translate inChar into base256 */
-    if (base64ToBase256(outChar, inChar) == outERROR)
+    if (base64ToBase256(outChar, inChar,&decodedCharsCount) == outERROR)
     {
       return outERROR;
     }
 
-    fputs(outChar, params->outputStream);
+    for (i = 0; i < decodedCharsCount-1; ++i)
+    {
+      fputc(outChar[i],params->outputStream);
+    }
+
     if (ferror(params->outputStream))
     {
       fprintf(stderr, ERROR_OUTPUT_STREAM_WRITING_MSG);
