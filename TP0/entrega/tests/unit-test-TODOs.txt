@@ -1,0 +1,41 @@
+-----------------------------------------------------------
+ @Title:   FIUBA - 66.20 Organizacion de Computadoras.
+ @Project: TP0 - Infraestructura basica.
+------------------------------------------------------------
+ @Filename: unit-test-TODOs.txt
+------------------------------------------------------------
+
+Unit Test (TODO)
+================
+
+A partir de script de BASH, se plantean realizar las siguientes pruebas unitarias:
+
+1. Conservacion de la entrada/salida. ---> DONE.
+
+  A partir de un INPUT cualquier utilizar el programa `tp0` como ENCODER. Con el OUTPUT obtenido ejecutar nuevamente el programa `tp0` como DECODER y generar una nuevo OUTPUT*.
+
+  file-input.txt --> (myUser$ ./tp0 -encode) --> OUTPUT --> (myUser$ ./tp0 -decode) --> OUTPUT*
+
+  Debe verificarse que INPUT == OUTPUT*
+
+  Se puede utilizar el comando `diff` para hacer la verificacion.
+
+  Ejemplo:
+
+  diff file1.txt file2.txt
+
+  Pueden encontrarse mas ejemplos en https://www.computerhope.com/unix/udiff.htm
+
+
+2. Validacion entrada/salida.
+
+  2.1. Ejecutar programa con argumentos invalidos. ---> DONE.
+  2.2. Ejecutar programa con argumentos incompletos. ---> DONE.
+  2.3. Ejecutar programa con entradas y salidas estandar. ---> DONE.
+  2.4. Ejecutar programa con entradas y salidas redirigidas a un archivo. ---> DONE.
+  2.5. Ejecutar programa con stream de entrada o hacer piping (ver ejemplo enunciado TP0 usando comando `yes`). ---> DONE.
+  2.6. Ejecutar programa con entradas vacia. ---> DONE.
+
+3. Eficiencia. ---> DONE.
+
+  Ejecutar el programa con entradas de diverso tamaño y calcular el tiempo de ejecucion (comando `time`). Para ello armar diversos archivos random para la entrada (revisar enunciado del TP0).

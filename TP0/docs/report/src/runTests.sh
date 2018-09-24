@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 24-Sep-2018 12:46:36 pm
+# @Last modified time: 24-Sep-2018 12:16:29 pm
 #
 # @Copyright (C):
 #    This file is part of 'TP0 - Infraestructura basica.'.
@@ -499,8 +499,7 @@ function test6_encoding_execution_times(){
   header "TEST6: encoding execution times."
 
   n=1;
-  nLimit=$((1024*10000));
-  rm -f $TESTS_DIR/encodingTimes.txt
+  nLimit=$((1024*1000));
 
   while [ $n -le $nLimit ]
   do
@@ -510,7 +509,7 @@ function test6_encoding_execution_times(){
     tt=$((($(date +%s%N) - $ts)/1000000));
 
     printf 'n: %-10d %10s %.2f [ms]\n' "$n" " " "$tt"
-    printf '%-10d %.2f\n' "$n" "$tt" >> $TESTS_DIR/encodingTimes.txt
+    printf '%-10d %10s %.2f\n' "$n" " " "$tt" >> ../tests/encodingTimes.txt
 
   	n=$((n*2));
 
@@ -522,8 +521,7 @@ function test7_decoding_execution_times(){
   header "TEST7: decoding execution times."
 
   n=1;
-  nLimit=$((1024*10000));
-  rm -f $TESTS_DIR/decodingTimes.txt
+  nLimit=$((1024*1000));
 
   while [ $n -le $nLimit ]
   do
@@ -534,7 +532,7 @@ function test7_decoding_execution_times(){
     tt=$((($(date +%s%N) - $ts)/1000000));
 
     printf 'n: %-10d %10s %.2f [ms]\n' "$n" " " "$tt"
-    printf '%-10d %.2f\n' "$n" "$tt" >> $TESTS_DIR/decodingTimes.txt
+    printf '%-10d %10s %.2f\n' "$n" " " "$tt" >> ../tests/decodingTimes.txt
 
   	n=$((n*2));
 

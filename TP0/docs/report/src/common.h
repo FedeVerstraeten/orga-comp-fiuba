@@ -2,7 +2,7 @@
  @Title:   FIUBA - 66.20 Organizacion de Computadoras.
  @Project: TP0 - Infraestructura basica.
 --------------------------------------------------------------
- @Filename: decoder.h
+ @Filename: common.h
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -12,9 +12,9 @@
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
- @Date:               12-Sep-2018 11:53:31 am
+ @Date:               12-Sep-2018 11:36:31 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 24-Sep-2018 11:27:38 am
+ @Last modified time: 18-Sep-2018 3:28:10 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -22,26 +22,28 @@
     is strictly prohibited.
 --------------------------------------------------------------
 
-Decoder definitions and declarations.
+Common program structures.
 
 ----------------------------------------------------------- */
-#ifndef DECODER__H
-#define DECODER__H
+#ifndef COMMON__H
+#define COMMON__H
 
-#include <stdio.h>
-#include <string.h>
-#include "common.h"
-#include "messages.h"
+#ifndef VERSION
+#define VERSION "1.0.0"
+#endif
 
-#define DECODER_MASK 0xFF000000
-#define B64_CHARS_PER_BLOCK 4
-#define PADDING_DEC '='
-#define PADD_INDEX 0
-#define OUTPUT_BLOCK_SIZE 3
-#define BITS_PER_BYTE 8
+#define SIZETABLEB64 64
 
-outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
-                           unsigned char *decCount);
-outputCode decode(params_t *params);
+static const char translationTableB64[SIZETABLEB64] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+typedef struct params_t
+{
+  char *action;
+  FILE *inputStream;
+  FILE *outputStream;
+} params_t;
+
+typedef enum outputCodes_ { outOK, outERROR } outputCode;
 
 #endif

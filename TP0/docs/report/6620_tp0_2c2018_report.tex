@@ -14,59 +14,61 @@
 \begin{titlepage}
 	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for horizontal lines, change thickness here
 	\center % Centre everything on the page
-
+	
 	\thispagestyle{empty}
 	\begin{center}
 		\includegraphics[scale=1]{includes/banner_fiuba.pdf}\\
 	\end{center}
-
-	\vspace*{\stretch{1}}
-
-	\textsc{\LARGE \textsc{[66.20] Organización de Computadoras}}\\[1cm]
+	
+% 	\vspace*{\stretch{1}}
+	
+	\textsc{\LARGE \textsc{[66.20] Organización de Computadoras}}\\[0.5cm]
 	\textsc{\Large \textsc{Trabajo Práctico 0}}\\[0.5cm]
-	\textsc{\large 2\textsuperscript{do} Cuatrimestre 2018}\\[0.5cm]
-
+	\textsc{\large 2\textsuperscript{do} Cuatrimestre 2018}\\[0.25cm]
+	
 	\HRule\\[0.5cm]
 	{\huge\bfseries Infraestructura básica}\\[0.2cm]
 	\HRule\\[0.5cm]
-
+	
 	\begin{tabbing}
 		\hspace{2cm}\=\+
 		\underline{AUTORES}\hspace{-1cm}\=\+\hspace{1cm}\=\hspace{6cm}\=\\[0.2cm]
-
+		
 		Husain, Ignacio Santiago.	\>\>- \#90.117\\
 		\>\footnotesize{$<$santiago.husain@gmail.com$>$}\\
-
-    Pesado, Lucía.	\>\>- \#xx.xxx\\
-    \>\footnotesize{$<$xxxx@xxxx.xxx$>$}\\
-
+		
+		Pesado, Lucía.	\>\>- \#98.275\\
+		\>\footnotesize{$<$luupesado@gmail.com$>$}\\
+		
 		Verstraeten, Federico.	\>\>- \#92.892\\
 		\>\footnotesize{$<$federico.verstraeten@gmail.com$>$}\\
-
+		
 		\<\underline{CÁTEDRA}\\[0.2cm]
 		Dr. Ing. Hamkalo, José Luis. \\
-
+		
 		\<\underline{CURSO}\\[0.2cm]
-		Ing. Santi, Leandro. \\[1cm]
-
-		\<\underline{FECHA DE ENTREGA}\>\>\> xx/xx/2018
+		Ing. Santi, Leandro. \\
+		Ing. Perez Masci, Hernán. \\
+		Ing. Natale, Luciano. \\[1cm]
+		
+		\<\underline{FECHA DE ENTREGA}\>\>\> \today
 		\\[0.2cm]
-
-		\<\underline{FECHA DE APROBACIÓN}\>\>\>
+		
+		\<\underline{FECHA DE APROBACIÓN}\>\>\> 
 		\\[0.2cm]
-
-		\<\underline{CALIFICACIÓN}\>\>\>
+		
+		\<\underline{CALIFICACIÓN}\>\>\> 
 		\\[0.2cm]
-
+		
 		\<\underline{FIRMA DE APROBACIÓN}
 		\\[0.5cm]
-
+		
 	\end{tabbing}
-
-
-	\vspace*{\stretch{1}}
-
-
+	
+	
+% 	\vspace*{\stretch{1}}
+	
+	
 \end{titlepage}
 
 %-----------------------------------%
@@ -76,7 +78,7 @@
 %-----------------------------------%
 \clearpage
 
-\tableofcontents
+\tableofcontents							
 
 \clearpage
 
@@ -93,33 +95,65 @@
 %									%
 %-----------------------------------%
 \section{Objetivos}
-
+El presente trabajo tiene los siguientes objetivos:
+\begin{itemize}
+    \item Diseñar un codificador/decodificador (\emph{codec}) de información en formato base 64 utilizando el lenguaje de programación C.
+    \item Compilar dicho codec en el sistema operativo netBSD en una máquina con arquitectura MIPS32, y producir el código assembly MIPS32 del mismo.
+    \item Realizar pruebas de caja negra para verificar que el programa está funcionando de manera correcta.
+    \item Utilizar la infraestructura básica que será utilizada en trabajos posteriores para programar en assembly MIPS32.
+\end{itemize}
 %-------------------------------%
 %								%
 %			Seccion				%
 %								%
 %-------------------------------%
 \section{Diseño e implementación del programa}
-Para código en texto usar \texttt{CODE\_1}.
-Para código en bloque usar
-\begin{lstlisting}[language=C, style=StyleC]
-typedef struct myType_t {
-int a, b;
-float a1, a2;
-FILE *outputStream;
-} myType_t;
-\end{lstlisting}
+
+Se diseñó un programa en lenguaje ANSI C que implementa el codec descripto en el documento RFC2045 \emph{Base64 Content-Transfer-Encoding} \cite{rfc2045}, \cite{wiki_base64}, con la diferencia de que si en la etapa de decodificación se encuentra un carácter no válido, la ejecución del programa se suspende, notificando al usuario del error producido.
+
+El programa se estructura de la siguiente manera:
+\begin{itemize}
+	\item \underline{Análisis gramatical de la línea de comandos}: se analizan las opciones ingresadas por la línea de comandos haciendo uso de la función \texttt{parseCmdline()}. La misma se encarga de inicializar una estructura del tipo \texttt{params\_t} utilizada para almacenar las opciones que ingresó el cliente, y cuya defición es
+	\begin{lstlisting}[language=C, style=StyleC]
+    	typedef struct params_t
+        {
+          char *action;
+          FILE *inputStream;
+          FILE *outputStream;
+        } params_t;
+	\end{lstlisting}
+	Además, hace uso de la función \texttt{getopt\_long()} de la biblioteca \texttt{getopt.h}. Dicha función provee una forma simple de procesar cada opción que es leída, extrayendo los argumentos de cada una. En caso de que no se encuentre alguna opción, se utiliza su valor por defecto según las especificaciones del trabajo.
+
+	\item \underline{Validación de opciones:} a medida que se va analizando cada opción de la línea de comandos, se valida cada una de ellas utilizando las funciones 
+	\begin{lstlisting}[language=C, style=StyleC]
+    	outputCode optAction()
+        outputCode optOutput()
+        outputCode optInput()
+        void optHelp()
+        void optVersion()
+    \end{lstlisting}
+    Además, las mismas realizan la correcta inicialización de las diferentes variables dentro de la estructura \texttt{params\_t} descripta en el punto anterior, o en caso de que el usuario ingresó las opciones de ayuda e indicación de versión del programa, se imprime por el flujo \texttt{stderr} dicha información.
+    
+	En caso de que se encuentre algún error en el argumento de alguna de las opciones, el usuario es informado por el flujo \texttt{stderr}, y se aborta la ejecución del programa utilizando la función \texttt{exit()}. Para ello, se creó un tipo enumerativo para simplificar el manejo de errores, definiendo los códigos que pueden devolver las funciones desarrolladas:
+	\begin{lstlisting}[language=C, style=StyleC]
+	typedef enum outputCodes_ {
+	outOK,
+	outERROR
+	} outputCode;
+	\end{lstlisting}
+	
+	\item \underline{Codificación/Decodificación:} una vez realizada la validación de las opciones y carga de configuración del programa, se utilizan las funciones \texttt{base256ToBase64()} o \texttt{base64ToBase256()} para codificar o decodificar el flujo de entrada, dependiendo de qué fue lo que el cliente le solicitó al programa.
+	
+	El proceso de codificación se realiza tomando cada carácter de entrada, y guardando los dos bits más y menos significativos para poder concatenarlos con los próximos caracteres que vayan ingresando por el flujo de entrada. Se realiza la extracción de los bits utilizando una máscara de bits y desplazándola adecuadamente dependiendo cuántos bytes se fueron leyendo. Con esta información, se extrae el índice de la tabla de codificación, y se almacenan los caracteres codificados en un arreglo de 4 bytes que posteriormente son impresos en el flujo de salida especificado. Cuando por el flujo de entrada ingresa \quotes{EOF}, se agrega el carácter de padding \quotes{=} dependiendo de cuántos caracteres hayan sido codificados en los pasos previos para que el arreglo de salida quede con 4 bytes completos.
+	
+	Por otro lado, la función \texttt{encode()} se encarga no solo de codificar el flujo de entrada, si no de llevar un registro de la cantidad de caracteres codificados para incluir un salto de línea cada 76 caracteres como se establece en la especificación del codec.
+	
+	El proceso de decodificación se realiza en tres pasos y de a bloques de 4 bytes. Para cada carácter a decodificar, primero se busca en la tabla traducción \texttt{translationTableB64} el índice correspondiente al carácter codificado que ingresó por el flujo de entrada. Luego se lo posiciona dentro de un entero de 4 bytes, en una posición que depende de cuál de los 4 bytes del bloque de entrada fue leído. Por último, se utiliza una máscara de bits para ir extrayendo cada uno de los caracteres de 1 byte correspondientes, y guardándolos en un array de salida, que será escrito en el flujo de salida posteriormente por la función \texttt{decode()}.
+	
+	\item \underline{Terminación del programa:} una vez finalizada la codificación o decodificación, se cierran los flujos de entrada y salida, y se retorna al sistema operativo.
+\end{itemize}
 
 El código fuente se encuentra en el apéndice, tanto en lenguaje C (\ref{app_main}) como en MIPS32 (\ref{app_main_asm}).
-
-Para poner figuras, usar
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.5]{./includes/fig1.jpg}
-	\caption{fig1.}
-	\label{fig1}
-\end{figure}
-y se las cita con \ref{fig1}.
 %-------------------------------%
 %								%
 %			Seccion				%
@@ -127,15 +161,16 @@ y se las cita con \ref{fig1}.
 %-------------------------------%
 \section{Compilación del programa}
 
-Debido al requerimiento de utilizar el programa en una computadora con arquitectura MIPS32, se utiliza el emulador GXemul que provee la cátedra, utilizando una máquina virtual que contiene el sistema operativo NetBSD con las herramientas necesarias para compilar el programa desarrollado; \texttt{gcc} y \texttt{make}.
+Debido al requerimiento de utilizar el programa en una computadora con arquitectura MIPS32, se utiliza el emulador \texttt{GXemul} que provee la cátedra, utilizando una máquina virtual que contiene el sistema operativo NetBSD con las herramientas \texttt{gcc} y \texttt{make} para compilar el programa desarrollado.
 
 Para obtener un ejecutable, se creó un archivo \texttt{makefile} cuyo contenido se puede ver en la sección \ref{app_makefile}. Para ejecutarlo, posicionarse en el directorio \texttt{src/} y ejecutar el siguiente comando:
-\begin{lstlisting}
-$ make
+\begin{lstlisting}[language=bash, style=StyleC]
+    $ make
 \end{lstlisting}
-El mismo generará el código assembler en el archivo \quotes{main.s} y el ejecutable con nombre \texttt{tp0}. En caso de requerir que el código assembly contenga los nombres de los registros, ejecutar el siguiente comando:
-\begin{lstlisting}
-$ make ARGS=-mrnames
+
+donde el mismo generará el ejecutable con nombre \texttt{tp0}. En caso de requerir que el código assembly MIPS32 de cada archivo con código fuente, ejecutar el siguiente comando:
+\begin{lstlisting}[language=bash, style=StyleC]
+    $ make assembly ARGS=-mrnames
 \end{lstlisting}
 
 %-------------------------------%
@@ -145,51 +180,108 @@ $ make ARGS=-mrnames
 %-------------------------------%
 \clearpage
 \section{Pruebas}
-Se realizaron pruebas de caja negra para determinar si el programa funciona como se espera.
 
-\subsection{Ejecución con parámetros por defecto}
+Según Patton en \cite{book_patton}, una prueba de caja negra (o \emph{black-box test}) es aquella donde se realizan pruebas al programa sin acceder al código fuente. Es decir, la única información a la que se tiene acceso es aquella que define el comportamiento del programa según las especificaciones del cliente. En esta sección se muestran los resultados de las distintas pruebas de caja negra que se realizaron sobre el programa para determinar su robustez y fiabilidad ante diferentes tipos de entradas. 
 
+Se creó un script en lenguaje \texttt{Bash} para automatizar las pruebas del programa.  El código del script se encuentra en la sección \ref{app_run_tests}, y está compuesto por 17 tests junto con 2 para medir tiempos de ejecución.
 
-\subsection{Pruebas de errores en las opciones}
-
-Se creó un script en \texttt{Bash} para automatizar las pruebas del programa. En el mismo se prueban diferentes combinaciones de las opciones de entrada para verificar si el programa es capaz de detectar errores. El código del script se encuentra en la sección \ref{app_run_tests}, y está compuesto por X tests. Los Y primeros son validaciones utilizando opciones y parámetros inválidos, donde se verifica que al intentar ejecutarlo, el programa termine y retorne un mensaje que indique el motivo de la ejecución fallida. El último test se corresponde con ejecuciones que retornan un código de éxito. Dado que el programa en este caso solo retorna un solo código, el script devuelve un mensaje de éxito, indicando la correcta ejecución del programa y que se generó correctamente el archivo de salida.
-
-La salida del script se divide en 7 secciones, cada una con un encabezado indicando el inicio del nuevo test, y 3 o más líneas por cada test. La primer línea del test es el comando ejecutado. La segunda indica si el test fue exitoso o no mediante la etiqueta \texttt{PASSED/NOT EQUAL}, y las siguientes líneas son los resultados que produce el programa (mensajes de error, etc...). Por ejemplo, para la prueba de la opción \quotes{-file}, se tiene lo siguiente:
-\begin{lstlisting}
-  ./tp0 -o .
-PASSED :
-ERROR: Can't open output stream.
-ERROR: Program exited with errors. =  ERROR: Can't open output stream.
-ERROR: Program exited with errors.
+La salida del script se divide en 2 secciones, cada una con un encabezado indicando el inicio del nuevo test y su nombre, y varias líneas por cada test. La primer línea del test es el comando ejecutado, indicado con la etiqueta \texttt{Testing}. La segunda indica si el test fue exitoso o no mediante la etiqueta \texttt{PASSED/FAILED} en color verde o rojo respectivamente, y las siguientes líneas son los resultados que produce el programa (mensajes de error, etc...). Por ejemplo, para la prueba de la opción \quotes{-i}, se tiene lo siguiente:
+\begin{lstlisting}[language=bash, style=StyleC]
+------------------------------------------------------
+TEST1: inexistent 'input' stream.
+------------------------------------------------------
+Testing: ./tp0 -i 1
+PASSED 
+  PROGRAM OUTPUT:
+	ERROR: Can't open input stream.
 \end{lstlisting}
-donde se ve que el test fue satisfactorio.
+donde se ve que el test fue satisfactorio ya que se introdujo un nombre de flujo de entrada inválido.
 
-\subsubsection{Salida de los tests automatizados}
-A continuación se muestran las salidas de los tests automatizados, concluyendo que se verifica el correcto funcionamiento del programa.
+Para ejecutar el script con las pruebas, posicionarse en el directorio \texttt{src/} y ejecutar el comando \texttt{/.runTests.sh} en la terminal de Linux.
 
-\lstinputlisting[language=bash, style=StyleC]{src/output_tests.txt}
+Si todos los tests pasan, entonces al final de la ejecución se debe obtener el siguiente mensaje
+\begin{lstlisting}[language=bash, style=StyleC]
+------------------------------------------------------
+Test suite ended.
+------------------------------------------------------
+  All tests passed.
+\end{lstlisting}
+En caso de que no pasen todos los tests, el script indicará cuántos no lo hicieron en color rojo.
+
+\subsection{Pruebas en las opciones de programa}
+
+En el script de tests se prueban diferentes combinaciones de las opciones de entrada para verificar si el programa es capaz de detectar errores. Los 7 primeros son validaciones utilizando opciones y parámetros inválidos, donde se verifica que al intentar ejecutarlo, el programa termina y retorna un mensaje que indique el motivo de la ejecución fallida. El test \texttt{test4\_valid\_parameters} se corresponde con ejecuciones que retornan un código de éxito. 
+
+Las salidas arrojadas por el script fueron las siguientes:
+
+\lstinputlisting[language=bash, style=StyleC]{tests/output_tests_options.txt}
+
+\subsubsection{Pruebas de codificación y decodificación}
+
+Los tests cuyo nombre son del estilo \texttt{test5x\_IO\_validation} se crearon para probar si el codec funciona correctamente, ya sea ingresando palabras y/o archivos cuya codificación es conocida, como también archivos aleatorios que son codificados y decodificados para probar si el programa realiza una operación de identidad. También se probó ingresar al decodificador caracteres que no estén en la tabla de codificación para determinar si el programa cortaba la ejecución como se encuentra especificado en el enunciado.
+
+Además, la prueba \texttt{test57\_IO\_validation} verifica que el programa produzca saltos de línea cada 76 caracteres según la especificación del enunciado, y además que si se codificaron N caracteres, la decodificación produzca N caracteres.
+
+Las salidas del script para dichas pruebas fue la siguiente:
+
+\lstinputlisting[language=bash, style=StyleC]{tests/output_tests_codec.txt}
+
+\subsubsection{Tiempos de codificación y decodificación}
+
+Los tests \texttt{test6\_encoding\_execution\_times} y \texttt{test7\_decoding\_execution\_times} se utilizan para evaluar los tiempos de ejecución del programa completo cuando se codifican y decodifican archivos binarios aleatorios de varios tamaños. 
+
+Las salidas de los mismos se muestran a continuación, donde la letra \texttt{n} indica la cantidad de bytes del archivo binario.
+
+\lstinputlisting[language=bash, style=StyleC]{tests/output_tests_runtimes.txt}
+
+Los gráficos correspondientes a los tiempos de ejecución se muestran en las figuras \ref{encodeTime} y \ref{decodeTime}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=1]{includes/encodingTimes.eps}
+	\caption{Tiempos de ejecución para codificación.}
+	\label{encodeTime}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=1]{includes/decodingTimes.eps}
+	\caption{Tiempos de ejecución para decodificación.}
+	\label{decodeTime}
+\end{figure}
+
 \clearpage
 
-\subsection{Prueba de fuga de memoria}
-El último tipo de prueba es el de la verificación de fugas de memoria. Debido al uso de memoria dinámica en el programa, se utilizó la herramienta \texttt{valgrind} \cite{valgrind} para verificar la existencia de dichas fugas. El comando utilizado fue
-\begin{lstlisting}
-valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all -v ./tp0 ARGUMENTOS
-\end{lstlisting}
-y el resultado del mismo fue
-\begin{lstlisting}
-==21530==
-==21530== HEAP SUMMARY:
-==21530==     in use at exit: 0 bytes in 0 blocks
-==21530==   total heap usage: 3 allocs, 3 frees, 3,691,048 bytes allocated
-==21530==
-==21530== All heap blocks were freed -- no leaks are possible
-==21530==
-==21530== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==21530== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-\end{lstlisting}
-concluyendo que no existen fugas de memoria.
+%-------------------------------%
+%								%
+%			Seccion				%
+%								%
+%-------------------------------%
+\section{Herramientas de hardware y software utilizadas}\label{sec_tools}
 
-Es importante aclarar que la verificación se realizó en la máquina \texttt{host} utilizando un procesador Intel i3-6100 (x86) y el sistema operativo Ubuntu 16.04.4. Si bien \texttt{valgrind} soporta la arquitectura MIPS32, en la máquina virtual no se dispone de esta herramienta, con lo cual no fue posible realizar la verificación de fuga de memoria en dicha máquina virtual.
+La computadora utilizada para realizar el desarrollo y las pruebas tiene las siguientes especificaciones:
+\begin{itemize}
+	\item Procesador: Intel i3-6100.
+	\item Memoria: 8GB RAM DDR4.
+	\item Almacenamiento: Disco magnético de 200GB de 7200RPM.
+\end{itemize}
+
+Los programas se desarrollaron en el sistema operativo Linux Ubuntu, cuyos datos de distribución son 
+\begin{Verbatim}
+	Distributor ID: Ubuntu
+	Description: Ubuntu 16.04.2 LTS
+	Release: 16.04
+	Codename: xenial
+\end{Verbatim}
+
+Además, se utilizaron las siguientes herramientas:
+\begin{itemize}
+	\item \underline{Compilador del proyecto}: GNU gcc (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609 \cite{tool_gcc}.
+	\item \underline{Control del proceso de compilación}: GNU Make 4.1 \cite{tool_gnuMake}.
+	\item \underline{Compilador del presente informe}: Latex pdfTeX 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) \cite{tool_latex}.
+    \item \underline{Edición de código fuente}: VIM - Vi IMproved 7.4 (2013 Aug 10, compiled Nov 24 2016 16:44:48) y Atom 1.15.0 \cite{tool_vim} \cite{tool_atom}.
+	\item \underline{Depuración del programa}: gdb \cite{tool_gdb}.
+\end{itemize}
 
 %-------------------------------%
 %								%
@@ -198,6 +290,11 @@ Es importante aclarar que la verificación se realizó en la máquina \texttt{ho
 %-------------------------------%
 \section{Conclusiones}
 
+Se creó un programa en lenguaje C que permite codificar y decodificar información en formato base 64, cumpliendo con las especificaciones del enunciado del trabajo. Se describió el flujo del programa y las funciones y estructuras más importantes del mismo, junto con el manejo de errores. Además, se describió el modo de compilación del programa utilizando las herramientas \texttt{gcc} y \texttt{make}.
+
+Por otro lado, se crearon casos de prueba de caja negra para verificar el correcto funcionamiento del programa. Las mismas cubren tests de validación de opciones del programa ingresando combinaciones de opciones válidas e inválidas para determinar si este es capaz de detectar errores. Además, se crearon pruebas de codificación y decodificación de archivos, tamaños máximos de líneas, y tiempos de ejecución.
+
+De esta forma se deja lista la infraestructura básica para los siguientes proyectos donde se trabajará con la arquitectura MIPS32 y el consecuente análisis y desarrollo de código assembly MIPS32.
 %-------------------------------%
 %								%
 %			Seccion				%
@@ -208,9 +305,20 @@ Es importante aclarar que la verificación se realizó en la máquina \texttt{ho
 	%	\bibitem{book_CompArch} Hennessy, J. L. - Patterson, D. A. - \emph{Computer Architecture: A Quantitative Approach} - 3\textsuperscript{rd} edition - Morgan Kaufmann - 2002.
 	%	\bibitem{book_CompOrg} Patterson, D. A. - Hennessy, J. L. - \emph{Computer Organization and Design: The Hardware/Software Interface} - 3\textsuperscript{rd} edition - Morgan Kaufmann - 2004.
 	\bibitem{book_Cprogr} Kernighan, B. W. - Ritchie, D. M. - \emph{C Programming Language} - 2\textsuperscript{nd} edition - Prentice Hall - 1988.
-	\bibitem{gnu_make} \emph{GNU Make} - \hyperlink{make}{https://www.gnu.org/software/make/}
-	\bibitem{valgrind} \emph{Valgrind} - \hyperlink{valgrind}{http://valgrind.org/}
+	\bibitem{book_patton} Patton, R. - \emph{Software Testing} - 2\textsuperscript{nd} edition - Sams Indianapolis, IN, USA 2005.
 	\bibitem{apuntes} \emph{Apuntes del curso 66.20 Organización de Computadoras} - Cátedra Hamkalo - Facultad de Ingeniería de la Universidad de Buenos Aires.
+	\bibitem{rfc2045} \emph{RFC 2045} - \hyperlink{make}{https://tools.ietf.org/html/rfc2045\#section-6.8}
+	\bibitem{wiki_base64} \emph{Base 64} - \hyperlink{make}{https://en.wikipedia.org/wiki/Base64}
+	\bibitem{tool_gnuMake} \emph{GNU Make} - \hyperlink{make}{https://www.gnu.org/software/make/}
+	\bibitem{tool_gcc} \emph{GNU Gcc} - \hyperlink{gcc}{https://gcc.gnu.org/}
+	\bibitem{tool_latex}
+	\href{https://www.latex-project.org/}{\LaTeX - https://www.latex-project.org/}
+	\bibitem{tool_vim}
+	\href{https://vim.sourceforge.io/}{VIM - https://vim.sourceforge.io/}
+	\bibitem{tool_atom}
+	\href{https://atom.io/}{Atom - https://atom.io/}
+	\bibitem{tool_gdb}
+	\href{https://www.gnu.org/software/gdb/}{GNU gdb - https://www.gnu.org/software/gdb/}
 \end{thebibliography}
 \clearpage
 
@@ -220,21 +328,70 @@ Es importante aclarar que la verificación se realizó en la máquina \texttt{ho
 %									%
 %-----------------------------------%
 \appendix
+\section{Makefile}\label{appendix_makefile}
+
+\subsubsection{makefile}\label{app_makefile}
+\lstinputlisting[language=bash, style=StyleC]{src/makefile.make}
+\clearpage
+
+\section{Tests}\label{appendix_tests}
+
+\subsubsection{runTests.sh}\label{app_run_tests}
+\lstinputlisting[language=bash, style=StyleC]{src/runTests.sh}
+
+\clearpage
 \section{Código fuente}\label{appendix_codigo_fuente}
 
 \subsubsection{main.c}\label{app_main}
 \lstinputlisting[language=C, style=StyleC]{src/main.c}
 \clearpage
 
-\subsubsection{makefile}\label{app_makefile}
-\lstinputlisting[language=bash, style=StyleC]{src/makefile.txt}
+\subsubsection{common.h}\label{app_common}
+\lstinputlisting[language=C, style=StyleC]{src/common.h}
 \clearpage
 
-\subsubsection{run\_tests.sh}\label{app_run_tests}
-\lstinputlisting[language=bash, style=StyleC]{src/run_tests.sh}
+\subsubsection{decoder.h}\label{app_decoderH}
+\lstinputlisting[language=C, style=StyleC]{src/decoder.h}
+\clearpage
+
+\subsubsection{decoder.c}\label{app_decoder}
+\lstinputlisting[language=C, style=StyleC]{src/decoder.c}
+\clearpage
+
+\subsubsection{encoder.h}\label{app_encoderH}
+\lstinputlisting[language=C, style=StyleC]{src/encoder.h}
+\clearpage
+
+\subsubsection{encoder.c}\label{app_encoder}
+\lstinputlisting[language=C, style=StyleC]{src/encoder.c}
+\clearpage
+
+\subsubsection{parser.h}\label{app_parserH}
+\lstinputlisting[language=C, style=StyleC]{src/parser.h}
+\clearpage
+
+\subsubsection{parser.c}\label{app_parser}
+\lstinputlisting[language=C, style=StyleC]{src/parser.c}
+\clearpage
+
+\subsubsection{messages.h}\label{app_messages}
+\lstinputlisting[language=C, style=StyleC]{src/messages.h}
+\clearpage
 
 \subsubsection{main.s}\label{app_main_asm}
-\lstinputlisting[language=C, style=StyleC]{src/main.s}
+\lstinputlisting[language=C, style=StyleC]{src/src_asmMIPS32/main.s}
+\clearpage
+
+\subsubsection{parser.s}\label{app_parser_asm}
+\lstinputlisting[language=C, style=StyleC]{src/src_asmMIPS32/parser.s}
+\clearpage
+
+\subsubsection{encoder.s}\label{app_encoder_asm}
+\lstinputlisting[language=C, style=StyleC]{src/src_asmMIPS32/encoder.s}
+\clearpage
+
+\subsubsection{decoder.s}\label{app_decoder_asm}
+\lstinputlisting[language=C, style=StyleC]{src/src_asmMIPS32/decoder.s}
 \clearpage
 
 \end{document}
