@@ -112,22 +112,25 @@ $LC13:
 	.ascii	"-V, --version\tPrint version and quit.\n\000"
 	.align	2
 $LC14:
-	.ascii	"-i, --input\tLocation of the input file.\n\000"
+	.ascii	"-h, --help\tPrint this information.\n\000"
 	.align	2
 $LC15:
-	.ascii	"-o, --output\tLocation of the output file.\n\000"
+	.ascii	"-i, --input\tLocation of the input file.\n\000"
 	.align	2
 $LC16:
+	.ascii	"-o, --output\tLocation of the output file.\n\000"
+	.align	2
+$LC17:
 	.ascii	"-a, --action\tProgram action: encode (default) or decode"
 	.ascii	".\n\000"
 	.align	2
-$LC17:
+$LC18:
 	.ascii	"Examples:\n\000"
 	.align	2
-$LC18:
+$LC19:
 	.ascii	"  %s -a encode -i ~/input -o ~/output\n\000"
 	.align	2
-$LC19:
+$LC20:
 	.ascii	"  %s -a decode\n\000"
 	.text
 	.align	2
@@ -202,11 +205,15 @@ $L19:
 	jal	$31,$25
 	la	$4,__sF+176
 	la	$5,$LC18
-	lw	$6,40($fp)
 	la	$25,fprintf
 	jal	$31,$25
 	la	$4,__sF+176
 	la	$5,$LC19
+	lw	$6,40($fp)
+	la	$25,fprintf
+	jal	$31,$25
+	la	$4,__sF+176
+	la	$5,$LC20
 	lw	$6,40($fp)
 	la	$25,fprintf
 	jal	$31,$25
@@ -217,16 +224,16 @@ $L19:
 	.size	optHelp, .-optHelp
 	.rdata
 	.align	2
-$LC20:
+$LC21:
 	.ascii	".\000"
 	.align	2
-$LC21:
+$LC22:
 	.ascii	"..\000"
 	.align	2
-$LC22:
+$LC23:
 	.ascii	"/\000"
 	.align	2
-$LC23:
+$LC24:
 	.ascii	"//\000"
 	.text
 	.align	2
@@ -253,11 +260,6 @@ validateStreamName:
 	b	$L20
 $L21:
 	lw	$4,48($fp)
-	la	$5,$LC20
-	la	$25,strcmp
-	jal	$31,$25
-	beq	$2,$0,$L23
-	lw	$4,48($fp)
 	la	$5,$LC21
 	la	$25,strcmp
 	jal	$31,$25
@@ -269,6 +271,11 @@ $L21:
 	beq	$2,$0,$L23
 	lw	$4,48($fp)
 	la	$5,$LC23
+	la	$25,strcmp
+	jal	$31,$25
+	beq	$2,$0,$L23
+	lw	$4,48($fp)
+	la	$5,$LC24
 	la	$25,strcmp
 	jal	$31,$25
 	bne	$2,$0,$L22
@@ -289,16 +296,16 @@ $L20:
 	.size	validateStreamName, .-validateStreamName
 	.rdata
 	.align	2
-$LC24:
+$LC25:
 	.ascii	"ERROR: Invalid input stream.\n\000"
 	.align	2
-$LC25:
+$LC26:
 	.ascii	"-\000"
 	.align	2
-$LC26:
+$LC27:
 	.ascii	"rb\000"
 	.align	2
-$LC27:
+$LC28:
 	.ascii	"ERROR: Can't open input stream.\n\000"
 	.text
 	.align	2
@@ -327,7 +334,7 @@ optInput:
 	li	$2,1			# 0x1
 	bne	$3,$2,$L25
 	la	$4,__sF+176
-	la	$5,$LC24
+	la	$5,$LC25
 	la	$25,fprintf
 	jal	$31,$25
 	li	$2,1			# 0x1
@@ -335,7 +342,7 @@ optInput:
 	b	$L24
 $L25:
 	lw	$4,48($fp)
-	la	$5,$LC25
+	la	$5,$LC26
 	la	$25,strcmp
 	jal	$31,$25
 	bne	$2,$0,$L26
@@ -346,7 +353,7 @@ $L25:
 $L26:
 	lw	$16,52($fp)
 	lw	$4,48($fp)
-	la	$5,$LC26
+	la	$5,$LC27
 	la	$25,fopen
 	jal	$31,$25
 	sw	$2,4($16)
@@ -355,7 +362,7 @@ $L27:
 	lw	$2,4($2)
 	bne	$2,$0,$L28
 	la	$4,__sF+176
-	la	$5,$LC27
+	la	$5,$LC28
 	la	$25,fprintf
 	jal	$31,$25
 	li	$2,1			# 0x1
@@ -375,13 +382,13 @@ $L24:
 	.size	optInput, .-optInput
 	.rdata
 	.align	2
-$LC28:
+$LC29:
 	.ascii	"ERROR: Invalid output stream.\n\000"
 	.align	2
-$LC29:
+$LC30:
 	.ascii	"wb\000"
 	.align	2
-$LC30:
+$LC31:
 	.ascii	"ERROR: Can't open output stream.\n\000"
 	.text
 	.align	2
@@ -410,7 +417,7 @@ optOutput:
 	li	$2,1			# 0x1
 	bne	$3,$2,$L30
 	la	$4,__sF+176
-	la	$5,$LC28
+	la	$5,$LC29
 	la	$25,fprintf
 	jal	$31,$25
 	li	$2,1			# 0x1
@@ -418,7 +425,7 @@ optOutput:
 	b	$L29
 $L30:
 	lw	$4,48($fp)
-	la	$5,$LC25
+	la	$5,$LC26
 	la	$25,strcmp
 	jal	$31,$25
 	bne	$2,$0,$L31
@@ -429,7 +436,7 @@ $L30:
 $L31:
 	lw	$16,52($fp)
 	lw	$4,48($fp)
-	la	$5,$LC29
+	la	$5,$LC30
 	la	$25,fopen
 	jal	$31,$25
 	sw	$2,8($16)
@@ -438,7 +445,7 @@ $L32:
 	lw	$2,8($2)
 	bne	$2,$0,$L33
 	la	$4,__sF+176
-	la	$5,$LC30
+	la	$5,$LC31
 	la	$25,fprintf
 	jal	$31,$25
 	li	$2,1			# 0x1
@@ -458,10 +465,10 @@ $L29:
 	.size	optOutput, .-optOutput
 	.rdata
 	.align	2
-$LC31:
+$LC32:
 	.ascii	"encode\000"
 	.align	2
-$LC32:
+$LC33:
 	.ascii	"decode\000"
 	.text
 	.align	2
@@ -493,22 +500,22 @@ optAction:
 	b	$L34
 $L35:
 	lw	$4,48($fp)
-	la	$5,$LC31
+	la	$5,$LC32
 	la	$25,strcmp
 	jal	$31,$25
 	bne	$2,$0,$L36
 	lw	$3,52($fp)
-	la	$2,$LC31
+	la	$2,$LC32
 	sw	$2,0($3)
 	b	$L37
 $L36:
 	lw	$4,48($fp)
-	la	$5,$LC32
+	la	$5,$LC33
 	la	$25,strcmp
 	jal	$31,$25
 	bne	$2,$0,$L38
 	lw	$3,52($fp)
-	la	$2,$LC32
+	la	$2,$LC33
 	sw	$2,0($3)
 	b	$L37
 $L38:
@@ -532,7 +539,7 @@ $L34:
 	.size	optAction, .-optAction
 	.rdata
 	.align	2
-$LC33:
+$LC34:
 	.ascii	"Vhi:o:a:\000"
 	.text
 	.align	2
@@ -561,7 +568,7 @@ parseCmdline:
 	lw	$2,0($2)
 	sw	$2,44($fp)
 	lw	$3,88($fp)
-	la	$2,$LC31
+	la	$2,$LC32
 	sw	$2,0($3)
 	lw	$3,88($fp)
 	la	$2,__sF
@@ -569,7 +576,7 @@ parseCmdline:
 	lw	$3,88($fp)
 	la	$2,__sF+88
 	sw	$2,8($3)
-	la	$2,$LC33
+	la	$2,$LC34
 	sw	$2,48($fp)
 $L41:
 	addu	$2,$fp,32

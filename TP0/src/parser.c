@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:21:22 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 24-Sep-2018 10:50:18 am
+ @Last modified time: 25-Sep-2018 4:50:21 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura basica.'.
@@ -56,6 +56,7 @@ void optHelp(char *arg)
   fprintf(stderr, "  %s [options]\n", arg);
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "-V, --version\tPrint version and quit.\n");
+  fprintf(stderr, "-h, --help\tPrint this information.\n");
   fprintf(stderr, "-i, --input\tLocation of the input file.\n");
   fprintf(stderr, "-o, --output\tLocation of the output file.\n");
   fprintf(stderr,
