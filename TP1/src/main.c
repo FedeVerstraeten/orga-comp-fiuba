@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 07-Oct-2018 11:05:02 pm
+ @Last modified time: 08-Oct-2018 3:54:55 pm
 
  @Copyright(C):
      This file is part of
@@ -45,18 +45,21 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  int transformationState;
+  int codecState;
+  int infd = fileno(params.inputStream);
+  int outfd = fileno(params.outputStream);
+
   if (strcmp(params.action, ENCODE_STR_TOKEN) == 0)
   {
-    transformationState = base64_encode(&params);
+    codecState = base64_encode(&params, infd, outfd);
   }
   else
   {
-    transformationState = base64_decode(&params);
+    codecState = base64_decode(&params, infd, outfd);
   }
-  if (transformationState != 0)
+  if (codecState != 0)
   {
-    fprintf(stderr, "%s", errmsg[transformationState]);
+    fprintf(stderr, "%s", errmsg[codecState]);
     exit(EXIT_FAILURE);
   }
 

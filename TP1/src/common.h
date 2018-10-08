@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:36:31 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 07-Oct-2018 10:25:45 pm
+ @Last modified time: 08-Oct-2018 2:43:02 pm
 
  @Copyright(C):
      This file is part of
@@ -32,11 +32,6 @@ Common program structures.
 #ifndef VERSION
 #define VERSION "1.0.0"
 #endif
-
-#define SIZETABLEB64 64
-
-static const char translationTableB64[SIZETABLEB64] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 typedef struct params_t
 {

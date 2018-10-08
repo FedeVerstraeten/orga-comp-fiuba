@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:32:42 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 07-Oct-2018 10:25:58 pm
+ @Last modified time: 08-Oct-2018 3:54:51 pm
 
  @Copyright(C):
      This file is part of
@@ -45,14 +45,30 @@ Program's common messages.
 #define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid action argument.\n"
 #endif
 #ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
-#define ERROR_OUTPUT_STREAM_WRITING_MSG "Output error when writing stream.\n"
+#define ERROR_OUTPUT_STREAM_WRITING_MSG \
+  "ERROR: Output error when writing stream.\n"
 #endif
 #ifndef ERROR_INPUT_STREAM_READING_MSG
-#define ERROR_INPUT_STREAM_READING_MSG "Input error when reading stream.\n"
+#define ERROR_INPUT_STREAM_READING_MSG \
+  "ERROR: Input error when reading stream.\n"
 #endif
 #ifndef ERROR_B64_CHAR_NOT_FOUND_MSG
 #define ERROR_B64_CHAR_NOT_FOUND_MSG \
   "ERROR: Character is not in Base64 Table.\n"
+#endif
+
+/* These values must correspond with 'errmsg' array in base64.c
+ * file. */
+#ifndef ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG
+#define ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG 1
+#endif
+
+#ifndef ERROR_NUMBER_INPUT_STREAM_READING_MSG
+#define ERROR_NUMBER_INPUT_STREAM_READING_MSG 2
+#endif
+
+#ifndef ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG
+#define ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG 3
 #endif
 
 #endif

@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:21:30 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 07-Oct-2018 11:02:09 pm
+ @Last modified time: 08-Oct-2018 4:16:20 pm
 
  @Copyright(C):
      This file is part of
@@ -37,7 +37,11 @@ const char *errmsg[] = {0, ERROR_OUTPUT_STREAM_WRITING_MSG,
                         ERROR_INPUT_STREAM_READING_MSG,
                         ERROR_B64_CHAR_NOT_FOUND_MSG};
 
-unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
+/* -----------------------------------------------------------
+*  base256ToBase64()
+* -------------------------------------------------------- */
+unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
+                              char inputEnded)
 {
   unsigned char headByte = 0, prevByte = 0;
   static unsigned char tailByte = 0;
@@ -48,22 +52,27 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
   /* Backup the previous tailByte. */
   prevByte = tailByte;
 
-  /* Padding: The last encoded block contains less than 6 bits. */
-  if ((inChar == EOF))
+  /* Padding: The last encoded block contains less than 6 bits,
+   * and we flush the encoding buffer. */
+  if (inputEnded == 1)
   {
     if (shiftRightBit == 6)
     {
       headByte = (prevByte | 0);
       strncpy(outBlock, &translationTableB64[headByte], 1);
-      strncat(outBlock, PADDING, 1);
+      /* TODO: Fede, cuando hagas la concatenacion a mano sin
+       * strcat(), fijate de usar PADDING y no PADDING_STR, ya
+       * que el primero es un char, y el segundo es un char con
+       * el \0 al final. */
+      strncat(outBlock, PADDING_STR, 1);
       return (encodedCharsCount + 2);
     }
     else if (shiftRightBit == 4)
     {
       headByte = (prevByte | 0);
       strncpy(outBlock, &translationTableB64[headByte], 1);
-      strncat(outBlock, PADDING, 1);
-      strncat(outBlock, PADDING, 1);
+      strncat(outBlock, PADDING_STR, 1);
+      strncat(outBlock, PADDING_STR, 1);
       return (encodedCharsCount + 3);
     }
     else
@@ -107,28 +116,49 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
 
   return encodedCharsCount;
 }
-/*int base64_encode(int infd, int outfd)*/
-int base64_encode(params_t *params)
+
+/* -----------------------------------------------------------
+ *  base64_encode()
+ * -------------------------------------------------------- */
+int base64_encode(params_t *params, int infd, int outfd)
 {
-  unsigned int inChar;
+  unsigned char inChar = 0;
+
+  char inputEnded = 0;
+
   char outBlock[ENCODER_OUTPUT_CHARS] = {};
   unsigned char totalEncodedCharsCount = 0, encodedCharsCount = 0;
+
+  ssize_t bytesRead = 0;
+  size_t nbytes = 0, nOutputBlock = 0, index1 = 0;
+
+  nbytes = sizeof(inChar);
+  nOutputBlock = sizeof(outBlock);
+
+  /* Variable for saving the 'errno' after reading or
+   * writing.*/
+  int errsv;
 
   do
   {
     /* Clear outBlock. */
-    memset(outBlock, 0, sizeof(outBlock));
+    memset(outBlock, 0, nOutputBlock);
 
-    /* Read inputStream and store as integer. */
-    inChar = getc(params->inputStream);
-
-    if (ferror(params->inputStream))
+    /* Read from the input stream. */
+    bytesRead = read(infd, &inChar, nbytes);
+    errsv = errno;
+    if (errsv)
     {
-      return 2;
+      return ERROR_NUMBER_INPUT_STREAM_READING_MSG;
+    }
+
+    if (bytesRead == 0)
+    {
+      inputEnded = 1;
     }
 
     /* Encoding to Base64. */
-    encodedCharsCount = base256ToBase64(outBlock, inChar);
+    encodedCharsCount = base256ToBase64(outBlock, inChar, inputEnded);
 
     if ((totalEncodedCharsCount + encodedCharsCount) <= MAX_LINE_LENGHT)
     {
@@ -136,27 +166,46 @@ int base64_encode(params_t *params)
     }
     else
     {
-      fputs("\n", params->outputStream);
-      if (ferror(params->outputStream))
+      fputc('\n', params->outputStream);
+      errsv = errno;
+      if (errsv)
       {
-        return 1;
+        return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
       }
       totalEncodedCharsCount = encodedCharsCount;
     }
 
-    /* Print output stream. */
-    fputs(outBlock, params->outputStream);
-    if (ferror(params->outputStream))
+    /* Print output stream.
+
+    fputc(outBlock[index1], params->outputStream);
+
+    char charToWrite;
+    charToWrite = outBlock[index1];
+    write(outfd, &charToWrite, sizeof(charToWrite));
+
+    */
+    index1 = 0;
+    while (outBlock[index1] != '\0')
     {
-      return 1;
+      fputc(outBlock[index1], params->outputStream);
+      errsv = errno;
+      if (errsv)
+      {
+        return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
+      }
+      index1++;
     }
-  } while (inChar != EOF);
+
+  } while (bytesRead > 0);
 
   return 0;
 }
 
-outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
-                           unsigned char *decCount)
+/* -----------------------------------------------------------
+ *  base64ToBase256()
+ * -------------------------------------------------------- */
+int base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
+                    unsigned char *decCount)
 {
   unsigned int bitMask = DECODER_MASK;
   unsigned char index1 = 0, index2 = 0;
@@ -169,7 +218,7 @@ outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
   /* Search char index in translationTableB64 */
   for (index1 = 0; index1 < B64_CHARS_PER_BLOCK; index1++)
   {
-    if (inBlock[index1] == PADDING_DEC)
+    if (inBlock[index1] == PADDING)
     {
       indexTable[index1] = PADD_INDEX;
       continue;
@@ -186,7 +235,7 @@ outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
     }
     if (index2 >= SIZETABLEB64)
     {
-      return 3;
+      return ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG;
     }
   }
 
@@ -207,7 +256,8 @@ outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
     /* Extract the decoded character from bitPattern */
     charHolder = (bitPattern & bitMask);
 
-    /* Shift right the decoded character to the correct position. */
+    /* Shift right the decoded character to the correct
+     * position. */
     charHolder >>= (B64_CHARS_PER_BLOCK - 1 - index1) * sizeof(unsigned char) *
                    BITS_PER_BYTE;
 
@@ -222,15 +272,26 @@ outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
   return 0;
 }
 
-/* int base64_decode(int infd, int outfd) */
-int base64_decode(params_t *params)
+/* -----------------------------------------------------------
+ *  base64_decode()
+ * -------------------------------------------------------- */
+int base64_decode(params_t *params, int infd, int outfd)
 {
-  unsigned char readChar;
+  unsigned char readChar = 0;
   unsigned char inBlock[B64_CHARS_PER_BLOCK] = {};
   unsigned char outBlock[OUTPUT_BLOCK_SIZE] = {};
   unsigned char index1, index2 = 0;
   unsigned char decodedCharsCount = 0;
-  int conversionOutput = 4;
+  int decodingState = 4;
+
+  ssize_t bytesRead = 0;
+  size_t nbytes = 0;
+
+  nbytes = sizeof(readChar);
+
+  /* Variable for saving the 'errno' after reading or
+   * writing.*/
+  int errsv;
 
   while (1)
   {
@@ -239,10 +300,13 @@ int base64_decode(params_t *params)
     /* Load input buffer */
     for (index1 = 0; index1 < B64_CHARS_PER_BLOCK; ++index1)
     {
-      readChar = getc(params->inputStream);
-      if (ferror(params->inputStream))
+      /*readChar = getc(params->inputStream);*/
+      /* Read from the input stream. */
+      bytesRead = read(infd, &readChar, nbytes);
+      errsv = errno;
+      if (errsv)
       {
-        return 2;
+        return ERROR_NUMBER_INPUT_STREAM_READING_MSG;
       }
 
       /* Discard detected whitespaces. */
@@ -257,25 +321,27 @@ int base64_decode(params_t *params)
       }
 
       /* EOF */
-      if (feof(params->inputStream))
+      if (bytesRead == 0)
       {
-        /* If there are still chars in the buffer, we flush it. */
+        /* If there are still chars in the buffer, we flush it.
+         */
         if (index1 != 0)
         {
-          conversionOutput =
+          decodingState =
               base64ToBase256(outBlock, inBlock, &decodedCharsCount);
-          if (conversionOutput != 0)
+          if (decodingState != 0)
           {
-            return conversionOutput;
+            return decodingState;
           }
 
           for (index2 = 0; index2 < decodedCharsCount - 1; ++index2)
           {
             fputc(outBlock[index2], params->outputStream);
-          }
-          if (ferror(params->outputStream))
-          {
-            return 1;
+            errsv = errno;
+            if (errsv)
+            {
+              return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
+            }
           }
         }
         return 0;
@@ -283,22 +349,22 @@ int base64_decode(params_t *params)
     }
 
     /* Translate inBlock into base256 */
-    conversionOutput = base64ToBase256(outBlock, inBlock, &decodedCharsCount);
-    if (conversionOutput != 0)
+    decodingState = base64ToBase256(outBlock, inBlock, &decodedCharsCount);
+    if (decodingState != 0)
     {
-      return conversionOutput;
+      return decodingState;
     }
 
     for (index2 = 0; index2 < decodedCharsCount - 1; ++index2)
     {
       fputc(outBlock[index2], params->outputStream);
-    }
-
-    if (ferror(params->outputStream))
-    {
-      return 1;
+      errsv = errno;
+      if (errsv)
+      {
+        return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
+      }
     }
   }
 
-  return conversionOutput;
+  return decodingState;
 }
