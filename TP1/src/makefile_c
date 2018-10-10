@@ -2,7 +2,7 @@
 # @Title:   FIUBA - 66.20 Organizacion de Computadoras.
 # @Project: TP1 - Conjunto de instrucciones MIPS.
 # ------------------------------------------------------------
-# @Filename: makefile
+# @Filename: makefile_c
 # ------------------------------------------------------------
 # @Authors:
 #    Husain, Ignacio Santiago.
@@ -14,7 +14,7 @@
 #
 # @Date:               07-Sep-2018 12:57:50 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 08-Oct-2018 4:20:08 pm
+# @Last modified time: 10-Oct-2018 5:09:21 pm
 #
 # @Copyright(C):
 #     This file is part of
@@ -34,9 +34,9 @@
 # ------------------------------------------------------------
 # List all the header and object files separated by a blank
 # space.
-_DEPS = messages.h common.h parser.h base64.h
-_SRC = main.c parser.c base64.c
-_OBJ = main.o parser.o base64.o
+_DEPS = messages.h common.h parser.h base64.h printChar.h flushBuffer.h
+_SRC = main.c parser.c base64.c flushBuffer.c printChar.c
+_OBJ = main.o parser.o base64.o flushBuffer.o printChar.o
 # ------------------------------------------------------------
 # Configuration.
 CC = gcc

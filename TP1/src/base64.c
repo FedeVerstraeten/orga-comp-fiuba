@@ -14,7 +14,7 @@
 
  @Date:               12-Sep-2018 11:21:30 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Oct-2018 4:16:20 pm
+ @Last modified time: 10-Oct-2018 4:38:07 pm
 
  @Copyright(C):
      This file is part of
@@ -120,7 +120,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
 /* -----------------------------------------------------------
  *  base64_encode()
  * -------------------------------------------------------- */
-int base64_encode(params_t *params, int infd, int outfd)
+int base64_encode(int infd, int outfd)
 {
   unsigned char inChar = 0;
 
@@ -138,6 +138,12 @@ int base64_encode(params_t *params, int infd, int outfd)
   /* Variable for saving the 'errno' after reading or
    * writing.*/
   int errsv;
+
+  /* Set an output buffer. */
+  buffer_t outputBuffer;
+  outputBuffer.fd = outfd;
+  outputBuffer.index = 0;
+  outputBuffer.size = BUFFER_SIZE;
 
   do
   {
@@ -166,8 +172,7 @@ int base64_encode(params_t *params, int infd, int outfd)
     }
     else
     {
-      fputc('\n', params->outputStream);
-      errsv = errno;
+      errsv = printChar(&outputBuffer, '\n');
       if (errsv)
       {
         return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
@@ -175,28 +180,20 @@ int base64_encode(params_t *params, int infd, int outfd)
       totalEncodedCharsCount = encodedCharsCount;
     }
 
-    /* Print output stream.
-
-    fputc(outBlock[index1], params->outputStream);
-
-    char charToWrite;
-    charToWrite = outBlock[index1];
-    write(outfd, &charToWrite, sizeof(charToWrite));
-
-    */
+    /* Print output stream. */
     index1 = 0;
     while (outBlock[index1] != '\0')
     {
-      fputc(outBlock[index1], params->outputStream);
-      errsv = errno;
+      errsv = printChar(&outputBuffer, outBlock[index1]);
       if (errsv)
       {
         return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
       }
       index1++;
     }
-
   } while (bytesRead > 0);
+
+  flushBuffer(&outputBuffer);
 
   return 0;
 }
@@ -275,7 +272,7 @@ int base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
 /* -----------------------------------------------------------
  *  base64_decode()
  * -------------------------------------------------------- */
-int base64_decode(params_t *params, int infd, int outfd)
+int base64_decode(int infd, int outfd)
 {
   unsigned char readChar = 0;
   unsigned char inBlock[B64_CHARS_PER_BLOCK] = {};
@@ -292,6 +289,12 @@ int base64_decode(params_t *params, int infd, int outfd)
   /* Variable for saving the 'errno' after reading or
    * writing.*/
   int errsv;
+
+  /* Set an output buffer. */
+  buffer_t outputBuffer;
+  outputBuffer.fd = outfd;
+  outputBuffer.index = 0;
+  outputBuffer.size = BUFFER_SIZE;
 
   while (1)
   {
@@ -336,14 +339,16 @@ int base64_decode(params_t *params, int infd, int outfd)
 
           for (index2 = 0; index2 < decodedCharsCount - 1; ++index2)
           {
-            fputc(outBlock[index2], params->outputStream);
-            errsv = errno;
+            errsv = printChar(&outputBuffer, outBlock[index2]);
             if (errsv)
             {
               return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
             }
           }
         }
+
+        flushBuffer(&outputBuffer);
+
         return 0;
       }
     }
@@ -357,8 +362,7 @@ int base64_decode(params_t *params, int infd, int outfd)
 
     for (index2 = 0; index2 < decodedCharsCount - 1; ++index2)
     {
-      fputc(outBlock[index2], params->outputStream);
-      errsv = errno;
+      errsv = printChar(&outputBuffer, outBlock[index2]);
       if (errsv)
       {
         return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
@@ -366,5 +370,7 @@ int base64_decode(params_t *params, int infd, int outfd)
     }
   }
 
-  return decodingState;
+  flushBuffer(&outputBuffer);
+
+  return ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG;
 }

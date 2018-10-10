@@ -14,7 +14,7 @@
 
  @Date:               07-Sep-2018 3:46:28 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 08-Oct-2018 3:54:55 pm
+ @Last modified time: 10-Oct-2018 4:38:37 pm
 
  @Copyright(C):
      This file is part of
@@ -51,11 +51,11 @@ int main(int argc, char **argv)
 
   if (strcmp(params.action, ENCODE_STR_TOKEN) == 0)
   {
-    codecState = base64_encode(&params, infd, outfd);
+    codecState = base64_encode(infd, outfd);
   }
   else
   {
-    codecState = base64_decode(&params, infd, outfd);
+    codecState = base64_decode(infd, outfd);
   }
   if (codecState != 0)
   {
