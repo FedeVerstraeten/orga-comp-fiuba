@@ -69,17 +69,23 @@ printChar:
 	addu	v1,v0,8
 	lbu	v0,24($fp)
 	sb	v0,4(v1)
+
+  # buffer->index++;
 	lw	v1,64($fp)
 	lw	v0,64($fp)
 	lw	v0,0(v0)
 	addu	v0,v0,1
 	sw	v0,0(v1)
-	lw	v0,64($fp)
-	lw	v0,0(v0)
-	sw	v0,32($fp)
+
+  # bytesToWrite = buffer->index;
+	lw	v0,buffer($fp) # Get buffer beginning.
+	lw	v0,BUFFER_IDX_OFFSET(v0) # buffer->index
+	sw	v0,bytesToWrite($fp)
+
+  # Preparation for if (buffer->index == buffer->size).
 	lw	v0,buffer($fp) # Get buffer beginning.
 	lw	v1,buffer($fp) # Get buffer beginning.
-	lw	a0,BUFFER_IDX_OFFSET(v0)
+	lw	a0,BUFFER_IDX_OFFSET(v0) # buffer->index
 	lw	v0,BUFFER_SIZE_OFFSET(v1) # buffer->size
 	bne	a0,v0,L18
 	sw	zero,bytesWriten($fp)

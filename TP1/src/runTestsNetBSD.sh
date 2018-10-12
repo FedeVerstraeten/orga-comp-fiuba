@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   root
-# @Last modified time: 12-Oct-2018 9:58:26 am
+# @Last modified time: 12-Oct-2018 1:49:22 pm
 #
 # @Copyright(C):
 #     This file is part of
@@ -94,7 +94,7 @@ mkdir $TESTS_DIR;
 
   n=2048;
   nLimit=$((1024*2));
-
+  
   while [ $n -le $nLimit ]
   do
   	 head -c $n </dev/urandom >$TESTS_DIR/in.bin;
@@ -108,11 +108,11 @@ mkdir $TESTS_DIR;
   	else
   		IO_validation_failed "n = $n";
       error_msg "in.bin";
-      cat $TESTS_DIR/in.bin | od -A x -t x1z -v;
+      cat $TESTS_DIR/in.bin | od -t c;
       error_msg "out.b64";
-      cat $TESTS_DIR/out.b64 | od -A x -t x1z -v;
+      cat $TESTS_DIR/out.b64 | od -t c;
       error_msg "out.bin";
-      cat $TESTS_DIR/out.bin | od -A x -t x1z -v;
+      cat $TESTS_DIR/out.bin | od -t c;
       failedTests=$(($failedTests+1));
   		break;
   	fi
