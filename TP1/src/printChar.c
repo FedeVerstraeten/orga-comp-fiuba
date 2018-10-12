@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Oct-2018 3:31:06 pm
+ @Last modified by:   root
+ @Last modified time: 11-Oct-2018 10:45:47 pm
 
  @Copyright(C):
      This file is part of
@@ -28,33 +28,29 @@ Function that prints characters located in a buffer.
 ----------------------------------------------------------- */
 #include "printChar.h"
 
-int printChar(buffer_t* buffer, unsigned char c)
-{
+int printChar(buffer_t *buffer, unsigned char c) {
   /* Variable for saving the 'errno' after reading or
    * writing.*/
   int errsv;
   size_t bytesToWrite;
   size_t bytesWriten;
-  unsigned char* relativeIndex;
+  unsigned char *relativeIndex;
 
   buffer->buffer[buffer->index] = c;
   buffer->index++;
 
   bytesToWrite = buffer->index;
 
-  if (buffer->index == buffer->size)
-  {
+  if (buffer->index == buffer->size) {
     bytesWriten = 0;
     relativeIndex = buffer->buffer;
 
-    while (bytesWriten < bytesToWrite)
-    {
+    while (bytesWriten < bytesToWrite) {
       bytesToWrite -= bytesWriten;
       relativeIndex += bytesWriten;
       bytesWriten = write(buffer->fd, relativeIndex, bytesToWrite);
       errsv = errno;
-      if (errsv)
-      {
+      if (errsv) {
         return errsv;
       }
     }

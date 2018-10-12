@@ -1,21 +1,23 @@
 #include <mips/regdef.h>
 #include <sys/syscall.h>
 
-#define SIZE 48
+#define SIZE 56
 
-#define buffer 52
-#define c 48
-
-#define PADDING_1 44
+# Saved-registers area (SRA).
+#define PADDING_1 52
+#define buffer 48
+#define c 44
 #define RA 40
 #define FP 36
 #define GP 32
 
+# Local and Temporary Area (LTA).
 #define relativeIndex 28
 #define bytesWriten 24
 #define bytesToWrite 20
 #define errsv 16
 
+# Argument-building area (ABA).
 #define ARG3 12
 #define ARG2 8
 #define ARG1 4
@@ -44,24 +46,24 @@ printChar:
 # Allocate memory for the stack.
 subu	sp,sp,SIZE
 # SRA beginning area.
-.cprestore GP
+.cprestore GP # TODO: VER ESTE VALOR!
 
 # Save the callee-saved registers used by the caller in the SRA.
 sw  ra, RA(sp)
 sw	$fp,FP(sp)
 sw  gp, GP(sp)
-# We must set the $fp to the beginning of the stack.
+# We adopt the convention of using the frame pointer
+# as our index in the stack.
 move $fp,sp
 
 # Now we save the arguments that were loaded by the caller
-# in the area reserved by the caller.
+# in the area reserved by the callee.
 sw a0, buffer($fp)
 sw a1, c($fp)
 
 ##############################
 # body: printChar            #
 ##############################
-
 # Store 'c' in buffer.
 lw t0, buffer($fp)
 lw t0, BUFFER_IDX_OFFSET(t0)
@@ -73,8 +75,8 @@ lw t1, BUFFER_ARRAY_OFFSET(t1)
 addu t0, t0, t1
 
 # As 'c' is and unsigned char, we use 'lb'.
-lw t1, c($fp)
-sw t1, 0(t0) # TODO: SIGSEV aca.
+lb t1, c($fp) # lb!!!! no es lw!!!
+sb t1, 0(t0) # TODO: SIGSEV aca.
 
 # Increase index.
 lw t0, buffer($fp)
@@ -144,10 +146,12 @@ exitLoop:
 
 exit:
   li v0, 0
-	move sp,$fp
+
+# Stack frame unwinding.
+	move sp,$fp # No hace falta esto.
 	lw ra, RA(sp)
 	lw $fp, FP(sp)
-	sw  gp, GP(sp)
+	lw  gp, GP(sp)
 
 	addu sp, sp, SIZE
 	j ra
