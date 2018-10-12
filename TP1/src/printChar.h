@@ -14,7 +14,7 @@
 
  @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   root
- @Last modified time: 10-Oct-2018 5:48:31 pm
+ @Last modified time: 12-Oct-2018 4:07:28 pm
 
  @Copyright(C):
      This file is part of
@@ -30,10 +30,10 @@ buffer.
 #ifndef PRINTCHAR__H
 #define PRINTCHAR__H
 
+#include "buffer_t.h"
 #include <errno.h>
 #include <unistd.h>
-#include "buffer_t.h"
 
-int printChar(buffer_t* buffer, unsigned char c);
+int printChar(buffer_t *buffer, unsigned char c);
 
 #endif

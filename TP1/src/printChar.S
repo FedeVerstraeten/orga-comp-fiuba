@@ -1,12 +1,17 @@
 #include <mips/regdef.h>
 #include <sys/syscall.h>
+#include <sys/errno.h>
 
 #define SIZE 56
 
 # Saved-registers area (SRA).
 #define PADDING_1 52
 #define buffer 48
+
+# Bear in mind that 'c' is an 'unsigned char'
+# whose size is 1 byte.
 #define c 44
+
 #define RA 40
 #define FP 36
 #define GP 32
@@ -46,7 +51,7 @@ printChar:
 # Allocate memory for the stack.
 subu	sp,sp,SIZE
 # SRA beginning area.
-.cprestore GP # TODO: VER ESTE VALOR!
+.cprestore GP
 
 # Save the callee-saved registers used by the caller in the SRA.
 sw  ra, RA(sp)
@@ -59,7 +64,7 @@ move $fp,sp
 # Now we save the arguments that were loaded by the caller
 # in the area reserved by the callee.
 sw a0, buffer($fp)
-sw a1, c($fp)
+sb a1, c($fp)
 
 ##############################
 # body: printChar            #
@@ -67,21 +72,17 @@ sw a1, c($fp)
 # Store 'c' in buffer.
 lw t0, buffer($fp)
 lw t0, BUFFER_IDX_OFFSET(t0)
-sll t0,t0,2
-
 lw t1, buffer($fp)
-lw t1, BUFFER_ARRAY_OFFSET(t1)
-
-addu t0, t0, t1
-
-# As 'c' is and unsigned char, we use 'lb'.
-lb t1, c($fp) # lb!!!! no es lw!!!
-sb t1, 0(t0) # TODO: SIGSEV aca.
+addu t1, t0, t1
+# As 'c' is 'unsigned char', we use 'lbu' to eliminate
+# sign extension.
+lbu t2, c($fp)
+sb t2, BUFFER_ARRAY_OFFSET(t1)
 
 # Increase index.
 lw t0, buffer($fp)
 lw t1, BUFFER_IDX_OFFSET(t0)
-addi t1, t1, 1
+addu t1, t1, 1
 sw t1, BUFFER_IDX_OFFSET(t0)
 
 # Set variable 'bytesToWrite'.
@@ -93,7 +94,7 @@ sw t0, bytesToWrite($fp)
 lw t0, buffer($fp)
 lw t1, BUFFER_IDX_OFFSET(t0)
 lw t2, BUFFER_SIZE_OFFSET(t0)
-bne t1, t2, exit
+bne t1, t2, return_0
 
 # Set variable 'bytesWriten'.
 li t0, 0
@@ -101,11 +102,11 @@ sw t0, bytesWriten($fp)
 
 # Set variable 'relativeIndex'.
 lw t0, buffer($fp)
-lw t0, 0(t0)
+addu t0,t0,BUFFER_ARRAY_OFFSET
 sw t0, relativeIndex($fp)
 
 # Write cycle.
-loop:
+while_loop:
 	# Check loop condition.
 	lw t0, bytesWriten($fp)
 	lw t1, bytesToWrite($fp)
@@ -115,7 +116,7 @@ loop:
 	# Decrement 'bytesToWrite'.
 	lw t0, bytesToWrite($fp)
 	lw t1, bytesWriten($fp)
-	sub t0, t0, t1
+	subu t0, t0, t1
 	sw t0, bytesToWrite($fp)
 
 	# Update 'relativeIndex'.
@@ -124,35 +125,35 @@ loop:
 	addu t0, t0, t1
 	sw t0, relativeIndex($fp)
 
-	lw          a0, buffer($fp)
-	lw          a0, BUFFER_FILE_DESCRIPTOR_OFFSET(a0)
-	lw          a1, relativeIndex($fp)
-	lw          a2, bytesToWrite($fp)
-	li          v0, SYS_write
+	lw a0, buffer($fp)
+	lw a0, BUFFER_FILE_DESCRIPTOR_OFFSET(a0)
+	lw a1, relativeIndex($fp)
+	lw a2, bytesToWrite($fp)
+	li v0, SYS_write
 	syscall
 
-	sw          v0, bytesWriten($fp)
+	sw v0, bytesWriten($fp)
 
   # Check if there were write errors.
-  # TODO.
-
-	b loop
+  lw  v0,errno
+  sw	v0,errsv($fp)
+  beq	v0,zero,while_loop
+  b exit_function
 
 exitLoop:
 	# Set to zero the buffer index.
-	li t0, 0
+  li t0, 0
 	lw t1, buffer($fp)
 	sw t0, BUFFER_IDX_OFFSET(t1)
 
-exit:
+return_0:
   li v0, 0
 
+exit_function:
 # Stack frame unwinding.
-	move sp,$fp # No hace falta esto.
 	lw ra, RA(sp)
 	lw $fp, FP(sp)
 	lw  gp, GP(sp)
-
 	addu sp, sp, SIZE
 	j ra
 

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   root
- @Last modified time: 10-Oct-2018 5:36:39 pm
+ @Last modified by:   Santiago
+ @Last modified time: 12-Oct-2018 8:14:33 pm
 
  @Copyright(C):
      This file is part of
@@ -39,8 +39,7 @@ Generic char buffer definition.
 
 #define BUFFER_SIZE 1024
 
-typedef struct buffer_t
-{
+typedef struct buffer_t {
   int index;
   int size;
   int fd;

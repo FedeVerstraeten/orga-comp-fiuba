@@ -15,8 +15,8 @@
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
-# @Last modified by:   root
-# @Last modified time: 12-Oct-2018 1:49:22 pm
+# @Last modified by:   Santiago
+# @Last modified time: 12-Oct-2018 8:15:14 pm
 #
 # @Copyright(C):
 #     This file is part of
@@ -92,18 +92,16 @@ mkdir $TESTS_DIR;
  test5_IO_validation(){
   header "TEST5: input-output should be the same."
 
-  n=2048;
-  nLimit=$((1024*2));
-  
+  n=1024;
+  nLimit=$((1024*100));
+
   while [ $n -le $nLimit ]
   do
   	 head -c $n </dev/urandom >$TESTS_DIR/in.bin;
   	$PROGRAM_NAME -a encode -i $TESTS_DIR/in.bin -o $TESTS_DIR/out.b64;
   	$PROGRAM_NAME -a decode -i $TESTS_DIR/out.b64 -o $TESTS_DIR/out.bin;
 
-    diff_result="$(diff $TESTS_DIR/in.bin $TESTS_DIR/out.bin)";
-
-  	if [ -z ${diff_result} ]; then :;
+  	if diff $TESTS_DIR/in.bin $TESTS_DIR/out.bin; then :;
   		IO_validation_passed "n = $n";
   	else
   		IO_validation_failed "n = $n";
