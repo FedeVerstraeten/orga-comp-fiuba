@@ -2,16 +2,10 @@
 #include <sys/syscall.h>
 #include <sys/errno.h>
 
-#define SIZE 56
+#define SIZE 48
 
 # Saved-registers area (SRA).
-#define PADDING_1 52
-#define buffer 48
-
-# Bear in mind that 'c' is an 'unsigned char'
-# whose size is 1 byte.
-#define c 44
-
+#define buffer 44
 #define RA 40
 #define FP 36
 #define GP 32
@@ -37,10 +31,10 @@
 .text
 .abicalls
 .align	2
-.globl	printChar
-.ent	printChar
+.globl	flushBuffer
+.ent	flushBuffer
 
-printChar:
+flushBuffer:
 # Debugger metadata.
 .frame	$fp,SIZE,ra
 # Pipeline magic.
@@ -64,40 +58,18 @@ move $fp,sp
 # Now we save the arguments that were loaded by the caller
 # in the area reserved by the callee.
 sw a0, buffer($fp)
-sb a1, c($fp)
 
 ##############################
 # body: printChar            #
 ##############################
-# Store 'c' in buffer.
-lw t0, buffer($fp)
-lw t0, BUFFER_IDX_OFFSET(t0)
-lw t1, buffer($fp)
-addu t1, t0, t1
-# As 'c' is 'unsigned char', we use 'lbu' to eliminate
-# sign extension.
-lbu t2, c($fp)
-sb t2, BUFFER_ARRAY_OFFSET(t1)
-
-# Increase index.
-lw t0, buffer($fp)
-lw t1, BUFFER_IDX_OFFSET(t0)
-addu t1, t1, 1
-sw t1, BUFFER_IDX_OFFSET(t0)
-
 # Set variable 'bytesToWrite'.
 lw t0, buffer($fp)
 lw t0, BUFFER_IDX_OFFSET(t0)
 sw t0, bytesToWrite($fp)
 
-# Check if buffer is full.
-lw t0, buffer($fp)
-lw t1, BUFFER_IDX_OFFSET(t0)
-lw t2, BUFFER_SIZE_OFFSET(t0)
-bne t1, t2, return_0
-
 # Set variable 'bytesWriten'.
-sw zero, bytesWriten($fp)
+li t0, 0
+sw t0, bytesWriten($fp)
 
 # Set variable 'relativeIndex'.
 lw t0, buffer($fp)
@@ -141,8 +113,9 @@ while_loop:
 
 exitLoop:
 	# Set to zero the buffer index.
+  li t0, 0
 	lw t1, buffer($fp)
-	sw zero, BUFFER_IDX_OFFSET(t1)
+	sw t0, BUFFER_IDX_OFFSET(t1)
 
 return_0:
   li v0, 0
@@ -155,4 +128,4 @@ exit_function:
 	addu sp, sp, SIZE
 	j ra
 
-.end printChar
+.end flushBuffer

@@ -1,8 +1,8 @@
 /* -----------------------------------------------------------
  @Title:   FIUBA - 66.20 Organización de Computadoras.
- @Project: TP1 - Conjunto de instrucciones MIPS.
+ @Project: TP0 - Infraestructura básica.
 --------------------------------------------------------------
- @Filename: flushBuffer.h
+ @Filename: base64_encode.h
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -12,28 +12,24 @@
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
- @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Oct-2018 3:32:19 pm
+ @Date:               15-Oct-2007 12:10:48 am
+ @Last modified by:   root
+ @Last modified time: 14-Oct-2018 12:49:11 am
 
  @Copyright(C):
-     This file is part of
-     'TP1 - Conjunto de instrucciones MIPS'. Unauthorized
-     copying or use of this file via any medium is
-     strictly prohibited.
+    This file is part of 'TP0 - Infraestructura básica.'.
+    Unauthorized copying or use of this file via any medium
+    is strictly prohibited.
 --------------------------------------------------------------
 
-Header file for function to flush a given buffer.
+PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#ifndef FLUSHBUFFER__H
-#define FLUSHBUFFER__H
+#ifndef BASE_64_ENCODE__H
+#define BASE_64_ENCODE__H
 
-#include <errno.h>
-#include <unistd.h>
-#include "buffer_t.h"
-#include "messages.h"
+#include "base64.h"
 
-int flushBuffer(buffer_t* buffer);
+int base64_encode(int infd, int outfd);
 
 #endif

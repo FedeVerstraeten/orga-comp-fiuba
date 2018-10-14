@@ -2,31 +2,37 @@
 #include <sys/syscall.h>
 #include <sys/errno.h>
 
-#define SIZE 56
-
-# Saved-registers area (SRA).
-#define PADDING_1 52
-#define buffer 48
-
-# Bear in mind that 'c' is an 'unsigned char'
-# whose size is 1 byte.
-#define c 44
-
-#define RA 40
-#define FP 36
-#define GP 32
-
-# Local and Temporary Area (LTA).
-#define relativeIndex 28
-#define bytesWriten 24
-#define bytesToWrite 20
-#define errsv 16
+#define ENCODER_OUTPUT_CHARS 2
+#define MAX_LINE_LENGHT 76
+#define BUFFER_SIZE 1024
 
 # Argument-building area (ABA).
-#define ARG3 12
-#define ARG2 8
-#define ARG1 4
 #define ARG0 0
+#define ARG1 4
+#define ARG2 8
+#define ARG3 12
+
+# Local and Temporary Area (LTA).
+#define inChar 16
+#define totalEncodedCharsCount 20
+#define encodedCharsCount 24
+#define inputEnded 28
+#define bytesRead 32
+#define nbytes 36
+#define nOutputBlock 40
+#define index1 44
+#define errsv 48
+#define outputBuffer 52
+#define outBlock 56
+
+# Saved-registers area (SRA).
+#define GP outBlock + 4*ENCODER_OUTPUT_CHARS
+#define FP GP + 4
+#define RA FP + 4
+#define outfd RA + 4
+#define infd outfd + 4
+
+#define SIZE infd + 4
 
 # Offsets in the 'buffer_t' structure.
 #define BUFFER_IDX_OFFSET 0
@@ -34,13 +40,15 @@
 #define BUFFER_FILE_DESCRIPTOR_OFFSET 8
 #define BUFFER_ARRAY_OFFSET 12
 
+#define SIZEOF_outBlock 1*ENCODER_OUTPUT_CHARS
+
 .text
 .abicalls
 .align	2
-.globl	printChar
-.ent	printChar
+.globl	base64_encode
+.ent	base64_encode
 
-printChar:
+base64_encode:
 # Debugger metadata.
 .frame	$fp,SIZE,ra
 # Pipeline magic.
@@ -63,38 +71,39 @@ move $fp,sp
 
 # Now we save the arguments that were loaded by the caller
 # in the area reserved by the callee.
-sw a0, buffer($fp)
-sb a1, c($fp)
+sw a0, infd($fp)
+sw a1, outfd($fp)
 
 ##############################
-# body: printChar            #
+# body: base64_encode        #
 ##############################
-# Store 'c' in buffer.
-lw t0, buffer($fp)
-lw t0, BUFFER_IDX_OFFSET(t0)
-lw t1, buffer($fp)
-addu t1, t0, t1
-# As 'c' is 'unsigned char', we use 'lbu' to eliminate
-# sign extension.
-lbu t2, c($fp)
-sb t2, BUFFER_ARRAY_OFFSET(t1)
+sw    zero, inChar($fp)
+sw    zero, totalEncodedCharsCount($fp)
+sw    zero, encodedCharsCount($fp)
+sw    zero, inputEnded($fp)
+sw    zero, bytesRead($fp)
+sw    zero, nbytes($fp)
+sw    zero, nOutputBlock($fp)
+sw    zero, index1($fp)
 
-# Increase index.
-lw t0, buffer($fp)
-lw t1, BUFFER_IDX_OFFSET(t0)
-addu t1, t1, 1
-sw t1, BUFFER_IDX_OFFSET(t0)
+li    t0, 1
+sw    t0, nbytes($fp)
+li    t0, SIZEOF_outBlock
+sw    t0, nOutputBlock($fp)
+
+
+
+
+
+
+
+
+
 
 # Set variable 'bytesToWrite'.
 lw t0, buffer($fp)
 lw t0, BUFFER_IDX_OFFSET(t0)
 sw t0, bytesToWrite($fp)
-
-# Check if buffer is full.
-lw t0, buffer($fp)
-lw t1, BUFFER_IDX_OFFSET(t0)
-lw t2, BUFFER_SIZE_OFFSET(t0)
-bne t1, t2, return_0
 
 # Set variable 'bytesWriten'.
 sw zero, bytesWriten($fp)
@@ -141,8 +150,9 @@ while_loop:
 
 exitLoop:
 	# Set to zero the buffer index.
+  li t0, 0
 	lw t1, buffer($fp)
-	sw zero, BUFFER_IDX_OFFSET(t1)
+	sw t0, BUFFER_IDX_OFFSET(t1)
 
 return_0:
   li v0, 0
@@ -155,4 +165,4 @@ exit_function:
 	addu sp, sp, SIZE
 	j ra
 
-.end printChar
+.end base64_encode

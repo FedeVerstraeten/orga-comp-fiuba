@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Oct-2018 3:33:00 pm
+ @Last modified by:   root
+ @Last modified time: 14-Oct-2018 2:02:33 am
 
  @Copyright(C):
      This file is part of
@@ -27,26 +27,25 @@ Function that writes a given buffer to a stream given by
 the file descriptor associated with the buffer.
 
 ----------------------------------------------------------- */
-#include "flushBuffer.h"
+#include "base64.h"
+#include <errno.h>
+#include <unistd.h>
 
-int flushBuffer(buffer_t* buffer)
-{
+int flushBuffer(buffer_t *buffer) {
   /* Variable for saving the 'errno' after reading or
    * writing.*/
   int errsv;
   size_t bytesToWrite = buffer->index;
   size_t bytesWriten = 0;
 
-  unsigned char* relativeIndex = buffer->buffer;
+  unsigned char *relativeIndex = buffer->buffer;
 
-  while (bytesWriten < bytesToWrite)
-  {
+  while (bytesWriten < bytesToWrite) {
     bytesToWrite -= bytesWriten;
     relativeIndex += bytesWriten;
     bytesWriten = write(buffer->fd, relativeIndex, bytesToWrite);
     errsv = errno;
-    if (errsv)
-    {
+    if (errsv) {
       return errsv;
     }
   }

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 10-Oct-2018 4:38:29 pm
+ @Last modified by:   root
+ @Last modified time: 14-Oct-2018 1:57:45 am
 
  @Copyright(C):
      This file is part of
@@ -34,11 +34,11 @@ Header file for codec implementation.
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "buffer_t.h"
-#include "common.h"
-#include "flushBuffer.h"
-#include "messages.h"
-#include "printChar.h"
+
+#include "base256ToBase64.h"
+#include "base64ToBase256.h"
+#include "base64_decode.h"
+#include "base64_encode.h"
 
 #define DECODER_MASK 0xFF000000
 #define B64_CHARS_PER_BLOCK 4
@@ -52,6 +52,7 @@ Header file for codec implementation.
 #define MAX_LINE_LENGHT 76
 
 #define PADDING '='
+#define PADDING_CHAR '='
 #define PADDING_STR "="
 #define SIZETABLEB64 64
 
@@ -61,12 +62,60 @@ static const char translationTableB64[SIZETABLEB64] =
 
 extern const char *errmsg[];
 
-unsigned char base256ToBase64(char *outChar, unsigned char inChar,
-                              char inputEnded);
-int base64_encode(int infd, int outfd);
+#define BUFFER_IDX_OFFSET 0
+#define BUFFER_SIZE_OFFSET 4
+#define BUFFER_FILE_DESCRIPTOR_OFFSET 8
+#define BUFFER_ARRAY_OFFSET 12
 
-int base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
-                    unsigned char *decCount);
-int base64_decode(int infd, int outfd);
+#define BUFFER_SIZE 1024
+
+typedef struct buffer_t {
+  int index;
+  int size;
+  int fd;
+  unsigned char buffer[BUFFER_SIZE];
+} buffer_t;
+
+#ifndef ERROR_INVALID_INPUT_STREAM
+#define ERROR_INVALID_INPUT_STREAM "ERROR: Invalid input stream.\n"
+#endif
+#ifndef ERROR_OPENING_INPUT_STREAM
+#define ERROR_OPENING_INPUT_STREAM "ERROR: Can't open input stream.\n"
+#endif
+#ifndef ERROR_INVALID_OUTPUT_STREAM
+#define ERROR_INVALID_OUTPUT_STREAM "ERROR: Invalid output stream.\n"
+#endif
+#ifndef ERROR_OPENING_OUTPUT_STREAM
+#define ERROR_OPENING_OUTPUT_STREAM "ERROR: Can't open output stream.\n"
+#endif
+#ifndef ERROR_ACTION_INVALID_ARGUMENT
+#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid action argument.\n"
+#endif
+#ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
+#define ERROR_OUTPUT_STREAM_WRITING_MSG                                        \
+  "ERROR: Output error when writing stream.\n"
+#endif
+#ifndef ERROR_INPUT_STREAM_READING_MSG
+#define ERROR_INPUT_STREAM_READING_MSG                                         \
+  "ERROR: Input error when reading stream.\n"
+#endif
+#ifndef ERROR_B64_CHAR_NOT_FOUND_MSG
+#define ERROR_B64_CHAR_NOT_FOUND_MSG                                           \
+  "ERROR: Character is not in Base64 Table.\n"
+#endif
+
+/* These values must correspond with 'errmsg' array in base64.c
+ * file. */
+#ifndef ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG
+#define ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG 1
+#endif
+
+#ifndef ERROR_NUMBER_INPUT_STREAM_READING_MSG
+#define ERROR_NUMBER_INPUT_STREAM_READING_MSG 2
+#endif
+
+#ifndef ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG
+#define ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG 3
+#endif
 
 #endif

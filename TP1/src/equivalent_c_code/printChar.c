@@ -14,7 +14,7 @@
 
  @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   root
- @Last modified time: 12-Oct-2018 4:07:35 pm
+ @Last modified time: 14-Oct-2018 2:02:59 am
 
  @Copyright(C):
      This file is part of
@@ -26,7 +26,9 @@
 Function that prints characters located in a buffer.
 
 ----------------------------------------------------------- */
-#include "printChar.h"
+#include "base64.h"
+#include <errno.h>
+#include <unistd.h>
 
 int printChar(buffer_t *buffer, unsigned char c) {
   /* Variable for saving the 'errno' after reading or

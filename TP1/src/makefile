@@ -14,7 +14,7 @@
 #
 # @Date:               07-Sep-2018 12:57:50 pm
 # @Last modified by:   root
-# @Last modified time: 12-Oct-2018 6:24:22 pm
+# @Last modified time: 14-Oct-2018 1:57:40 am
 #
 # @Copyright(C):
 #     This file is part of
@@ -34,13 +34,13 @@
 # ------------------------------------------------------------
 # List all the header and object files separated by a blank
 # space.
-_DEPS = messages.h common.h parser.h base64.h printChar.h flushBuffer.h
-_SRC = main.c parser.c base64.c flushBuffer.c printChar.S
-_OBJ = main.o parser.o base64.o flushBuffer.o printChar.o
+_DEPS = base64.h base64_encode.h base64_decode.h base256ToBase64.h base64ToBase256.h
+_SRC = main.c base64.c flushBuffer.S printChar.S base64_encode.c base64_decode.c base256ToBase64.c base64ToBase256.c
+_OBJ = main.o base64.o flushBuffer.o printChar.o base64_encode.o base64_decode.o base256ToBase64.o base64ToBase256.o
 # ------------------------------------------------------------
 # Configuration.
 CC = gcc
-CFLAGS = -Wall -I. -O0 -DNETBSD3 -g
+CFLAGS = -Wall -I. -O0 -DNETBSD3
 OUTPUT1 = tp1
 # ------------------------------------------------------------
 all: $(OUTPUT1)
@@ -54,5 +54,5 @@ assembly:
 .PHONY: clean assembly
 
 clean:
-	rm -f ./*.o ./*~ ./*.core ./*~ ./*.s
+	rm -f ./*.o ./*~ ./*.core ./*~
 	rm -f $(OUTPUT1)
