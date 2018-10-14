@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:11:01 am
  @Last modified by:   root
- @Last modified time: 14-Oct-2018 12:11:48 am
+ @Last modified time: 14-Oct-2018 4:09:10 am
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -25,7 +25,7 @@
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#include "base64_encode.h"
+#include "base64.h"
 
 int base64_encode(int infd, int outfd) {
   unsigned char inChar = 0;
@@ -49,7 +49,8 @@ int base64_encode(int infd, int outfd) {
 
   do {
     /* Clear outBlock. */
-    memset(outBlock, 0, nOutputBlock);
+    for (index1 = 0; index1 < ENCODER_OUTPUT_CHARS; ++index1)
+      outBlock[index1] = 0;
 
     /* Read from the input stream. */
     bytesRead = read(infd, &inChar, nbytes);
