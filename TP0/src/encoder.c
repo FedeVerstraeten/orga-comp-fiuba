@@ -26,6 +26,19 @@ Encoder implementation.
 
 ----------------------------------------------------------- */
 #include "encoder.h"
+void addPadding(char *outBlock,const char pad,int numberPad)
+{
+  int i=0;
+  while(outBlock[i] != '\0')
+    i++;
+  while(numberPad > 0)
+  {
+    outBlock[i]=pad;
+    numberPad--;
+    i++;
+  }
+  outBlock[i+1]='\0';
+}
 
 unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
 {
@@ -44,16 +57,15 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
     if (shiftRightBit == 6)
     {
       headByte = (prevByte | 0);
-      strncpy(outBlock, &translationTableB64[headByte], 1);
-      strncat(outBlock, PADDING, 1);
+      outBlock[0]=translationTableB64[headByte];
+      addPadding(outBlock,PADDING_CHAR,1);
       return (encodedCharsCount + 2);
     }
     else if (shiftRightBit == 4)
     {
       headByte = (prevByte | 0);
-      strncpy(outBlock, &translationTableB64[headByte], 1);
-      strncat(outBlock, PADDING, 1);
-      strncat(outBlock, PADDING, 1);
+      outBlock[0]=translationTableB64[headByte];
+      addPadding(outBlock,PADDING_CHAR,2);
       return (encodedCharsCount + 3);
     }
     else
@@ -76,7 +88,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
   headByte = (prevByte | headByte);
 
   /*Print translation in outBlock*/
-  strncpy(outBlock, &translationTableB64[headByte], 1);
+  outBlock[0]=translationTableB64[headByte];
   encodedCharsCount++;
 
   shiftRightBit += 2;
@@ -89,7 +101,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
     shiftRightBit = 2;
 
     /* Print tailByte and clear. */
-    strncat(outBlock, &translationTableB64[tailByte], 1);
+    outBlock[1]=translationTableB64[tailByte];
     encodedCharsCount++;
 
     tailByte = 0;
@@ -100,6 +112,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
 
 outputCode encode(params_t *params)
 {
+  int i=0;
   unsigned int inChar;
   char outBlock[ENCODER_OUTPUT_CHARS] = {};
   unsigned char totalEncodedCharsCount = 0, encodedCharsCount = 0;
@@ -107,7 +120,8 @@ outputCode encode(params_t *params)
   do
   {
     /* Clear outBlock. */
-    memset(outBlock, 0, sizeof(outBlock));
+    for (i=0; i < ENCODER_OUTPUT_CHARS; ++i)
+      outBlock[i]=0;
 
     /* Read inputStream and store as integer. */
     inChar = getc(params->inputStream);

@@ -35,10 +35,12 @@ Encoder definitions and declarations.
 
 #define ENCODER_MASK 0xFC
 #define TAIL_MAX_BITS_TO_SHIFT 6
+#define PADDING_CHAR '='
 #define PADDING "="
 #define ENCODER_OUTPUT_CHARS 4
 #define MAX_LINE_LENGHT 76
 
+void addPadding(char *outBlock,const char pad,int numberPad);
 unsigned char base256ToBase64(char *outChar, unsigned int inChar);
 outputCode encode(params_t *params);
 
