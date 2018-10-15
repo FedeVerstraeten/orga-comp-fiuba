@@ -46,13 +46,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
   static unsigned char bitMask = ENCODER_MASK;
   static unsigned int shiftRightBit = 2;
   unsigned char encodedCharsCount = 0;
-  int i=0;
   
-  /* Clear outBlock. */
-  for (i=0; i < ENCODER_OUTPUT_CHARS; ++i)
-    outBlock[i]=0;
-
-
   /* Backup the previous tailByte. */
   prevByte = tailByte;
 

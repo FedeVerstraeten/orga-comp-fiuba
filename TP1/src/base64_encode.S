@@ -2,7 +2,7 @@
   #include <sys/syscall.h>
   #include <sys/errno.h>
 
-  #define ENCODER_OUTPUT_CHARS 2
+  #define ENCODER_OUTPUT_CHARS 3
   #define MAX_LINE_LENGHT 76
   #define BUFFER_SIZE 1024
 
