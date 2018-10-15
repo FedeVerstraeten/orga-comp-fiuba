@@ -46,6 +46,12 @@ unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
   static unsigned char bitMask = ENCODER_MASK;
   static unsigned int shiftRightBit = 2;
   unsigned char encodedCharsCount = 0;
+  int i=0;
+  
+  /* Clear outBlock. */
+  for (i=0; i < ENCODER_OUTPUT_CHARS; ++i)
+    outBlock[i]=0;
+
 
   /* Backup the previous tailByte. */
   prevByte = tailByte;
@@ -55,18 +61,13 @@ unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
   if (inputEnded == 1) {
     if (shiftRightBit == 6) {
       headByte = (prevByte | 0);
-      strncpy(outBlock, &translationTableB64[headByte], 1);
-      /* TODO: Fede, cuando hagas la concatenacion a mano sin
-       * strcat(), fijate de usar PADDING y no PADDING_STR, ya
-       * que el primero es un char, y el segundo es un char con
-       * el \0 al final. */
-      strncat(outBlock, PADDING_STR, 1);
+      outBlock[0]=translationTableB64[headByte];
+      addPadding(outBlock,PADDING,1);
       return (encodedCharsCount + 2);
     } else if (shiftRightBit == 4) {
       headByte = (prevByte | 0);
-      strncpy(outBlock, &translationTableB64[headByte], 1);
-      strncat(outBlock, PADDING_STR, 1);
-      strncat(outBlock, PADDING_STR, 1);
+      outBlock[0]=translationTableB64[headByte];
+      addPadding(outBlock,PADDING,2);
       return (encodedCharsCount + 3);
     } else
       return encodedCharsCount;
@@ -88,7 +89,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
   headByte = (prevByte | headByte);
 
   /*Print translation in outBlock*/
-  strncpy(outBlock, &translationTableB64[headByte], 1);
+  outBlock[0]=translationTableB64[headByte];
   encodedCharsCount++;
 
   shiftRightBit += 2;
@@ -100,7 +101,7 @@ unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
     shiftRightBit = 2;
 
     /* Print tailByte and clear. */
-    strncat(outBlock, &translationTableB64[tailByte], 1);
+    outBlock[1]=translationTableB64[tailByte];
     encodedCharsCount++;
 
     tailByte = 0;
