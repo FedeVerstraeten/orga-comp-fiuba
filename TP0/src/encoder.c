@@ -47,6 +47,11 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
   static unsigned char bitMask = ENCODER_MASK;
   static unsigned int shiftRightBit = 2;
   unsigned char encodedCharsCount = 0;
+  int i = 0;
+
+  /* Clear outBlock. */
+  for (i=0; i < ENCODER_OUTPUT_CHARS; ++i)
+    outBlock[i]=0;
 
   /* Backup the previous tailByte. */
   prevByte = tailByte;
@@ -112,17 +117,13 @@ unsigned char base256ToBase64(char *outBlock, unsigned int inChar)
 
 outputCode encode(params_t *params)
 {
-  int i=0;
+  /*int i=0;*/
   unsigned int inChar;
   char outBlock[ENCODER_OUTPUT_CHARS] = {};
   unsigned char totalEncodedCharsCount = 0, encodedCharsCount = 0;
 
   do
   {
-    /* Clear outBlock. */
-    for (i=0; i < ENCODER_OUTPUT_CHARS; ++i)
-      outBlock[i]=0;
-
     /* Read inputStream and store as integer. */
     inChar = getc(params->inputStream);
 
