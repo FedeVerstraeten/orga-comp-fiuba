@@ -1,0 +1,41 @@
+------------------------------------------------------
+TEST5: input-output should be the same.
+------------------------------------------------------
+PASSED:  n = 1024
+PASSED:  n = 2048
+PASSED:  n = 4096
+------------------------------------------------------
+TEST51: input known text with known encoding.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST52: Encode letter 'M'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST53: Encode 'Ma'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST54: Encode 'Man'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST55: Encode and decode 'Man'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST56: Check bit by bit.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST57: Check max line length and number of encoded bytes.
+------------------------------------------------------
+PASSED:  No differences in line count.
+PASSED:  No differences in word count.
+------------------------------------------------------
+TEST58: decoding input with chars not in B64 table should produce error.
+------------------------------------------------------
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Character is not in Base64 Table.

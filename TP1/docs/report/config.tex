@@ -13,7 +13,7 @@
 \usepackage{textcomp}
 % Paquete para utilizar el font Times Roman de Adobe por defecto.
 \usepackage{mathptmx}
-
+ 
 %Manejo de márgenes
 %Agrega 2cm al ancho por defecto (usado junto con hoffset, no se pierde el centrado)
 \addtolength{\textwidth}{2cm}
@@ -67,7 +67,7 @@
 	% Formato de numeracion de ecuaciones por seccion. Ej. seccion x, ecuacion y: (x.y)
 	\numberwithin{equation}{section}
 	\numberwithin{figure}{section}
-
+	
 % Simbolos matematicos. Por ej. la 'R' de reales, etc...
 \usepackage{amssymb}
 \usepackage{amsfonts}
@@ -116,7 +116,7 @@
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
 % Swap the definition of \abs* and \norm*, so that \abs
-% and \norm resizes the size of the brackets, and the
+% and \norm resizes the size of the brackets, and the 
 % starred version does not.
 \makeatletter
 \let\oldabs\abs
@@ -127,7 +127,7 @@
 \makeatother
 
 % Operadores para escribir vectores en negrita directamente.
-% Ej:  $\vecbf{v} = 5\vechat{k}$
+% Ej:  $\vecbf{v} = 5\vechat{k}$ 
 \newcommand{\vecbf}[1]{\mathbf{#1}}
 % Operador para escribir en negrita todo lo que tenga hat.
 \newcommand{\vechat}[1]{\hat{\mathbf{#1}}}
@@ -135,7 +135,7 @@
 % ***************************************************
 % CODIGO FUENTE.
 % ***************************************************
-% Paquetes para pseudocodigo.
+% Paquetes para pseudocodigo.	
 \usepackage{lgrind}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -304,7 +304,7 @@
 
 \lstset{
 	backgroundcolor=\color{lbcolor},
-	tabsize=4,
+	tabsize=4,    
 	language=[GNU]C++,
 	basicstyle=\scriptsize,
 	upquote=true,
@@ -369,7 +369,7 @@
 %\SetWatermarkScale{0.8}
 %\SetWatermarkText{BORRADOR}
 
-% This pack­age sim­pli­fies the in­clu­sion of ex­ter­nal multi-page PDF doc­u­ments in LaTeX doc­u­ments.
+% This pack­age sim­pli­fies the in­clu­sion of ex­ter­nal multi-page PDF doc­u­ments in LaTeX doc­u­ments. 
 \usepackage{pdfpages}
 \setboolean{@twoside}{false}
 
@@ -437,11 +437,11 @@
 	\hypersetup{a4paper,
 				% Muestra el titulo en el maro superior de la ventana del visor de pdf
 				pdfdisplaydoctitle=true,
-				% Al encender esta funcion, ya nohay recuadros feos alrededor de los links
+				% Al encender esta funcion, ya nohay recuadros feos alrededor de los links 	
 				colorlinks=true,
-				% Color cuando se escribe una URL.
+				% Color cuando se escribe una URL.   
 				urlcolor = black,
-				%Para que el link a nuevos pdf, no se abran en la misma ventana
+				%Para que el link a nuevos pdf, no se abran en la misma ventana 		
 				pdfnewwindow=true,
 				% Color para links internos
 				linkcolor=black,
@@ -450,16 +450,16 @@
 				% Color para links a archivos
        			filecolor=black,
 				pdftitle={66.20 - TP1 - 2C2018},
-				pdfauthor={HPV}
+				pdfauthor={AHV}
 			}
 
-% ***************************************************
+% ***************************************************			
 % GLOSARIO.
 % ***************************************************
 % Glosario. Debe cargarse después del paquete "hyperref", como excepción.
 %\include{./misc/glossary}
 
-% ***************************************************
+% ***************************************************			
 % ALGUNOS TEMPLATES DE CODIGO UTIL.
 % ***************************************************
 
@@ -509,7 +509,7 @@
 %\end{equation}
 % *********************************************************************************
 %\begin{equation}
-%\mathbf{R}_x\left(\phi\right) =
+%\mathbf{R}_x\left(\phi\right) = 
 %\begin{bmatrix}
 %1 & 0 & 0 \\
 %0 & \cos \left(\phi\right) & \sin \left(\phi\right) \\
@@ -552,23 +552,23 @@
 %	\centering
 %	\label{table:bad_table}
 %	\begin{tabular}{|l|c|c|c|c|}
+%		\hline 
+%		& \multicolumn{2}{c}{Species I} & \multicolumn{2}{c|}{Species II} \\ 
 %		\hline
-%		& \multicolumn{2}{c}{Species I} & \multicolumn{2}{c|}{Species II} \\
-%		\hline
-%		Dental measurement  & mean & SD  & mean & SD  \\ \hline
+%		Dental measurement  & mean & SD  & mean & SD  \\ \hline 
 %		\hline
 %		I1MD & 6.23 & 0.91 & 5.2  & 0.7  \\
-%		\hline
+%		\hline 
 %		I1LL & 7.48 & 0.56 & 8.7  & 0.71 \\
-%		\hline
+%		\hline 
 %		I2MD & 3.99 & 0.63 & 4.22 & 0.54 \\
-%		\hline
+%		\hline 
 %		I2LL & 6.81 & 0.02 & 6.66 & 0.01 \\
-%		\hline
+%		\hline 
 %		CMD & 13.47 & 0.09 & 10.55 & 0.05 \\
-%		\hline
-%		CBL & 11.88 & 0.05 & 13.11 & 0.04\\
-%		\hline
+%		\hline 
+%		CBL & 11.88 & 0.05 & 13.11 & 0.04\\ 
+%		\hline 
 %	\end{tabular}
 %\end{table}
 % *********************************************************************************
@@ -577,23 +577,23 @@
 %	\centering
 %	\label{table:nice_table}
 %	\begin{tabular}{l c c c c}
-%		\hline
-%		\multirow{2}{*}{Dental measurement} & \multicolumn{2}{c}{Species I} & \multicolumn{2}{c}{Species II} \\
+%		\hline 
+%		\multirow{2}{*}{Dental measurement} & \multicolumn{2}{c}{Species I} & \multicolumn{2}{c}{Species II} \\ 
 %		\cline{2-5}
-%		& mean & SD  & mean & SD  \\
+%		& mean & SD  & mean & SD  \\ 
 %		\hline
 %		I1MD & 6.23 & 0.91 & 5.2  & 0.7  \\
-%
+%		
 %		I1LL & 7.48 & 0.56 & 8.7  & 0.71 \\
-%
+%		
 %		I2MD & 3.99 & 0.63 & 4.22 & 0.54 \\
-%
+%		
 %		I2LL & 6.81 & 0.02 & 6.66 & 0.01 \\
-%
+%		
 %		CMD & 13.47 & 0.09 & 10.55 & 0.05 \\
-%
-%		CBL & 11.88 & 0.05 & 13.11 & 0.04\\
-%		\hline
+%		
+%		CBL & 11.88 & 0.05 & 13.11 & 0.04\\ 
+%		\hline 
 %	\end{tabular}
 %\end{table}
 % *********************************************************************************
@@ -603,21 +603,21 @@
 %	\label{table:good_table}
 %	\begin{tabular}{l c c c c}
 %		\toprule
-%		\multirow{2}{*}{Dental measurement} & \multicolumn{2}{c}{Species I} & \multicolumn{2}{c}{Species II} \\
+%		\multirow{2}{*}{Dental measurement} & \multicolumn{2}{c}{Species I} & \multicolumn{2}{c}{Species II} \\ 
 %		\cmidrule{2-5}
-%		& mean & SD  & mean & SD  \\
+%		& mean & SD  & mean & SD  \\ 
 %		\midrule
 %		I1MD & 6.23 & 0.91 & 5.2  & 0.7  \\
-%
+%		
 %		I1LL & 7.48 & 0.56 & 8.7  & 0.71 \\
-%
+%		
 %		I2MD & 3.99 & 0.63 & 4.22 & 0.54 \\
-%
+%		
 %		I2LL & 6.81 & 0.02 & 6.66 & 0.01 \\
-%
+%		
 %		CMD & 13.47 & 0.09 & 10.55 & 0.05 \\
-%
-%		CBL & 11.88 & 0.05 & 13.11 & 0.04\\
+%		
+%		CBL & 11.88 & 0.05 & 13.11 & 0.04\\ 
 %		\bottomrule
 %	\end{tabular}
 %\end{table}
@@ -678,8 +678,8 @@
 % \ang{;;46.8150}
 % $\pm \SI{0.9}{\second}$
 % \SI{1e-22}{}
-% ...utilizando mediciones en tierra de $F_{\SI{10.7}{}}$: Al dejar vacío el segundo
-% argumento, lo que hace es usar el formato numérico SI, y no el local. O sea, aparece
+% ...utilizando mediciones en tierra de $F_{\SI{10.7}{}}$: Al dejar vacío el segundo 
+% argumento, lo que hace es usar el formato numérico SI, y no el local. O sea, aparece 
 % "10.7" en vez de "10,7".
 %
 % *********************************************************************************

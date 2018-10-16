@@ -14,61 +14,61 @@
 \begin{titlepage}
 	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for horizontal lines, change thickness here
 	\center % Centre everything on the page
-
+	
 	\thispagestyle{empty}
 	\begin{center}
 		\includegraphics[scale=1]{includes/banner_fiuba.pdf}\\
 	\end{center}
-
+	
 % 	\vspace*{\stretch{1}}
-
+	
 	\textsc{\LARGE \textsc{[66.20] Organización de Computadoras}}\\[0.5cm]
 	\textsc{\Large \textsc{Trabajo Práctico 1}}\\[0.5cm]
 	\textsc{\large 2\textsuperscript{do} Cuatrimestre 2018}\\[0.25cm]
-
+	
 	\HRule\\[0.5cm]
 	{\huge\bfseries Conjunto de instrucciones MIPS}\\[0.2cm]
 	\HRule\\[0.5cm]
-
+	
 	\begin{tabbing}
 		\hspace{2cm}\=\+
 		\underline{AUTORES}\hspace{-1cm}\=\+\hspace{1cm}\=\hspace{6cm}\=\\[0.2cm]
-
+		
 		Husain, Ignacio Santiago.	\>\>- \#90.117\\
 		\>\footnotesize{$<$santiago.husain@gmail.com$>$}\\
-
+		
 		Pesado, Lucía.	\>\>- \#98.275\\
 		\>\footnotesize{$<$luupesado@gmail.com$>$}\\
-
+		
 		Verstraeten, Federico.	\>\>- \#92.892\\
 		\>\footnotesize{$<$federico.verstraeten@gmail.com$>$}\\
-
+		
 		\<\underline{CÁTEDRA}\\[0.2cm]
 		Dr. Ing. Hamkalo, José Luis. \\
-
+		
 		\<\underline{CURSO}\\[0.2cm]
 		Ing. Santi, Leandro. \\
 		Ing. Perez Masci, Hernán. \\
 		Ing. Natale, Luciano. \\[1cm]
-
+		
 		\<\underline{FECHA DE ENTREGA}\>\>\> \today
 		\\[0.2cm]
-
-		\<\underline{FECHA DE APROBACIÓN}\>\>\>
+		
+		\<\underline{FECHA DE APROBACIÓN}\>\>\> 
 		\\[0.2cm]
-
-		\<\underline{CALIFICACIÓN}\>\>\>
+		
+		\<\underline{CALIFICACIÓN}\>\>\> 
 		\\[0.2cm]
-
+		
 		\<\underline{FIRMA DE APROBACIÓN}
 		\\[0.5cm]
-
+		
 	\end{tabbing}
-
-
+	
+	
 % 	\vspace*{\stretch{1}}
-
-
+	
+	
 \end{titlepage}
 
 %-----------------------------------%
@@ -78,7 +78,7 @@
 %-----------------------------------%
 \clearpage
 
-\tableofcontents
+\tableofcontents							
 
 \clearpage
 
@@ -97,10 +97,13 @@
 \section{Objetivos}
 El presente trabajo tiene los siguientes objetivos:
 \begin{itemize}
-    \item Diseñar un codificador/decodificador (\emph{codec}) de información en formato base 64 utilizando el lenguaje de programación C.
-    \item Compilar dicho codec en el sistema operativo netBSD en una máquina con arquitectura MIPS32, y producir el código assembly MIPS32 del mismo.
+    \item Diseñar un codificador/decodificador (\emph{codec}) de información en formato base 64.
+    \item Utilizar el lenguaje \textit{Assembly} MIPS32, para la implementaciiones del codificador y decodificador, desarrollando las funciones \texttt{base64\_encode()} y \texttt{base64\_decode()}, y las auxiliares que fueran necesarias.
+    \item Utilizar la ABI presentada por la cátedra para el desarrollo de los códigos en \textit{Assembly}.
+    \item Utilizar el lenguaje de programación C para desarrollar lo necesario para el procesamiento de las opciones de línea de comandos, apertura y cierre de archivos, y reporte de errores, e invocar el código en \textit{Assembly}.
+    \item Compilar dicho codec en el sistema operativo netBSD en una máquina con arquitectura MIPS32.
     \item Realizar pruebas de caja negra para verificar que el programa está funcionando de manera correcta.
-    \item Utilizar la infraestructura básica que será utilizada en trabajos posteriores para programar en assembly MIPS32.
+    %\item Utilizar la infraestructura básica que será utilizada en trabajos posteriores para programar en assembly MIPS32.
 \end{itemize}
 %-------------------------------%
 %								%
@@ -124,7 +127,7 @@ El programa se estructura de la siguiente manera:
 	\end{lstlisting}
 	Además, hace uso de la función \texttt{getopt\_long()} de la biblioteca \texttt{getopt.h}. Dicha función provee una forma simple de procesar cada opción que es leída, extrayendo los argumentos de cada una. En caso de que no se encuentre alguna opción, se utiliza su valor por defecto según las especificaciones del trabajo.
 
-	\item \underline{Validación de opciones:} a medida que se va analizando cada opción de la línea de comandos, se valida cada una de ellas utilizando las funciones
+	\item \underline{Validación de opciones:} a medida que se va analizando cada opción de la línea de comandos, se valida cada una de ellas utilizando las funciones 
 	\begin{lstlisting}[language=C, style=StyleC]
     	outputCode optAction()
         outputCode optOutput()
@@ -133,7 +136,7 @@ El programa se estructura de la siguiente manera:
         void optVersion()
     \end{lstlisting}
     Además, las mismas realizan la correcta inicialización de las diferentes variables dentro de la estructura \texttt{params\_t} descripta en el punto anterior, o en caso de que el usuario ingresó las opciones de ayuda e indicación de versión del programa, se imprime por el flujo \texttt{stderr} dicha información.
-
+    
 	En caso de que se encuentre algún error en el argumento de alguna de las opciones, el usuario es informado por el flujo \texttt{stderr}, y se aborta la ejecución del programa utilizando la función \texttt{exit()}. Para ello, se creó un tipo enumerativo para simplificar el manejo de errores, definiendo los códigos que pueden devolver las funciones desarrolladas:
 	\begin{lstlisting}[language=C, style=StyleC]
 	typedef enum outputCodes_ {
@@ -141,19 +144,463 @@ El programa se estructura de la siguiente manera:
 	outERROR
 	} outputCode;
 	\end{lstlisting}
-
-	\item \underline{Codificación/Decodificación:} una vez realizada la validación de las opciones y carga de configuración del programa, se utilizan las funciones \texttt{base256ToBase64()} o \texttt{base64ToBase256()} para codificar o decodificar el flujo de entrada, dependiendo de qué fue lo que el cliente le solicitó al programa.
-
-	El proceso de codificación se realiza tomando cada carácter de entrada, y guardando los dos bits más y menos significativos para poder concatenarlos con los próximos caracteres que vayan ingresando por el flujo de entrada. Se realiza la extracción de los bits utilizando una máscara de bits y desplazándola adecuadamente dependiendo cuántos bytes se fueron leyendo. Con esta información, se extrae el índice de la tabla de codificación, y se almacenan los caracteres codificados en un arreglo de 4 bytes que posteriormente son impresos en el flujo de salida especificado. Cuando por el flujo de entrada ingresa \quotes{EOF}, se agrega el carácter de padding \quotes{=} dependiendo de cuántos caracteres hayan sido codificados en los pasos previos para que el arreglo de salida quede con 4 bytes completos.
-
-	Por otro lado, la función \texttt{encode()} se encarga no solo de codificar el flujo de entrada, si no de llevar un registro de la cantidad de caracteres codificados para incluir un salto de línea cada 76 caracteres como se establece en la especificación del codec.
-
-	El proceso de decodificación se realiza en tres pasos y de a bloques de 4 bytes. Para cada carácter a decodificar, primero se busca en la tabla traducción \texttt{translationTableB64} el índice correspondiente al carácter codificado que ingresó por el flujo de entrada. Luego se lo posiciona dentro de un entero de 4 bytes, en una posición que depende de cuál de los 4 bytes del bloque de entrada fue leído. Por último, se utiliza una máscara de bits para ir extrayendo cada uno de los caracteres de 1 byte correspondientes, y guardándolos en un array de salida, que será escrito en el flujo de salida posteriormente por la función \texttt{decode()}.
-
-	\item \underline{Terminación del programa:} una vez finalizada la codificación o decodificación, se cierran los flujos de entrada y salida, y se retorna al sistema operativo.
+	
+	\item \underline{Codificación/Decodificación:} una vez realizada la validación de las opciones y carga de configuración del programa, se utilizan las funciones \texttt{base64\_encode()} o \texttt{base64\_decode()} para codificar o decodificar el flujo de entrada, dependiendo de qué fue lo que el cliente le solicitó al programa.
+	
+	Internamente, ambas funciones se encargan de leer y escribir sobre los archivos de entrada y salida definidos por sus respectivos \emph{file descriptors}, además de realizar el correspondiente manejo de errores leyendo la variable global \texttt{errno}.
+	
+	Además, hacen uso de las funciones \texttt{b256To64()} y \texttt{b64To256()} para codificar y decodificar los caracteres que se vayan leyendo.
+	
+	Se decidió realizar esta división de tareas para que no tener funciones monolíticas con demasiadas responsabilidades (lectura y escritura de archivos, manejo de errores, y codificación y decodificación de caracteres).
+	
+	\item \underline{Terminación del programa:} una vez finalizada la codificación o decodificación, se verifican si se produjeron errores notificando al usuario mediante el flujo \texttt{stderr}, y se cierran los flujos de entrada y salida, y se retorna al sistema operativo.
 \end{itemize}
 
-El código fuente se encuentra en el apéndice, tanto en lenguaje C (\ref{app_main}) como en MIPS32 (\ref{app_main_asm}).
+El código fuente desarrollado en ASM MIPS32 y en C se encuentra en el apéndice (\ref{appendix_codigo_fuente}) con sus respectivos \emph{headers} en (\ref{appendix_headers}).
+
+A continuación se describen las secciones importantes de las funciones desarrolladas y se muestra para cada una de ellas el stack que deben crear según la convención descripta en \cite{abi} y \cite{abi_curso}. Se recuerda que se debe agregar padding para alinear el stack a 8 bytes como se requiere en la convención de llamadas a función, por lo que hay algunos stacks que incorporan las variables con nombre \texttt{PADDING\_X} para mostrar esto. Además, varias de ellas van definiendo su tamaño dependiendo de algunas constantes que se debieron utilizar para parametrizar el problema, por lo que se los calculó en función de ellas para una mejor comprensión.
+
+Por otro lado, debido a que se escribieron aproximadamente 1500 líneas en código ASM, se decidió dividir todo el desarrollo en 8 archivos .S para facilitar la comprensión del lector y también del desarrollo que se hizo. Uno de los problemas que se generarían al tener un solo archivo .S es que habría que definir varias etiquetas con nombres únicos para todos los \emph{branchings} que se realizan. De la misma forma, se decidió crear dos archivos .h; \texttt{base64.h} y \texttt{base64\_s.h} para declarar y definir diferentes funciones y constantes. El primero es utilizado por \texttt{main.c} y define mensajes de error del parser junto con las declaraciones
+\begin{lstlisting}[language=C, style=StyleC]
+extern const char *errmsg[];
+extern int base64_encode(int infd, int outfd);
+extern int base64_decode(int infd, int outfd);
+\end{lstlisting}
+para indicarle al compilador que dichos símbolos están definidos en otros archivos (los .S). El segundo header define todas las constantes importantes que utiliza el codec y los mensajes de error. Además de incluir las directivas de inclusión de los headers
+\begin{lstlisting}[language=C, style=StyleC]
+#include <mips/regdef.h>
+#include <sys/syscall.h>
+#include <sys/errno.h>
+\end{lstlisting}
+para hacer uso de los nombres de los registros de la arquitectura MIPS32, las llamadas a sistema, y del manejo de errores.
+
+Además, fue fundamental dicha división ya que permitió realizar depuraciones más simples cuando tuvimos diferentes errores en la codificación del programa.
+
+Respecto del trabajo práctico anterior, se eliminaron todas las llamadas a funciones de la bilioteca standard de C. En particular, se hacía uso de las funciones \texttt{strlen()} y \texttt{strcat()} en la función de codificación, y de \texttt{getc()} y \texttt{fputs()} para la lectura y escritura de los flujos de entrada y salida.
+
+Por último, para facilitar la comprensión de los archivos .S desarrollados, se incluye dentro del directorio \texttt{\ src\ equivalent\_c\_code} los códigos C equivalentes de las funciones traducidas.
+
+\subsection{\texttt{base64.S}}
+Se decidió que el archivo fuente \texttt{base64.S} contenga las definiciones de la tabla de codificación y de los mensajes, ya que son usadas por varios archivos fuentes. El contenido del mismo es el siguiente
+\begin{lstlisting}[language=C, style=StyleC]
+# include "base64_s.h"
+
+.globl translationTableB64
+
+translationTableB64:
+.ascii	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123"
+.ascii	"456789+/"
+
+msg0:
+.asciiz	ERROR_OUTPUT_STREAM_WRITING_MSG
+
+msg1:
+.asciiz	ERROR_INPUT_STREAM_READING_MSG
+msg2:
+.asciiz	ERROR_B64_CHAR_NOT_FOUND_MSG
+.globl	errmsg
+.data
+errmsg:
+.word	0
+.word	msg0
+.word	msg1
+.word	msg2
+\end{lstlisting}
+donde puede verse que se utilizaron las directivas \texttt{.globl} para definir dichos arreglos globales, y así hacerlos visibles a todas las funciones que las requieran.
+
+\subsection{\texttt{base64\_encode()}}
+
+Se encarga de leer caracteres del archivo de entrada y volcarlos en un buffer de salida (descripto más adelante). La misma realiza la llamada a sistema \texttt{SYS\_READ} para leer los caracteres, como se muestra en el siguiente fragmento de código
+\begin{lstlisting}[language=C, style=StyleC]
+# Read from the input stream.
+	lw	  a0,infd($fp)
+	addu  a1,$fp,inChar
+	lw	  a2,nbytes($fp)
+	li    v0, SYS_read
+	syscall
+# Store the syscall return value.
+	sw	  v0,bytesRead($fp)
+\end{lstlisting}
+donde se guarda el resultado en la variable \texttt{inChar}.
+
+Para la verificación de errores, luego de cada llamada de lectura, se lee la variable global \texttt{errno}, como se muestra a continuación
+\begin{lstlisting}[language=C, style=StyleC]
+# Check if there were write errors.
+  lw  	t0,errno
+  sw	t0,errsv($fp)
+  beq	t0,zero,no_read_errors
+  li	v0,ERROR_NUMBER_INPUT_STREAM_READING_MSG
+  b   	exit_function
+\end{lstlisting}
+y se retorna en caso de que hayan habido errores.
+
+Una vez leído los caracteres, debe realizar el llamado al codificador, cargando correctamente la dirección de memoria del mismo. En el siguiente fragmento se muestra dicha llamada
+\begin{lstlisting}[language=C, style=StyleC]
+# Call 'b256To64()' to encode input.
+	addu	v0,$fp,outBlock
+	lbu	    v1,inChar($fp)
+	lb	    a2,inputEnded($fp)
+	move	a0,v0
+	move    a1,v1
+	la	    t9,b256To64
+	jal	    ra,t9
+# Save encoder output.
+	sb	    v0,encodedCharsCount($fp)
+\end{lstlisting}
+
+Una vez que se realizó la codificación, se llama a la función \texttt{printChar()} que imprime en el archivo de salida en caso de que el buffer de salida se haya llenado, y si no, se continúa la codificación. Cuando la misma termina porque no quedan más caracteres por codificar, se vacía dicho buffer y se retorna a \texttt{main()}. El fragmento de código utilizado para la llamada es el siguiente
+\begin{lstlisting}[language=C, style=StyleC]
+# Call 'printChar()'.
+	addu	a0,$fp,outputBuffer
+	addu	t0,$fp,outBlock
+	lw	    t1,index1($fp)
+	addu	t0,t0,t1
+# We are loading a byte only, not the entire word.
+	lbu	    t0,0(t0)
+	move	a1,t0
+	la	    t9,printChar
+	jal	    ra,t9
+\end{lstlisting}
+
+El stack que crea la función se muestra en la figura \ref{stack_base64_encode}. El código se encuentra en el apéndice \ref{app_base64_encode}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{@{}l|c|@{}}
+		\cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+		00 & ARG0 \\ \cmidrule(l){2-2} 
+		04 & ARG1 \\ \cmidrule(l){2-2} 
+		08 & ARG2 \\ \cmidrule(l){2-2}
+		12 & ARG3 \\ \cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+		16 & inChar \\ \cmidrule(l){2-2} 
+		17 & totalEncodedCharsCount \\ \cmidrule(l){2-2} 
+		18 & encodedCharsCount \\ \cmidrule(l){2-2} 
+		19 & inputEnded \\ \cmidrule(l){2-2} 		
+		20 & bytesRead \\ \cmidrule(l){2-2} 		
+		24 & nbytes \\ \cmidrule(l){2-2} 		
+		28 & nOutputBlock \\ \cmidrule(l){2-2} 		
+		32 & index1 \\ \cmidrule(l){2-2} 				 
+		36 & errsv \\ \cmidrule(l){2-2} 		
+		40 & outputBuffer \\ \cmidrule(l){2-2} 		
+		44 + \\BUFFER\_SIZE +\\ BUFFER\_ARRAY\_OFFSET & outBlock \\ \cmidrule(l){2-2} 		
+		outBlock + 4 & PADDING\_1 \\ \cmidrule(l){2-2} 		
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+		PADDING\_1 + 4 & GP \\ \cmidrule(l){2-2} 
+		GP + 4 & FP \\ \cmidrule(l){2-2} 
+		FP + 4 & RA \\ \cmidrule(l){2-2} 
+		RA + 4 & infd \\ \cmidrule(l){2-2} 
+		infd + 4 & outfd \\ \cmidrule(l){2-2} 
+		outfd + 4 & PADDING\_2 \\ \cmidrule(l){2-2} 
+	\end{tabular}
+	\caption{Diseño del stack de \texttt{base64\_encode()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+	\label{stack_base64_encode}
+\end{table}
+
+donde las constantes 
+\begin{lstlisting}[language=C, style=StyleC]
+BUFFER_SIZE
+BUFFER_ARRAY_OFFSET
+\end{lstlisting}
+están definidas en \texttt{base64\_s.h}.
+
+El tamaño del stack queda definido por la directiva
+\begin{lstlisting}[language=C, style=StyleC]
+#define SIZE PADDING\_2 + 4
+\end{lstlisting}
+
+\subsection{\texttt{b256To64()}}
+
+Se tuvo que tener cuidado en la codificación ya que se hacen manejos de a bytes y no de words, por lo que se utilizaron instrucciones del tipo \texttt{lbu} y \texttt{sb}. Además, también hubo que tener cuidado por las extensiones de signo que realizan algunas instrucciones. Por ejemplo, si había que comparar una constante con algún byte, la instrucción \texttt{li} realiza extensión de signo, y los resultados de las comparaciones entre bytes y words requerían que solo se esté comparando el byte menos significativo. Estos recaudos se debieron a que en un principio el programa no pasaba los tests desarrollados, por lo que luego de analizar detenidamente con \texttt{gdb} y algunas secciones del código generado por \texttt{GCC}, se pudo comprender qué era lo que estaba sucediendo. El error más común fue el de olvidarnos de la extensión de signo realizada por algunas instrucciones, produciendo comparaciones entre bytes erróneas.
+
+Para el acceso a la tabla de codificación, se utilizó la instrucción \texttt{lbu}, como se muestra en el siguiente fragmento.
+\begin{lstlisting}[language=C, style=StyleC]
+# Set outBlock[0].
+  lbu	   t0,headByte($fp)
+  lbu	   t0,translationTableB64(t0)
+  lw	   t1,outBlock($fp)
+# We only need the LSB.
+  sb	   t0,0(t1)
+\end{lstlisting}
+
+El stack que crea la función se muestra en la figura \ref{stack_b256To64}. El código se encuentra en el apéndice \ref{app_b256To64}.
+	
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{@{}l|c|@{}}
+			\cmidrule(l){2-2} 
+			\multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+			00 & ARG0 \\ \cmidrule(l){2-2} 
+			04 & ARG1 \\ \cmidrule(l){2-2} 
+			08 & ARG2 \\ \cmidrule(l){2-2}
+			12 & ARG3 \\ \cmidrule(l){2-2} 
+			\multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+			16 & headByte \\ \cmidrule(l){2-2} 
+			17 & prevByte \\ \cmidrule(l){2-2} 
+			18 & encodedCharsCount \\ \cmidrule(l){2-2} 
+			20 & i \\ \cmidrule(l){2-2} 
+			\multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+			24 & GP \\ \cmidrule(l){2-2} 
+			28 & FP \\ \cmidrule(l){2-2} 
+			32 & RA \\ \cmidrule(l){2-2} 
+			36 & outBlock \\ \cmidrule(l){2-2} 
+			40 & inChar \\ \cmidrule(l){2-2} 
+			41 & inputEnded \\ \cmidrule(l){2-2} 
+			inputEnded + 3 & PADDING\_0 \\ \cmidrule(l){2-2} 
+		\end{tabular}
+		\caption{Diseño del stack de \texttt{b256To64()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+		\label{stack_b256To64}
+	\end{table}
+	
+	El tamaño del stack queda definido por la directiva
+	\begin{lstlisting}[language=C, style=StyleC]
+	#define SIZE_b256To64 PADDING_0 + 4
+	\end{lstlisting}
+	
+\subsection{\texttt{addPadding()}}
+
+Se desarrolló la función \texttt{addPadding()} para agregar el padding cuando hiciera falta en el proceso de codificación. Además, para reducir en algunas líneas el tamaño de los archivos fuente y poder depurar mejor el programa en caso de errores.
+
+El stack que crea la función se muestra en la figura \ref{stack_addPadding}. El código se encuentra en el apéndice \ref{app_addPadding}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{@{}l|c|@{}}
+		\cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+		00 & ARG0 \\ \cmidrule(l){2-2} 
+		04 & ARG1 \\ \cmidrule(l){2-2} 
+		08 & ARG2 \\ \cmidrule(l){2-2}
+		12 & ARG3 \\ \cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+		16 & i \\ \cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+		20 & RA \\ \cmidrule(l){2-2} 
+		24 & FP \\ \cmidrule(l){2-2} 
+		28 & GP \\ \cmidrule(l){2-2} 
+		32 & outBlock \\ \cmidrule(l){2-2} 
+	    36 & pad \\ \cmidrule(l){2-2} 
+	    pad + 4 & numberPad \\ \cmidrule(l){2-2} 
+	    numberPad + 4 & PADDING\_0 \\ \cmidrule(l){2-2} 
+	\end{tabular}
+	\caption{Diseño del stack de \texttt{addPadding()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+	\label{stack_addPadding}
+\end{table}
+
+El tamaño del stack queda definido por la directiva
+\begin{lstlisting}[language=C, style=StyleC]
+#define SIZE PADDING_0 + 4
+\end{lstlisting}
+
+\subsection{\texttt{base64\_decode()}}
+
+\texttt{base64\_decode()} se encarga de decodificar el flujo de entrada. La función es similar a \texttt{base64\_encode()}, donde también se realizan llamadas a sistema para leer el flujo de caracteres de entrada.
+
+El stack que crea la función se muestra en la figura \ref{stack_base64_decode}. El código se encuentra en el apéndice \ref{app_base64_decode}.
+	
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{@{}l|c|@{}}
+			\cmidrule(l){2-2} 
+			\multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+			00 & ARG0 \\ \cmidrule(l){2-2} 
+			04 & ARG1 \\ \cmidrule(l){2-2} 
+			08 & ARG2 \\ \cmidrule(l){2-2}
+			12 & ARG3 \\ \cmidrule(l){2-2} 
+			\multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+			16 & readChar \\ \cmidrule(l){2-2} 
+			readChar + B64\_CHARS\_PER\_BLOCK & inBlock \\ \cmidrule(l){2-2} 
+			inBlock + OUTPUT\_BLOCK\_SIZE + 1 & outBlock \\ \cmidrule(l){2-2} 
+			outBlock + 4 & index1 \\ \cmidrule(l){2-2} 		
+			index1 + 1 & index2 \\ \cmidrule(l){2-2} 		
+			index2 + 1 & decodedCharsCount \\ \cmidrule(l){2-2} 		
+			decodedCharsCount + 2 & decodingState \\ \cmidrule(l){2-2} 		
+			decodingState + 4 & bytesRead \\ \cmidrule(l){2-2} 				 
+			bytesRead + 4 & nbytes \\ \cmidrule(l){2-2} 		
+			nbytes + 4 & errsv \\ \cmidrule(l){2-2} 		
+			errsv + 4  & outputBuffer \\ \cmidrule(l){2-2} 			
+			\multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+			outputBuffer +\\ BUFFER\_SIZE +\\ BUFFER\_ARRAY\_OFFSET & GP \\ \cmidrule(l){2-2} 
+			GP + 4 & FP \\ \cmidrule(l){2-2} 
+			FP + 4 & RA \\ \cmidrule(l){2-2} 
+			RA + 4 & infd \\ \cmidrule(l){2-2} 
+			infd + 4 & outfd \\ \cmidrule(l){2-2} 
+		\end{tabular}
+		\caption{Diseño del stack de \texttt{base64\_decode()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+		\label{stack_base64_decode}
+	\end{table}
+	
+	donde las constantes 
+	\begin{lstlisting}[language=C, style=StyleC]
+	B64_CHARS_PER_BLOCK
+	OUTPUT_BLOCK_SIZE
+	BUFFER_SIZE
+	BUFFER_ARRAY_OFFSET
+	\end{lstlisting}
+	están definidas en \texttt{base64\_s.h}.
+	
+	El tamaño del stack queda definido por la directiva
+	\begin{lstlisting}[language=C, style=StyleC]
+	#define SIZE outfd + 4
+	\end{lstlisting}
+	
+\subsection{\texttt{b64To256()}}
+
+\texttt{b64To256()} se encarga de decodificar los caracteres de entrada y también es similar a su contrapartida para codificación, donde se tuvieron los mismos recaudos con el manejo de bytes.
+
+El stack que crea la función se muestra en la figura \ref{stack_b64To256}. El código se encuentra en el apéndice \ref{app_b64To256}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}l|c|@{}}
+    \cmidrule(l){2-2} 
+    \multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+    00 & ARG0 \\ \cmidrule(l){2-2} 
+    04 & ARG1 \\ \cmidrule(l){2-2} 
+    08 & ARG2 \\ \cmidrule(l){2-2}
+    12 & ARG3 \\ \cmidrule(l){2-2} 
+    \multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+    16 & bitMask \\ \cmidrule(l){2-2} 
+    20 & index1 \\ \cmidrule(l){2-2} 
+    21 & index2 \\ \cmidrule(l){2-2} 
+    22 & accumBit \\ \cmidrule(l){2-2} 
+    24 & indexTable \\ \cmidrule(l){2-2} 
+    B64\_CHARS\_PER\_BLOCK + 24 & charHolder \\ \cmidrule(l){2-2}
+    charHolder + 4 & bitPattern \\ \cmidrule(l){2-2}
+    \multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+    bitPattern + 4 & RA \\ \cmidrule(l){2-2} 
+    GP + 3 & FP \\ \cmidrule(l){2-2} 
+    FP + 4 & GP \\ \cmidrule(l){2-2} 
+    \multicolumn{1}{c|}{\textbf{}} & \textbf{Arguments of function} \\ \cmidrule(l){2-2} 
+    RA + 4 & outBlock \\ \cmidrule(l){2-2} 
+    outBlock + 4 & inBlock \\ \cmidrule(l){2-2}
+    inBlock + 4 & decCount \\ \cmidrule(l){2-2}
+    decCount + 4 & PADDING\_0 \\ \cmidrule(l){2-2} 
+  \end{tabular}
+  \caption{Diseño del stack de \texttt{b64To256()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+  \label{stack_b64To256}
+\end{table}
+
+donde la constante
+\begin{lstlisting}[language=C, style=StyleC]
+B64_CHARS_PER_BLOCK
+\end{lstlisting}
+está definida en \texttt{base64\_s.h}.
+	
+El tamaño del stack queda definido por la directiva
+\begin{lstlisting}[language=C, style=StyleC]
+#define SIZE_b64To256 PADDING_0 + 4
+\end{lstlisting}	
+
+\subsection{\texttt{printChar()}}
+
+Se decidió implementar un buffer de escritura para no tener que realizar llamadas a sistema cada vez que se necesitaba escribir en el archivo de salida. El código equivalente de dicho buffer es
+\begin{lstlisting}[language=C, style=StyleC]
+#define BUFFER_IDX_OFFSET 0
+#define BUFFER_SIZE_OFFSET 4
+#define BUFFER_FILE_DESCRIPTOR_OFFSET 8
+#define BUFFER_ARRAY_OFFSET 12
+
+#define BUFFER_SIZE 1024
+
+typedef struct buffer_t
+{
+  int index;
+  int size;
+  int fd;
+  unsigned char buffer[BUFFER_SIZE];
+} buffer_t;
+\end{lstlisting}
+donde se definieron los offsets dentro de la estructura para ser utilizados en el código ASM y poder acceder a los diferentes campos del mismo.
+
+Para realizar la escritura sobre el archivo de salida, se utiliza la llamada a sistema \texttt{SYS\_WRITE} junto con la lectura de la variable global \texttt{errno} para determinar si existieron errores. A continuación se muestra un fragmento de código donde se muestra dicho procesamiento.
+\begin{lstlisting}[language=C, style=StyleC]
+  lw    a0, buffer($fp)
+  lw    a0, BUFFER_FILE_DESCRIPTOR_OFFSET(a0)
+  lw    a1, relativeIndex($fp)
+  lw    a2, bytesToWrite($fp)
+  li    v0, SYS_write
+  syscall
+  sw    v0, bytesWriten($fp)
+
+# Check if there were write errors.
+  lw    v0,errno
+  sw	  v0,errsv($fp)
+  beq	  v0,zero,while_loop
+  b     exit_function
+\end{lstlisting}
+
+
+El stack que crea la función se muestra en la figura \ref{stack_printChar}. El código se encuentra en el apéndice \ref{app_printChar}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{@{}l|c|@{}}
+		\cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+		00 & ARG0 \\ \cmidrule(l){2-2} 
+		04 & ARG1 \\ \cmidrule(l){2-2} 
+		08 & ARG2 \\ \cmidrule(l){2-2}
+		12 & ARG3 \\ \cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+		16 & errsv \\ \cmidrule(l){2-2} 
+		20 & bytesToWrite \\ \cmidrule(l){2-2} 
+		24 & bytesWriten \\ \cmidrule(l){2-2} 
+		28 & relativeIndex \\ \cmidrule(l){2-2} 		
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+		32 & GP \\ \cmidrule(l){2-2} 
+		36 & FP \\ \cmidrule(l){2-2} 
+		40 & RA \\ \cmidrule(l){2-2} 
+		44 & c \\ \cmidrule(l){2-2} 
+		48 & buffer \\ \cmidrule(l){2-2} 
+		52 & PADDING\_1 \\ \cmidrule(l){2-2} 
+	\end{tabular}
+	\caption{Diseño del stack de \texttt{printChar()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+	\label{stack_printChar}
+\end{table}
+
+El tamaño del stack queda definido por la directiva
+\begin{lstlisting}[language=C, style=StyleC]
+#define SIZE PADDING_1 + 4
+\end{lstlisting}
+
+
+\subsection{\texttt{flushBuffer()}}
+
+\texttt{flushBuffer()} es una función similar a \texttt{printChar()}, solo que no realiza la verificación de si el buffer de salida está lleno, ya que justamente lo que se quiere es vaciarlo.
+
+El stack que crea la función se muestra en la figura \ref{stack_flushBuffer}. El código se encuentra en el apéndice \ref{app_flushBuffer}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{@{}l|c|@{}}
+		\cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Argument-building area (ABA)} \\ \cmidrule(l){2-2} 
+		00 & ARG0 \\ \cmidrule(l){2-2} 
+		04 & ARG1 \\ \cmidrule(l){2-2} 
+		08 & ARG2 \\ \cmidrule(l){2-2}
+		12 & ARG3 \\ \cmidrule(l){2-2} 
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Local and Temporary Area (LTA)} \\ \cmidrule(l){2-2} 
+		16 & errsv \\ \cmidrule(l){2-2} 
+		20 & bytesToWrite \\ \cmidrule(l){2-2} 
+		24 & bytesWriten \\ \cmidrule(l){2-2} 
+		28 & relativeIndex \\ \cmidrule(l){2-2} 		
+		\multicolumn{1}{c|}{\textbf{}} & \textbf{Saved-registers area (SRA)} \\ \cmidrule(l){2-2} 
+		32 & GP \\ \cmidrule(l){2-2} 
+		36 & FP \\ \cmidrule(l){2-2} 
+		40 & RA \\ \cmidrule(l){2-2} 
+		44 & buffer \\ \cmidrule(l){2-2} 
+	\end{tabular}
+	\caption{Diseño del stack de \texttt{flushBuffer()}. La primer columna se corresponde con el offset en bytes respecto del frame pointer.}
+	\label{stack_flushBuffer}
+\end{table}
+
+El tamaño del stack queda definido por la directiva
+\begin{lstlisting}[language=C, style=StyleC]
+#define SIZE buffer + 4
+\end{lstlisting}
+
 %-------------------------------%
 %								%
 %			Seccion				%
@@ -168,10 +615,13 @@ Para obtener un ejecutable, se creó un archivo \texttt{makefile} cuyo contenido
     $ make
 \end{lstlisting}
 
-donde el mismo generará el ejecutable con nombre \texttt{tp0}. En caso de requerir que el código assembly MIPS32 de cada archivo con código fuente, ejecutar el siguiente comando:
+En el mismo puede verse que se utilizan los archivos .S que contienen el código MIPS32 assembly, que serán utilizados directamente por el assembler. La declaración de los mismos se hace en las variables \texttt{\_SRC1} y \texttt{\_SRC2}:
 \begin{lstlisting}[language=bash, style=StyleC]
-    $ make assembly ARGS=-mrnames
+_SRC1 = main.c base64.S flushBuffer.S printChar.S
+_SRC2 = base64_encode.S base64_decode.S b256To64.S b64To256.S addPadding.S
 \end{lstlisting}
+
+El programa ejecutable aparecerá en el directorio donde se ejecutó el comando \texttt{make}, con el nombre \texttt{tp1}.
 
 %-------------------------------%
 %								%
@@ -181,9 +631,9 @@ donde el mismo generará el ejecutable con nombre \texttt{tp0}. En caso de reque
 \clearpage
 \section{Pruebas}
 
-Según Patton en \cite{book_patton}, una prueba de caja negra (o \emph{black-box test}) es aquella donde se realizan pruebas al programa sin acceder al código fuente. Es decir, la única información a la que se tiene acceso es aquella que define el comportamiento del programa según las especificaciones del cliente. En esta sección se muestran los resultados de las distintas pruebas de caja negra que se realizaron sobre el programa para determinar su robustez y fiabilidad ante diferentes tipos de entradas.
+Según Patton en \cite{book_patton}, una prueba de caja negra (o \emph{black-box test}) es aquella donde se realizan pruebas al programa sin acceder al código fuente. Es decir, la única información a la que se tiene acceso es aquella que define el comportamiento del programa según las especificaciones del cliente. En esta sección se muestran los resultados de las distintas pruebas de caja negra que se realizaron sobre el programa para determinar su robustez y fiabilidad ante diferentes tipos de entradas. 
 
-Se creó un script en lenguaje \texttt{Bash} para automatizar las pruebas del programa.  El código del script se encuentra en la sección \ref{app_run_tests}, y está compuesto por 17 tests junto con 2 para medir tiempos de ejecución.
+Se creó un script en lenguaje \texttt{Bash} para automatizar las pruebas del programa.  El código del script se encuentra en la sección \ref{app_run_tests}, y está compuesto por 17 test.
 
 La salida del script se divide en 2 secciones, cada una con un encabezado indicando el inicio del nuevo test y su nombre, y varias líneas por cada test. La primer línea del test es el comando ejecutado, indicado con la etiqueta \texttt{Testing}. La segunda indica si el test fue exitoso o no mediante la etiqueta \texttt{PASSED/FAILED} en color verde o rojo respectivamente, y las siguientes líneas son los resultados que produce el programa (mensajes de error, etc...). Por ejemplo, para la prueba de la opción \quotes{-i}, se tiene lo siguiente:
 \begin{lstlisting}[language=bash, style=StyleC]
@@ -191,26 +641,43 @@ La salida del script se divide en 2 secciones, cada una con un encabezado indica
 TEST1: inexistent 'input' stream.
 ------------------------------------------------------
 Testing: ./tp0 -i 1
-PASSED
+PASSED 
   PROGRAM OUTPUT:
 	ERROR: Can't open input stream.
 \end{lstlisting}
 donde se ve que el test fue satisfactorio ya que se introdujo un nombre de flujo de entrada inválido.
 
-Para ejecutar el script con las pruebas, posicionarse en el directorio \texttt{src/} y ejecutar el comando \texttt{./runTests.sh} en la terminal de Linux.
+El script con las pruebas debe ejecutarse dentro en la arquitectura MIPS. Para ello deberán cargarse los códigos fuentes del programa, compilar los mismos, y finalmente posicionarse en el directorio \texttt{src/} para ejecutar el comando \texttt{./runTests.sh} en la terminal provista por el Sistema Operativo \textbf{NetBSD} emulado a través de \textbf{gxemul}.
 
-Si todos los tests pasan, entonces al final de la ejecución se debe obtener el siguiente mensaje
+Si todos los tests pasan, entonces al final de la ejecución se debe obtener el siguiente mensaje.
 \begin{lstlisting}[language=bash, style=StyleC]
 ------------------------------------------------------
 Test suite ended.
 ------------------------------------------------------
   All tests passed.
 \end{lstlisting}
-En caso de que no pasen todos los tests, el script indicará cuántos no lo hicieron en color rojo.
+
+En caso de que no pasen todos los tests, el script indicará en color rojo cuántos y cuales de estos no hicieron, similar al siguiente mensaje.
+
+\begin{lstlisting}[language=bash, style=StyleC]
+------------------------------------------------------
+TEST11: no 'input' option parameters.
+------------------------------------------------------
+Testing: ./tp0 -i 
+FAILED 
+  PROGRAM OUTPUT:
+	./tp0: option requires an argument -- 'i'
+
+------------------------------------------------------
+Test suite ended.
+------------------------------------------------------
+  Failed tests: 1
+\end{lstlisting}
+
 
 \subsection{Pruebas en las opciones de programa}
 
-En el script de tests se prueban diferentes combinaciones de las opciones de entrada para verificar si el programa es capaz de detectar errores. Los 7 primeros son validaciones utilizando opciones y parámetros inválidos, donde se verifica que al intentar ejecutarlo, el programa termina y retorna un mensaje que indique el motivo de la ejecución fallida. El test \texttt{test4\_valid\_parameters} se corresponde con ejecuciones que retornan un código de éxito.
+En el script de tests se prueban diferentes combinaciones de las opciones de entrada para verificar si el programa es capaz de detectar errores. Los 7 primeros son validaciones utilizando opciones y parámetros inválidos, donde se verifica que al intentar ejecutarlo, el programa termina y retorna un mensaje que indique el motivo de la ejecución fallida. El test \texttt{test4\_valid\_parameters} se corresponde con ejecuciones que retornan un código de éxito. 
 
 Las salidas arrojadas por el script fueron las siguientes:
 
@@ -218,37 +685,13 @@ Las salidas arrojadas por el script fueron las siguientes:
 
 \subsubsection{Pruebas de codificación y decodificación}
 
-Los tests cuyo nombre son del estilo \texttt{test5x\_IO\_validation} se crearon para probar si el codec funciona correctamente, ya sea ingresando palabras y/o archivos cuya codificación es conocida, como también archivos aleatorios que son codificados y decodificados para probar si el programa realiza una operación de identidad. También se probó ingresar al decodificador caracteres que no estén en la tabla de codificación para determinar si el programa cortaba la ejecución como se encuentra especificado en el enunciado.
+Los tests cuyo nombre son del estilo \texttt{test5x\_IO\_validation} se permiten probar si el codec funciona correctamente, ya sea ingresando palabras y/o archivos cuya codificación es conocida, como también archivos aleatorios que son codificados y decodificados para probar si el programa realiza una operación de identidad. También se probó ingresar al decodificador caracteres que no estén en la tabla de codificación para determinar si el programa cortaba la ejecución como se encuentra especificado en el enunciado.
 
 Además, la prueba \texttt{test57\_IO\_validation} verifica que el programa produzca saltos de línea cada 76 caracteres según la especificación del enunciado, y además que si se codificaron N caracteres, la decodificación produzca N caracteres.
 
 Las salidas del script para dichas pruebas fue la siguiente:
 
 \lstinputlisting[language=bash, style=StyleC]{tests/output_tests_codec.txt}
-
-\subsubsection{Tiempos de codificación y decodificación}
-
-Los tests \texttt{test6\_encoding\_execution\_times} y \texttt{test7\_decoding\_execution\_times} se utilizan para evaluar los tiempos de ejecución del programa completo cuando se codifican y decodifican archivos binarios aleatorios de varios tamaños.
-
-Las salidas de los mismos se muestran a continuación, donde la letra \texttt{n} indica la cantidad de bytes del archivo binario.
-
-\lstinputlisting[language=bash, style=StyleC]{tests/output_tests_runtimes.txt}
-
-Los gráficos correspondientes a los tiempos de ejecución se muestran en las figuras \ref{encodeTime} y \ref{decodeTime}, cuya escala horizontal es logarítmica.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=1]{includes/encodingTimes.eps}
-	\caption{Tiempos de ejecución para codificación.}
-	\label{encodeTime}
-\end{figure}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=1]{includes/decodingTimes.eps}
-	\caption{Tiempos de ejecución para decodificación.}
-	\label{decodeTime}
-\end{figure}
 
 \clearpage
 
@@ -266,20 +709,20 @@ La computadora utilizada para realizar el desarrollo y las pruebas tiene las sig
 	\item Almacenamiento: Disco magnético de 200GB de 7200RPM.
 \end{itemize}
 
-Los programas se desarrollaron en el sistema operativo Linux Ubuntu, cuyos datos de distribución son
-\begin{Verbatim}
-	Distributor ID: Ubuntu
-	Description: Ubuntu 16.04.2 LTS
-	Release: 16.04
-	Codename: xenial
-\end{Verbatim}
+El desarrollo se hizo directamente en el emulador provisto por la cátedra, donde el sistema operativo host fue Linux Ubuntu, cuyos datos de distribución son 
+\begin{itemize}
+	\item Distributor ID: Ubuntu
+	\item Description: Ubuntu 16.04.2 LTS
+	\item Release: 16.04
+	\item Codename: xenial
+\end{itemize}
 
 Además, se utilizaron las siguientes herramientas:
 \begin{itemize}
-	\item \underline{Compilador del proyecto}: GNU gcc (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609 \cite{tool_gcc}.
-	\item \underline{Control del proceso de compilación}: GNU Make 4.1 \cite{tool_gnuMake}.
+	\item \underline{Compilador del proyecto}: gcc (GCC) 3.3.3 (NetBSD nb3 20040520) \cite{tool_gcc}.
+	\item \underline{Control del proceso de compilación}: GNU Make \cite{tool_gnuMake}.
 	\item \underline{Compilador del presente informe}: Latex pdfTeX 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) \cite{tool_latex}.
-    \item \underline{Edición de código fuente}: VIM - Vi IMproved 7.4 (2013 Aug 10, compiled Nov 24 2016 16:44:48) y Atom 1.15.0 \cite{tool_vim} \cite{tool_atom}.
+    \item \underline{Edición de código fuente}: VIM - Vi IMproved 6.4 (2005 Oct 15, compiled May 26 2006 02:17:15) y Atom 1.15.0 \cite{tool_vim} \cite{tool_atom}.
 	\item \underline{Depuración del programa}: gdb \cite{tool_gdb}.
 \end{itemize}
 
@@ -290,11 +733,20 @@ Además, se utilizaron las siguientes herramientas:
 %-------------------------------%
 \section{Conclusiones}
 
-Se creó un programa en lenguaje C que permite codificar y decodificar información en formato base 64, cumpliendo con las especificaciones del enunciado del trabajo. Se describió el flujo del programa y las funciones y estructuras más importantes del mismo, junto con el manejo de errores. Además, se describió el modo de compilación del programa utilizando las herramientas \texttt{gcc} y \texttt{make}.
+Se implementaron en lenguaje \textit{assembly MIPS32} todas las funciones que permiten codificar y decodificar la información en formato \textit{base64}, cumpliendo con las especificaciones del enunciado del trabajo.
+Se describieron cada una de las subfunciones que componen las principales, junto con los argumentos que reciben y sus valores de salida. Además, se detalló el \textit{stack frame} generado por cada una de las funciones  y algunas partes de código importantes de la implementación.
+Además se describió el modo de compilación del programa utilizando las herramientas \texttt{gcc} y \texttt{make}.
 
-Por otro lado, se crearon casos de prueba de caja negra para verificar el correcto funcionamiento del programa. Las mismas cubren tests de validación de opciones del programa ingresando combinaciones de opciones válidas e inválidas para determinar si este es capaz de detectar errores. Además, se crearon pruebas de codificación y decodificación de archivos, tamaños máximos de líneas, y tiempos de ejecución.
+\hfill
 
-De esta forma se deja lista la infraestructura básica para los siguientes proyectos donde se trabajará con la arquitectura MIPS32 y el consecuente análisis y desarrollo de código assembly MIPS32.
+Por otro lado, se crearon casos de prueba de caja negra para verificar el correcto funcionamiento del programa. Las mismas cubren test de validación de opciones del programa ingresando combinaciones de opciones válidas e inválidas para determinar si este es capaz de detectar errores. Además, se crearon pruebas de codificación y decodificación sobre archivos de formato entrada conocidos y otros generados de manera aleatoria, y tamaños máximos de líneas, a fin de verificar la robustez del programa.
+A diferencia del trabajo anterior, en este no se pudieron evaluar tiempos de ejecución del programa, ya que solo puede ser ejecutado dentro de una arquitectura MIPS que acepte el código \textit{assembly MIPS32}. Como la arquitectura es emulada a través de \texttt{gxemul}, los tiempos medidos estarían sezgados por la performance del emulador y no serían los de la implementación del programa desarrollado.
+
+\hfill
+
+Para finalizar, el trabajo permitió estudiar la arquitectura MIPS32 mediante sus set de instrucciones, entendiendo cómo realiza las diferentes operaciones que uno encuentra en lenguajes de alto nivel. Además se estudió en particular cómo se generan los stacks entre llamadas, aplicando la convención de llamado a funciones de la ABI, y también cómo es que se realiza
+una syscall al sistema.
+
 %-------------------------------%
 %								%
 %			Seccion				%
@@ -302,11 +754,13 @@ De esta forma se deja lista la infraestructura básica para los siguientes proye
 %-------------------------------%
 \clearpage
 \begin{thebibliography}{10}
-	%	\bibitem{book_CompArch} Hennessy, J. L. - Patterson, D. A. - \emph{Computer Architecture: A Quantitative Approach} - 3\textsuperscript{rd} edition - Morgan Kaufmann - 2002.
-	%	\bibitem{book_CompOrg} Patterson, D. A. - Hennessy, J. L. - \emph{Computer Organization and Design: The Hardware/Software Interface} - 3\textsuperscript{rd} edition - Morgan Kaufmann - 2004.
+	\bibitem{book_CompArch} Hennessy, J. L. - Patterson, D. A. - \emph{Computer Architecture: A Quantitative Approach} - 3\textsuperscript{rd} edition - Morgan Kaufmann - 2002.
+	\bibitem{book_CompOrg} Patterson, D. A. - Hennessy, J. L. - \emph{Computer Organization and Design: The Hardware/Software Interface} - 3\textsuperscript{rd} edition - Morgan Kaufmann - 2004.
 	\bibitem{book_Cprogr} Kernighan, B. W. - Ritchie, D. M. - \emph{C Programming Language} - 2\textsuperscript{nd} edition - Prentice Hall - 1988.
 	\bibitem{book_patton} Patton, R. - \emph{Software Testing} - 2\textsuperscript{nd} edition - Sams Indianapolis, IN, USA 2005.
 	\bibitem{apuntes} \emph{Apuntes del curso 66.20 Organización de Computadoras} - Cátedra Hamkalo - Facultad de Ingeniería de la Universidad de Buenos Aires.
+	\bibitem{abi} \emph{System V Application Binary Interface - MIPS/RISC Processor Supplement} - 3\textsuperscript{nd} edition - 1996.
+    \bibitem{abi_curso} Organización de Computadoras - 66.20 \emph{MIPS ABI: Function Call Convention}.
 	\bibitem{rfc2045} \emph{RFC 2045} - \hyperlink{make}{https://tools.ietf.org/html/rfc2045\#section-6.8}
 	\bibitem{wiki_base64} \emph{Base 64} - \hyperlink{make}{https://en.wikipedia.org/wiki/Base64}
 	\bibitem{tool_gnuMake} \emph{GNU Make} - \hyperlink{make}{https://www.gnu.org/software/make/}
@@ -344,6 +798,49 @@ De esta forma se deja lista la infraestructura básica para los siguientes proye
 
 \subsubsection{main.c}\label{app_main}
 \lstinputlisting[language=C, style=StyleC]{src/main.c}
+\clearpage
+
+\subsubsection{addPadding.S}\label{app_addPadding}
+\lstinputlisting[language=C, style=StyleC]{src/addPadding.S}
+\clearpage
+
+\subsubsection{b64To256.S}\label{app_b64To256}
+\lstinputlisting[language=C, style=StyleC]{src/b64To256.S}
+\clearpage
+
+\subsubsection{b256To64.S}\label{app_b256To64}
+\lstinputlisting[language=C, style=StyleC]{src/b256To64.S}
+\clearpage
+
+\subsubsection{base64.S}\label{app_base64}
+\lstinputlisting[language=C, style=StyleC]{src/base64.S}
+\clearpage
+
+\subsubsection{base64\_decode.S}\label{app_base64_decode}
+\lstinputlisting[language=C, style=StyleC]{src/base64_decode.S}
+\clearpage
+
+\subsubsection{base64\_encode.S}\label{app_base64_encode}
+\lstinputlisting[language=C, style=StyleC]{src/base64_encode.S}
+\clearpage
+
+\subsubsection{flushBuffer.S}\label{app_flushBuffer}
+\lstinputlisting[language=C, style=StyleC]{src/flushBuffer.S}
+\clearpage
+
+\subsubsection{printChar.S}\label{app_printChar}
+\lstinputlisting[language=C, style=StyleC]{src/printChar.S}
+\clearpage
+
+\clearpage
+\section{Header files}\label{appendix_headers}
+
+\subsubsection{base64\_s.h}\label{app_base64_s_h}
+\lstinputlisting[language=C, style=StyleC]{src/base64_s.h}
+\clearpage
+
+\subsubsection{base64.h}\label{app_base64_h}
+\lstinputlisting[language=C, style=StyleC]{src/base64.h}
 \clearpage
 
 \end{document}

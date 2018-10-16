@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------
  @Title:   FIUBA - 66.20 Organizacion de Computadoras.
- @Project: TP0 - Infraestructura basica.
+ @Project: TP1 - Conjunto de instrucciones MIPS.
 --------------------------------------------------------------
  @Filename: messages.h
 --------------------------------------------------------------
@@ -14,12 +14,13 @@
 
  @Date:               12-Sep-2018 11:32:42 am
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 24-Sep-2018 10:50:07 am
+ @Last modified time: 16-Oct-2018 3:57:25 pm
 
  @Copyright(C):
-    This file is part of 'TP0 - Infraestructura basica.'.
-    Unauthorized copying or use of this file via any medium
-    is strictly prohibited.
+     This file is part of
+     'TP1 - Conjunto de instrucciones MIPS'. Unauthorized
+     copying or use of this file via any medium is
+     strictly prohibited.
 --------------------------------------------------------------
 
 Program's common messages.
@@ -44,14 +45,30 @@ Program's common messages.
 #define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid action argument.\n"
 #endif
 #ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
-#define ERROR_OUTPUT_STREAM_WRITING_MSG "Output error when writing stream.\n"
+#define ERROR_OUTPUT_STREAM_WRITING_MSG \
+  "ERROR: Output error when writing stream.\n"
 #endif
 #ifndef ERROR_INPUT_STREAM_READING_MSG
-#define ERROR_INPUT_STREAM_READING_MSG "Input error when reading stream.\n"
+#define ERROR_INPUT_STREAM_READING_MSG \
+  "ERROR: Input error when reading stream.\n"
 #endif
 #ifndef ERROR_B64_CHAR_NOT_FOUND_MSG
 #define ERROR_B64_CHAR_NOT_FOUND_MSG \
   "ERROR: Character is not in Base64 Table.\n"
+#endif
+
+/* These values must correspond with 'errmsg' array in base64.c
+ * file. */
+#ifndef ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG
+#define ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG 1
+#endif
+
+#ifndef ERROR_NUMBER_INPUT_STREAM_READING_MSG
+#define ERROR_NUMBER_INPUT_STREAM_READING_MSG 2
+#endif
+
+#ifndef ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG
+#define ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG 3
 #endif
 
 #endif

@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # ------------------------------------------------------------
 # @Title:   FIUBA - 66.20 Organizacion de Computadoras.
-# @Project: TP0 - Infraestructura basica.
+# @Project: TP1 - Conjunto de instrucciones MIPS.
 # ------------------------------------------------------------
 # @Filename: runTests.sh
 # ------------------------------------------------------------
@@ -16,12 +16,13 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 24-Sep-2018 12:16:29 pm
+# @Last modified time: 16-Oct-2018 3:42:39 pm
 #
-# @Copyright (C):
-#    This file is part of 'TP0 - Infraestructura basica.'.
-#    Unauthorized copying or use of this file via any medium
-#    is strictly prohibited.
+# @Copyright(C):
+#     This file is part of
+#     'TP1 - Conjunto de instrucciones MIPS'. Unauthorized
+#     copying or use of this file via any medium is
+#     strictly prohibited.
 # ------------------------------------------------------------
 #
 # Script to test errors in the program arguments.
@@ -35,7 +36,7 @@
 # ------------------------------------------------------------
 
 # Program name to test.
-PROGRAM_NAME='./tp0'
+PROGRAM_NAME='./tp1'
 
 # Failed tests counter.
 failedTests=0;
@@ -108,7 +109,7 @@ function test1_parameter_input_inexistent_stream(){
 	done
 }
 
-EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("./tp0: option requires an argument -- 'i'")
+EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("tp1: option requires an argument -- i")
 
 function test11_parameter_input_no_argument(){
   header "TEST11: no 'input' option parameters."
@@ -190,7 +191,7 @@ function test2_parameter_output_stream(){
 	done
 }
 
-EXPECTED_OUTPUT_OUTPUT_NO_ARGUMENT=("./tp0: option requires an argument -- 'o'")
+EXPECTED_OUTPUT_OUTPUT_NO_ARGUMENT=("tp1: option requires an argument -- o")
 
 function test21_parameter_output_no_argument(){
   header "TEST21: no 'output' option parameters."
@@ -246,7 +247,7 @@ function test3_parameter_action(){
 	done
 }
 
-EXPECTED_OUTPUT_ACTION_NO_ARGUMENT=("./tp0: option requires an argument -- 'a'")
+EXPECTED_OUTPUT_ACTION_NO_ARGUMENT=("tp1: option requires an argument -- a")
 
 function test31_parameter_action_no_argument(){
   header "TEST31: no 'action' option parameters."
@@ -313,8 +314,8 @@ mkdir $TESTS_DIR;
 function test5_IO_validation(){
   header "TEST5: input-output should be the same."
 
-  n=1;
-  nLimit=$((1024*1000));
+  n=1024;
+  nLimit=$((1024*5));
 
   while [ $n -le $nLimit ]
   do
@@ -426,10 +427,9 @@ s: \n${diff_result}";
 function test56_IO_validation(){
   header "TEST56: Check bit by bit."
 
-  program_output="$(echo -E xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
-  correct_output="0000000   x   y   z  \n
-0000004";
-  diff_result="$(diff  <(echo -E "$program_output" ) <(echo -E "$correct_output"))";
+  program_output="$(echo -n xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
+  correct_output="0000000    x   y   z 0000003";
+  diff_result="$(diff  <(echo $program_output ) <(echo $correct_output))";
 
   if [[ -z ${diff_result} ]]; then :;
     IO_validation_passed "No differences.";
@@ -447,7 +447,7 @@ function test57_IO_validation(){
   # 1024 bytes[base256] => (8190+2) bits => 1365 bytes[base64] + 2 bits
   # 1365 bytes[base64] + 2 bits + '==' =>  1366 bytes[base64]
   # floor(1366 bytes[base64] / 76 charEachLine) => 17 lines
-  correct_output_line_count="17";
+  correct_output_line_count="      17";
   diff_result_line_count="$(diff  <(echo "$program_output_line_count" ) <(echo "$correct_output_line_count"))";
 
   if [[ -z ${diff_result_line_count} ]]; then :;
@@ -460,7 +460,7 @@ function test57_IO_validation(){
   fi
 
   program_output_word_count="$(yes | head -c 1024 | $PROGRAM_NAME -a encode | $PROGRAM_NAME -a decode | wc -c)";
-  correct_output_word_count="1024";
+  correct_output_word_count="    1024";
   diff_result_word_count="$(diff  <(echo "$program_output_word_count" ) <(echo "$correct_output_word_count"))";
 
   if [[ -z ${diff_result_word_count} ]]; then :;
@@ -499,7 +499,8 @@ function test6_encoding_execution_times(){
   header "TEST6: encoding execution times."
 
   n=1;
-  nLimit=$((1024*1000));
+  nLimit=$((1024*10000));
+  rm -f $TESTS_DIR/encodingTimes.txt
 
   while [ $n -le $nLimit ]
   do
@@ -509,7 +510,7 @@ function test6_encoding_execution_times(){
     tt=$((($(date +%s%N) - $ts)/1000000));
 
     printf 'n: %-10d %10s %.2f [ms]\n' "$n" " " "$tt"
-    printf '%-10d %10s %.2f\n' "$n" " " "$tt" >> ../tests/encodingTimes.txt
+    printf '%-10d %.2f\n' "$n" "$tt" >> $TESTS_DIR/encodingTimes.txt
 
   	n=$((n*2));
 
@@ -521,7 +522,8 @@ function test7_decoding_execution_times(){
   header "TEST7: decoding execution times."
 
   n=1;
-  nLimit=$((1024*1000));
+  nLimit=$((1024*10000));
+  rm -f $TESTS_DIR/decodingTimes.txt
 
   while [ $n -le $nLimit ]
   do
@@ -532,7 +534,7 @@ function test7_decoding_execution_times(){
     tt=$((($(date +%s%N) - $ts)/1000000));
 
     printf 'n: %-10d %10s %.2f [ms]\n' "$n" " " "$tt"
-    printf '%-10d %10s %.2f\n' "$n" " " "$tt" >> ../tests/decodingTimes.txt
+    printf '%-10d %.2f\n' "$n" "$tt" >> $TESTS_DIR/decodingTimes.txt
 
   	n=$((n*2));
 
@@ -560,8 +562,6 @@ test55_IO_validation
 test56_IO_validation
 test57_IO_validation
 test58_IO_validation
-test6_encoding_execution_times
-test7_decoding_execution_times
 
 header "Test suite ended."
 

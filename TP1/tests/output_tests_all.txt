@@ -1,0 +1,157 @@
+------------------------------------------------------
+TEST1: inexistent 'input' stream.
+------------------------------------------------------
+Testing: ./tp1 -i 1
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Can't open input stream.
+Testing: ./tp1 -i hola.bin
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Can't open input stream.
+------------------------------------------------------
+TEST11: no 'input' option parameters.
+------------------------------------------------------
+Testing: ./tp1 -i
+PASSED
+  PROGRAM OUTPUT:
+        tp1: option requires an argument -- i
+------------------------------------------------------
+TEST12: invalid 'input' stream.
+------------------------------------------------------
+Testing: ./tp1 -i .
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid input stream.
+Testing: ./tp1 -i ..
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid input stream.
+Testing: ./tp1 -i /
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid input stream.
+Testing: ./tp1 -i //
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid input stream.
+------------------------------------------------------
+TEST2: invalid 'output' stream.
+------------------------------------------------------
+Testing: ./tp1 -i ../tests/leviathan.input -o .
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid output stream.
+Testing: ./tp1 -i ../tests/leviathan.input -o ..
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid output stream.
+Testing: ./tp1 -i ../tests/leviathan.input -o /
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid output stream.
+Testing: ./tp1 -i ../tests/leviathan.input -o //
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid output stream.
+------------------------------------------------------
+TEST21: no 'output' option parameters.
+------------------------------------------------------
+Testing: ./tp1 -o
+PASSED
+  PROGRAM OUTPUT:
+        tp1: option requires an argument -- o
+------------------------------------------------------
+TEST3: invalid 'action' parameters.
+------------------------------------------------------
+Testing: ./tp1 -a bad_action
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+Testing: ./tp1 -a 1
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+Testing: ./tp1 -a .
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+Testing: ./tp1 -a ..
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+Testing: ./tp1 -a /
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+Testing: ./tp1 -a //
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+Testing: ./tp1 -a $
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Invalid action argument.
+------------------------------------------------------
+TEST31: no 'action' option parameters.
+------------------------------------------------------
+Testing: ./tp1 -a
+PASSED
+  PROGRAM OUTPUT:
+        tp1: option requires an argument -- a
+------------------------------------------------------
+TEST4: all options with correct parameters.
+------------------------------------------------------
+Testing: ./tp1 -a encode -i ../tests/test1.bin -o ../tests/test1_out.bin
+PASSED
+  PROGRAM OUTPUT:
+
+Testing: ./tp1 -a decode -i ../tests/test1_out.bin -o ../tests/test2.bin
+PASSED
+  PROGRAM OUTPUT:
+
+------------------------------------------------------
+TEST5: input-output should be the same.
+------------------------------------------------------
+PASSED:  n = 1024
+PASSED:  n = 2048
+PASSED:  n = 4096
+------------------------------------------------------
+TEST51: input known text with known encoding.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST52: Encode letter 'M'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST53: Encode 'Ma'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST54: Encode 'Man'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST55: Encode and decode 'Man'.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST56: Check bit by bit.
+------------------------------------------------------
+PASSED:  No differences.
+------------------------------------------------------
+TEST57: Check max line length and number of encoded bytes.
+------------------------------------------------------
+PASSED:  No differences in line count.
+PASSED:  No differences in word count.
+------------------------------------------------------
+TEST58: decoding input with chars not in B64 table should produce error.
+------------------------------------------------------
+PASSED
+  PROGRAM OUTPUT:
+        ERROR: Character is not in Base64 Table.
+------------------------------------------------------
+Test suite ended.
+------------------------------------------------------
+  All tests passed.
