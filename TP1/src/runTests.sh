@@ -109,7 +109,7 @@ function test1_parameter_input_inexistent_stream(){
 	done
 }
 
-EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("./tp1: option requires an argument -- 'i'")
+EXPECTED_OUTPUT_INPUT_NO_ARGUMENT=("tp1: option requires an argument -- i")
 
 function test11_parameter_input_no_argument(){
   header "TEST11: no 'input' option parameters."
@@ -191,7 +191,7 @@ function test2_parameter_output_stream(){
 	done
 }
 
-EXPECTED_OUTPUT_OUTPUT_NO_ARGUMENT=("./tp1: option requires an argument -- 'o'")
+EXPECTED_OUTPUT_OUTPUT_NO_ARGUMENT=("tp1: option requires an argument -- o")
 
 function test21_parameter_output_no_argument(){
   header "TEST21: no 'output' option parameters."
@@ -247,7 +247,7 @@ function test3_parameter_action(){
 	done
 }
 
-EXPECTED_OUTPUT_ACTION_NO_ARGUMENT=("./tp1: option requires an argument -- 'a'")
+EXPECTED_OUTPUT_ACTION_NO_ARGUMENT=("tp1: option requires an argument -- a")
 
 function test31_parameter_action_no_argument(){
   header "TEST31: no 'action' option parameters."
