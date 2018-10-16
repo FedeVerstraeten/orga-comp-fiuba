@@ -1,6 +1,4 @@
-#include <mips/regdef.h>
-#include <sys/syscall.h>
-#include <sys/errno.h>
+#include "base64_s.h"
 
 #define SIZE 48
 
@@ -21,12 +19,6 @@
 #define ARG2 8
 #define ARG1 4
 #define ARG0 0
-
-# Offsets in the 'buffer_t' structure.
-#define BUFFER_IDX_OFFSET 0
-#define BUFFER_SIZE_OFFSET 4
-#define BUFFER_FILE_DESCRIPTOR_OFFSET 8
-#define BUFFER_ARRAY_OFFSET 12
 
 .text
 .abicalls

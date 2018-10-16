@@ -1,24 +1,4 @@
-#include <mips/regdef.h>
-#include <sys/syscall.h>
-#include <sys/errno.h>
-
-#define B64_CHARS_PER_BLOCK 4
-#define OUTPUT_BLOCK_SIZE 3
-#define BUFFER_SIZE 1024
-#define SIZEOF_readChar 1
-
-#define ERROR_NUMBER_OUTPUT_STREAM_WRITING_MSG 1
-#define ERROR_NUMBER_INPUT_STREAM_READING_MSG 2
-
-#define ASCII_LF 10
-#define ASCII_TAB 9
-#define ASCII_SPACE 32
-
-# Offsets in the 'buffer_t' structure.
-#define BUFFER_IDX_OFFSET 0
-#define BUFFER_SIZE_OFFSET 4
-#define BUFFER_FILE_DESCRIPTOR_OFFSET 8
-#define BUFFER_ARRAY_OFFSET 12
+#include "base64_s.h"
 
 # Argument-building area (ABA).
 #define ARG0 0
@@ -96,7 +76,7 @@ base64_decode:
 	sw	zero,nbytes($fp)
 
   # Set bytes counters.
-	li	v0,SIZEOF_readChar
+	li	v0,SIZEOF_UCHAR
 	sw	v0,nbytes($fp)
 
   # Set 'outputBuffer' fields.

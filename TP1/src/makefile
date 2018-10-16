@@ -2,7 +2,7 @@
 # @Title:   FIUBA - 66.20 Organizacion de Computadoras.
 # @Project: TP1 - Conjunto de instrucciones MIPS.
 # ------------------------------------------------------------
-# @Filename: makefile_c
+# @Filename: makefile
 # ------------------------------------------------------------
 # @Authors:
 #    Husain, Ignacio Santiago.
@@ -14,7 +14,7 @@
 #
 # @Date:               07-Sep-2018 12:57:50 pm
 # @Last modified by:   santiago
-# @Last modified time: 16-Oct-2018 3:36:17 am
+# @Last modified time: 16-Oct-2018 8:26:03 am
 #
 # @Copyright(C):
 #     This file is part of
@@ -34,9 +34,11 @@
 # ------------------------------------------------------------
 # List all the header and object files separated by a blank
 # space.
-_DEPS = base64.h b256To64.h
-_SRC = main.c base64.c flushBuffer.S printChar.S base64_encode.S base64_decode.S b256To64.c b64To256.S
-_OBJ = main.o base64.o flushBuffer.o printChar.o base64_encode.o base64_decode.o b256To64.o b64To256.o
+_DEPS = base64_s.h base64.h
+_SRC1 = main.c base64.S flushBuffer.S printChar.S
+_SRC2 = base64_encode.S base64_decode.S b256To64.S b64To256.S addPadding.S
+_OBJ1 = main.o base64.o flushBuffer.o printChar.o
+_OBJ2 = base64_encode.o base64_decode.o b256To64.o b64To256.o addPadding.o
 # ------------------------------------------------------------
 # Configuration.
 CC = gcc
@@ -45,11 +47,11 @@ OUTPUT1 = tp1
 # ------------------------------------------------------------
 all: $(OUTPUT1)
 
-$(OUTPUT1): $(_SRC) $(_DEPS)
-	$(CC) $(CFLAGS) -o $@ $(_SRC)
+$(OUTPUT1): $(_SRC1) $(_SRC2) $(_DEPS)
+	$(CC) $(CFLAGS) -o $@ $(_SRC1) $(_SRC2)
 
 assembly:
-	$(CC) $(CFLAGS) -S $(_SRC) -mrnames
+	$(CC) $(CFLAGS) -S $(_SRC1) $(_SRC2) -mrnames
 
 .PHONY: clean assembly
 

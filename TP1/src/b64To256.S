@@ -1,15 +1,4 @@
-#include <mips/regdef.h>
-
-#define B64_CHARS_PER_BLOCK 4
-#define DECODER_MASK 0xFF000000
-#define PADDING_ASCII 61
-#define PAD_INDEX 0
-#define SIZETABLEB64 64
-#define BITS_PER_BYTE 8
-#define OUTPUT_BLOCK_SIZE 3
-#define SIZEOF_UCHAR 1
-
-#define ERROR_NUMBER_B64_CHAR_NOT_FOUND_MSG 3
+#include "base64_s.h"
 
 # Argument-building area (ABA).
 #define ARG0 0
@@ -264,11 +253,3 @@ exit_function:
 	j	    ra
 
 .end	b64To256
-
-.rdata
-.align	2
-.type	translationTableB64, @object
-.size	translationTableB64, 64
-translationTableB64:
-.ascii	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123"
-.ascii	"456789+/"

@@ -16,7 +16,7 @@
 #
 # @Date:               07-Sep-2018 2:12:07 pm
 # @Last modified by:   santiago
-# @Last modified time: 16-Oct-2018 3:22:03 am
+# @Last modified time: 16-Oct-2018 8:26:06 am
 #
 # @Copyright(C):
 #     This file is part of
@@ -428,8 +428,8 @@ function test56_IO_validation(){
   header "TEST56: Check bit by bit."
 
   program_output="$(echo -E xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
-  correct_output="0000000   x   y   z  \n
-0000004";
+  correct_output="0000000    x   y   z \n
+0000003";
   diff_result="$(diff  <(echo -E "$program_output" ) <(echo -E "$correct_output"))";
 
   if [[ -z ${diff_result} ]]; then :;
@@ -448,7 +448,7 @@ function test57_IO_validation(){
   # 1024 bytes[base256] => (8190+2) bits => 1365 bytes[base64] + 2 bits
   # 1365 bytes[base64] + 2 bits + '==' =>  1366 bytes[base64]
   # floor(1366 bytes[base64] / 76 charEachLine) => 17 lines
-  correct_output_line_count="17";
+  correct_output_line_count="      17";
   diff_result_line_count="$(diff  <(echo "$program_output_line_count" ) <(echo "$correct_output_line_count"))";
 
   if [[ -z ${diff_result_line_count} ]]; then :;
@@ -461,7 +461,7 @@ function test57_IO_validation(){
   fi
 
   program_output_word_count="$(yes | head -c 1024 | $PROGRAM_NAME -a encode | $PROGRAM_NAME -a decode | wc -c)";
-  correct_output_word_count="1024";
+  correct_output_word_count="    1024";
   diff_result_word_count="$(diff  <(echo "$program_output_word_count" ) <(echo "$correct_output_word_count"))";
 
   if [[ -z ${diff_result_word_count} ]]; then :;

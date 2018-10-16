@@ -2,7 +2,7 @@
  @Title:   FIUBA - 66.20 Organización de Computadoras.
  @Project: TP1 - Conjunto de instrucciones MIPS.
 --------------------------------------------------------------
- @Filename: b256To64.h
+ @Filename: addPadding.c
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -12,9 +12,9 @@
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
- @Date:               15-Oct-2007 12:24:29 am
+ @Date:               17-Oct-2007 3:59:08 am
  @Last modified by:   santiago
- @Last modified time: 15-Oct-2018 11:36:02 pm
+ @Last modified time: 16-Oct-2018 4:00:19 am
 
  @Copyright(C):
      This file is part of
@@ -26,13 +26,16 @@
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#ifndef B256TO64__H
-#define B256TO64__H
+#include "addPadding.h"
 
-#include "base64.h"
-
-unsigned char b256To64(char *outChar, unsigned char inChar, char inputEnded);
-
-void addPadding(char *outBlock, const char pad, int numberPad);
-
-#endif
+void addPadding(char *outBlock, const char pad, int numberPad) {
+  int i = 0;
+  while (outBlock[i] != '\0')
+    i++;
+  while (numberPad > 0) {
+    outBlock[i] = pad;
+    numberPad--;
+    i++;
+  }
+  outBlock[i + 1] = '\0';
+}

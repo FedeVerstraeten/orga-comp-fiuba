@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:24:22 am
  @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 3:37:50 am
+ @Last modified time: 16-Oct-2018 6:29:20 am
 
  @Copyright(C):
      This file is part of
@@ -27,18 +27,6 @@ PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
 #include "b256To64.h"
-
-void addPadding(char *outBlock, const char pad, int numberPad) {
-  int i = 0;
-  while (outBlock[i] != '\0')
-    i++;
-  while (numberPad > 0) {
-    outBlock[i] = pad;
-    numberPad--;
-    i++;
-  }
-  outBlock[i + 1] = '\0';
-}
 
 unsigned char b256To64(char *outBlock, unsigned char inChar, char inputEnded) {
   unsigned char headByte = 0, prevByte = 0;
@@ -87,7 +75,7 @@ unsigned char b256To64(char *outBlock, unsigned char inChar, char inputEnded) {
   /* Merge previous tailByte and current headByte. */
   headByte = (prevByte | headByte);
 
-  /*Print translation in outBlock*/
+  /* Print translation in outBlock. */
   outBlock[0] = translationTableB64[headByte];
   encodedCharsCount++;
 
