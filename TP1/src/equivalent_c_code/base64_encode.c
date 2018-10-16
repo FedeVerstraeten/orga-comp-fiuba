@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:11:01 am
  @Last modified by:   root
- @Last modified time: 14-Oct-2018 4:09:10 am
+ @Last modified time: 15-Oct-2018 11:05:09 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -64,7 +64,7 @@ int base64_encode(int infd, int outfd) {
     }
 
     /* Encoding to Base64. */
-    encodedCharsCount = base256ToBase64(outBlock, inChar, inputEnded);
+    encodedCharsCount = b256To64(outBlock, inChar, inputEnded);
 
     if ((totalEncodedCharsCount + encodedCharsCount) <= MAX_LINE_LENGHT) {
       totalEncodedCharsCount += encodedCharsCount;

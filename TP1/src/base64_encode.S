@@ -57,7 +57,7 @@
 .ent	base64_encode
 base64_encode:
 # Debugger metadata.
-.frame	$fp,SIZE,ra		# vars= 1080, regs= 3/0, args= 16, extra= 8
+.frame	$fp,SIZE,ra
 
 # Pipeline magic.
 .set	noreorder
@@ -151,13 +151,13 @@ no_read_errors:
 	sb	t0,inputEnded($fp)
 
 encode:
-# Call 'base256ToBase64()' to encode input.
+# Call 'b256To64()' to encode input.
 	addu	v0,$fp,outBlock
 	lbu	  v1,inChar($fp)
 	lb	  a2,inputEnded($fp)
 	move	a0,v0
 	move	a1,v1
-	la	  t9,base256ToBase64
+	la	  t9,b256To64
 	jal	  ra,t9
 # Save encoder output.
 	sb	  v0,encodedCharsCount($fp)

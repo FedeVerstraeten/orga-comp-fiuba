@@ -14,7 +14,7 @@
 
  @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   root
- @Last modified time: 15-Oct-2018 9:16:12 pm
+ @Last modified time: 15-Oct-2018 11:04:02 pm
 
  @Copyright(C):
      This file is part of
@@ -35,8 +35,8 @@ Header file for codec implementation.
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "base256ToBase64.h"
-#include "base64ToBase256.h"
+#include "b256To64.h"
+#include "b64To256.h"
 
 #define DECODER_MASK 0xFF000000
 #define B64_CHARS_PER_BLOCK 4

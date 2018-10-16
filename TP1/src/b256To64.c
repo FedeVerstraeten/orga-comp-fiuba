@@ -2,7 +2,7 @@
  @Title:   FIUBA - 66.20 Organización de Computadoras.
  @Project: TP0 - Infraestructura básica.
 --------------------------------------------------------------
- @Filename: base256ToBase64.c
+ @Filename: b256To64.c
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:24:22 am
  @Last modified by:   root
- @Last modified time: 14-Oct-2018 2:47:02 am
+ @Last modified time: 15-Oct-2018 11:02:42 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -25,7 +25,7 @@
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#include "base256ToBase64.h"
+#include "b256To64.h"
 
 void addPadding(char *outBlock, const char pad, int numberPad) {
   int i = 0;
@@ -39,8 +39,7 @@ void addPadding(char *outBlock, const char pad, int numberPad) {
   outBlock[i + 1] = '\0';
 }
 
-unsigned char base256ToBase64(char *outBlock, unsigned char inChar,
-                              char inputEnded) {
+unsigned char b256To64(char *outBlock, unsigned char inChar, char inputEnded) {
   unsigned char headByte = 0, prevByte = 0;
   static unsigned char tailByte = 0;
   static unsigned char bitMask = ENCODER_MASK;

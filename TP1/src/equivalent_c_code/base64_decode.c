@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:51:25 am
  @Last modified by:   root
- @Last modified time: 15-Oct-2018 4:24:17 pm
+ @Last modified time: 15-Oct-2018 11:02:18 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -75,8 +75,7 @@ int base64_decode(int infd, int outfd) {
         /* If there are still chars in the buffer, we flush it.
          */
         if (index1 != 0) {
-          decodingState =
-              base64ToBase256(outBlock, inBlock, &decodedCharsCount);
+          decodingState = b64To256(outBlock, inBlock, &decodedCharsCount);
           if (decodingState != 0) {
             return decodingState;
           }
@@ -96,7 +95,7 @@ int base64_decode(int infd, int outfd) {
     }
 
     /* Translate inBlock into base256 */
-    decodingState = base64ToBase256(outBlock, inBlock, &decodedCharsCount);
+    decodingState = b64To256(outBlock, inBlock, &decodedCharsCount);
     if (decodingState != 0) {
       return decodingState;
     }

@@ -14,7 +14,7 @@
 #
 # @Date:               07-Sep-2018 12:57:50 pm
 # @Last modified by:   root
-# @Last modified time: 15-Oct-2018 6:20:26 pm
+# @Last modified time: 15-Oct-2018 11:03:55 pm
 #
 # @Copyright(C):
 #     This file is part of
@@ -34,9 +34,9 @@
 # ------------------------------------------------------------
 # List all the header and object files separated by a blank
 # space.
-_DEPS = base64.h base256ToBase64.h base64ToBase256.h
-_SRC = main.c base64.c flushBuffer.S printChar.S base64_encode.S base64_decode.S base256ToBase64.c base64ToBase256.c
-_OBJ = main.o base64.o flushBuffer.o printChar.o base64_encode.o base64_decode.o base256ToBase64.o base64ToBase256.o
+_DEPS = base64.h b256To64.h b64To256.h
+_SRC = main.c base64.c flushBuffer.S printChar.S base64_encode.S base64_decode.S b256To64.c b64To256.c
+_OBJ = main.o base64.o flushBuffer.o printChar.o base64_encode.o base64_decode.o b256To64.o b64To256.o
 # ------------------------------------------------------------
 # Configuration.
 CC = gcc

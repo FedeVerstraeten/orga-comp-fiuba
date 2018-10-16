@@ -2,7 +2,7 @@
  @Title:   FIUBA - 66.20 Organización de Computadoras.
  @Project: TP0 - Infraestructura básica.
 --------------------------------------------------------------
- @Filename: base64ToBase256.c
+ @Filename: b64To256.c
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:51:56 am
  @Last modified by:   root
- @Last modified time: 14-Oct-2018 2:46:53 am
+ @Last modified time: 15-Oct-2018 11:00:38 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -25,10 +25,10 @@
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#include "base64ToBase256.h"
+#include "b64To256.h"
 
-int base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
-                    unsigned char *decCount) {
+int b64To256(unsigned char *outBlock, unsigned char *inBlock,
+             unsigned char *decCount) {
   unsigned int bitMask = DECODER_MASK;
   unsigned char index1 = 0, index2 = 0;
   unsigned char indexTable[B64_CHARS_PER_BLOCK] = {0, 0, 0, 0};

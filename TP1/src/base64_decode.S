@@ -55,7 +55,7 @@
 .ent	base64_decode
 base64_decode:
 # Debugger metadata.
-.frame	$fp,SIZE,ra		# vars= 1080, regs= 3/0, args= 16, extra= 8
+.frame	$fp,SIZE,ra
 
 # Pipeline magic.
 .set	noreorder
@@ -172,7 +172,7 @@ check_input_ended:
   lbu   a0,outBlock($fp)
   lbu   a1,inBlock($fp)
   lbu   a2,decodedCharsCount($fp)
-	la	t9,base64ToBase256
+	la	t9,b64To256
 	jal	ra,t9
 # Save decoder output.
 	sw	v0,decodingState($fp)
@@ -236,7 +236,7 @@ decode_buffer:
 	addu	t1,$fp,inBlock
   move	a1,t1
 	addu	a2,$fp,decodedCharsCount
-	la	  t9,base64ToBase256
+	la	  t9,b64To256
 	jal	  ra,t9
   # Save decoder output.
 	sw	  v0,decodingState($fp)
