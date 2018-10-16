@@ -15,8 +15,8 @@
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
-# @Last modified by:   Ignacio Santiago Husain
-# @Last modified time: 08-Oct-2018 4:21:36 pm
+# @Last modified by:   santiago
+# @Last modified time: 16-Oct-2018 3:22:03 am
 #
 # @Copyright(C):
 #     This file is part of
@@ -314,8 +314,8 @@ mkdir $TESTS_DIR;
 function test5_IO_validation(){
   header "TEST5: input-output should be the same."
 
-  n=1;
-  nLimit=$((1024*1000));
+  n=1024;
+  nLimit=$((1024*5));
 
   while [ $n -le $nLimit ]
   do

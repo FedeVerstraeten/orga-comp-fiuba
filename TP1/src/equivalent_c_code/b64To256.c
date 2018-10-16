@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------
  @Title:   FIUBA - 66.20 Organización de Computadoras.
- @Project: TP0 - Infraestructura básica.
+ @Project: TP1 - Conjunto de instrucciones MIPS.
 --------------------------------------------------------------
  @Filename: b64To256.c
 --------------------------------------------------------------
@@ -13,19 +13,20 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:51:56 am
- @Last modified by:   root
- @Last modified time: 15-Oct-2018 11:00:38 pm
+ @Last modified by:   santiago
+ @Last modified time: 16-Oct-2018 3:20:03 am
 
  @Copyright(C):
-    This file is part of 'TP0 - Infraestructura básica.'.
-    Unauthorized copying or use of this file via any medium
-    is strictly prohibited.
+     This file is part of
+     'TP1 - Conjunto de instrucciones MIPS'. Unauthorized
+     copying or use of this file via any medium is
+     strictly prohibited.
 --------------------------------------------------------------
 
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#include "b64To256.h"
+#include "base64.h"
 
 int b64To256(unsigned char *outBlock, unsigned char *inBlock,
              unsigned char *decCount) {

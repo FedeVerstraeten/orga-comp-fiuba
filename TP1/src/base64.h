@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   root
- @Last modified time: 15-Oct-2018 11:04:02 pm
+ @Last modified by:   santiago
+ @Last modified time: 16-Oct-2018 3:02:02 am
 
  @Copyright(C):
      This file is part of
@@ -36,7 +36,6 @@ Header file for codec implementation.
 #include <unistd.h>
 
 #include "b256To64.h"
-#include "b64To256.h"
 
 #define DECODER_MASK 0xFF000000
 #define B64_CHARS_PER_BLOCK 4

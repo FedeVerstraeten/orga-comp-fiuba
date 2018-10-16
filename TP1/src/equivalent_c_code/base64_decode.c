@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------
  @Title:   FIUBA - 66.20 Organización de Computadoras.
- @Project: TP0 - Infraestructura básica.
+ @Project: TP1 - Conjunto de instrucciones MIPS.
 --------------------------------------------------------------
  @Filename: base64_decode.c
 --------------------------------------------------------------
@@ -13,19 +13,20 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:51:25 am
- @Last modified by:   root
- @Last modified time: 15-Oct-2018 11:02:18 pm
+ @Last modified by:   santiago
+ @Last modified time: 16-Oct-2018 3:01:29 am
 
  @Copyright(C):
-    This file is part of 'TP0 - Infraestructura básica.'.
-    Unauthorized copying or use of this file via any medium
-    is strictly prohibited.
+     This file is part of
+     'TP1 - Conjunto de instrucciones MIPS'. Unauthorized
+     copying or use of this file via any medium is
+     strictly prohibited.
 --------------------------------------------------------------
 
 PUT DESCRIPTION HERE.
 
 ----------------------------------------------------------- */
-#include "base64_decode.h"
+#include "base64.h"
 
 int base64_decode(int infd, int outfd) {
   unsigned char readChar = 0;
