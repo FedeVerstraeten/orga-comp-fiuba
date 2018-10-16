@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # ------------------------------------------------------------
 # @Title:   FIUBA - 66.20 Organizacion de Computadoras.
