@@ -43,54 +43,54 @@ flushBuffer:
 .set	reorder
 
 # Allocate memory for the stack.
-subu	sp,sp,SIZE
+  subu	sp,sp,SIZE
 # SRA beginning area.
 .cprestore GP
 
 # Save the callee-saved registers used by the caller in the SRA.
-sw  ra, RA(sp)
-sw	$fp,FP(sp)
-sw  gp, GP(sp)
+  sw  ra, RA(sp)
+  sw	$fp,FP(sp)
+  sw  gp, GP(sp)
 # We adopt the convention of using the frame pointer
 # as our index in the stack.
-move $fp,sp
+  move $fp,sp
 
 # Now we save the arguments that were loaded by the caller
 # in the area reserved by the callee.
-sw a0, buffer($fp)
+  sw a0, buffer($fp)
 
 ##############################
 # body: printChar            #
 ##############################
 # Set variable 'bytesToWrite'.
-lw t0, buffer($fp)
-lw t0, BUFFER_IDX_OFFSET(t0)
-sw t0, bytesToWrite($fp)
+  lw t0, buffer($fp)
+  lw t0, BUFFER_IDX_OFFSET(t0)
+  sw t0, bytesToWrite($fp)
 
 # Set variable 'bytesWriten'.
-li t0, 0
-sw t0, bytesWriten($fp)
+  li t0, 0
+  sw t0, bytesWriten($fp)
 
 # Set variable 'relativeIndex'.
-lw t0, buffer($fp)
-addu t0,t0,BUFFER_ARRAY_OFFSET
-sw t0, relativeIndex($fp)
+  lw t0, buffer($fp)
+  addu t0,t0,BUFFER_ARRAY_OFFSET
+  sw t0, relativeIndex($fp)
 
 # Write cycle.
 while_loop:
-	# Check loop condition.
+# Check loop condition.
 	lw t0, bytesWriten($fp)
 	lw t1, bytesToWrite($fp)
 
 	bge t0, t1, exitLoop
 
-	# Decrement 'bytesToWrite'.
+# Decrement 'bytesToWrite'.
 	lw t0, bytesToWrite($fp)
 	lw t1, bytesWriten($fp)
 	subu t0, t0, t1
 	sw t0, bytesToWrite($fp)
 
-	# Update 'relativeIndex'.
+# Update 'relativeIndex'.
 	lw t0, relativeIndex($fp)
 	lw t1, bytesWriten($fp)
 	addu t0, t0, t1
@@ -105,14 +105,14 @@ while_loop:
 
 	sw v0, bytesWriten($fp)
 
-  # Check if there were write errors.
+# Check if there were write errors.
   lw  v0,errno
   sw	v0,errsv($fp)
   beq	v0,zero,while_loop
   b exit_function
 
 exitLoop:
-	# Set to zero the buffer index.
+# Set to zero the buffer index.
   li t0, 0
 	lw t1, buffer($fp)
 	sw t0, BUFFER_IDX_OFFSET(t1)

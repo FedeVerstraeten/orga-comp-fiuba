@@ -14,7 +14,7 @@
 
  @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   root
- @Last modified time: 14-Oct-2018 2:47:43 am
+ @Last modified time: 15-Oct-2018 9:16:12 pm
 
  @Copyright(C):
      This file is part of
@@ -37,7 +37,6 @@ Header file for codec implementation.
 
 #include "base256ToBase64.h"
 #include "base64ToBase256.h"
-#include "base64_decode.h"
 
 #define DECODER_MASK 0xFF000000
 #define B64_CHARS_PER_BLOCK 4

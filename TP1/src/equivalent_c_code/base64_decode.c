@@ -14,7 +14,7 @@
 
  @Date:               15-Oct-2007 12:51:25 am
  @Last modified by:   root
- @Last modified time: 14-Oct-2018 2:46:40 am
+ @Last modified time: 15-Oct-2018 4:24:17 pm
 
  @Copyright(C):
     This file is part of 'TP0 - Infraestructura básica.'.
@@ -55,7 +55,6 @@ int base64_decode(int infd, int outfd) {
 
     /* Load input buffer */
     for (index1 = 0; index1 < B64_CHARS_PER_BLOCK; ++index1) {
-      /*readChar = getc(params->inputStream);*/
       /* Read from the input stream. */
       bytesRead = read(infd, &readChar, nbytes);
       errsv = errno;
