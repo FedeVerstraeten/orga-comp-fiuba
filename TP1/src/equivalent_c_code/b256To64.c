@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:24:22 am
- @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 6:29:20 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:49:57 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+Function to convert from b256 to b64.
 
 ----------------------------------------------------------- */
 #include "b256To64.h"

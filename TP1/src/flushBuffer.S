@@ -1,24 +1,24 @@
 #include "base64_s.h"
 
-#define SIZE 48
-
-# Saved-registers area (SRA).
-#define buffer 44
-#define RA 40
-#define FP 36
-#define GP 32
+# Argument-building area (ABA).
+#define ARG0 0
+#define ARG1 4
+#define ARG2 8
+#define ARG3 12
 
 # Local and Temporary Area (LTA).
-#define relativeIndex 28
-#define bytesWriten 24
-#define bytesToWrite 20
 #define errsv 16
+#define bytesToWrite 20
+#define bytesWriten 24
+#define relativeIndex 28
 
-# Argument-building area (ABA).
-#define ARG3 12
-#define ARG2 8
-#define ARG1 4
-#define ARG0 0
+# Saved-registers area (SRA).
+#define GP 32
+#define FP 36
+#define RA 40
+#define buffer 44
+
+#define SIZE buffer + 4
 
 .text
 .abicalls

@@ -14,7 +14,7 @@
 
  @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 16-Oct-2018 3:29:52 pm
+ @Last modified time: 16-Oct-2018 3:55:13 pm
 
  @Copyright(C):
      This file is part of
@@ -31,30 +31,31 @@ by 'main.c'
 #ifndef BASE64__H
 #define BASE64__H
 
-/* ------- Messages definitions ------- */
-#ifndef ERROR_ACTION_INVALID_ARGUMENT
-#define ERROR_ACTION_INVALID_ARGUMENT "ERROR: Invalid action argument.\n"
-#endif
+#include <stdio.h>
+#include <string.h>
+#include "common.h"
+#include "messages.h"
 
-#ifndef ERROR_INVALID_INPUT_STREAM
-#define ERROR_INVALID_INPUT_STREAM "ERROR: Invalid input stream.\n"
-#endif
-#ifndef ERROR_OPENING_INPUT_STREAM
-#define ERROR_OPENING_INPUT_STREAM "ERROR: Can't open input stream.\n"
-#endif
+#define DECODER_MASK 0xFF000000
+#define B64_CHARS_PER_BLOCK 4
+#define PADDING_DEC '='
+#define PADD_INDEX 0
+#define OUTPUT_BLOCK_SIZE 3
+#define BITS_PER_BYTE 8
 
-#ifndef ERROR_INVALID_OUTPUT_STREAM
-#define ERROR_INVALID_OUTPUT_STREAM "ERROR: Invalid output stream.\n"
-#endif
-#ifndef ERROR_OPENING_OUTPUT_STREAM
-#define ERROR_OPENING_OUTPUT_STREAM "ERROR: Can't open output stream.\n"
-#endif
+#define ENCODER_MASK 0xFC
+#define TAIL_MAX_BITS_TO_SHIFT 6
+#define PADDING "="
+#define ENCODER_OUTPUT_CHARS 4
+#define MAX_LINE_LENGHT 76
 
 extern const char *errmsg[];
 
-/* ------- Functions declarations ------- */
+unsigned char base256ToBase64(char *outChar, unsigned int inChar);
+int base64_encode(params_t *params);
 
-extern int base64_encode(int infd, int outfd);
-extern int base64_decode(int infd, int outfd);
+outputCode base64ToBase256(unsigned char *outBlock, unsigned char *inBlock,
+                           unsigned char *decCount);
+int base64_decode(params_t *params);
 
 #endif

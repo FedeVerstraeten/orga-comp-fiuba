@@ -15,8 +15,8 @@
 #          federico.verstraeten at gmail dot com
 #
 # @Date:               07-Sep-2018 2:12:07 pm
-# @Last modified by:   santiago
-# @Last modified time: 16-Oct-2018 8:26:06 am
+# @Last modified by:   Ignacio Santiago Husain
+# @Last modified time: 16-Oct-2018 3:42:39 pm
 #
 # @Copyright(C):
 #     This file is part of
@@ -427,10 +427,9 @@ s: \n${diff_result}";
 function test56_IO_validation(){
   header "TEST56: Check bit by bit."
 
-  program_output="$(echo -E xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
-  correct_output="0000000    x   y   z \n
-0000003";
-  diff_result="$(diff  <(echo -E "$program_output" ) <(echo -E "$correct_output"))";
+  program_output="$(echo -n xyz | $PROGRAM_NAME | $PROGRAM_NAME -a decode | od -t c)";
+  correct_output="0000000    x   y   z 0000003";
+  diff_result="$(diff  <(echo $program_output ) <(echo $correct_output))";
 
   if [[ -z ${diff_result} ]]; then :;
     IO_validation_passed "No differences.";
@@ -563,8 +562,6 @@ test55_IO_validation
 test56_IO_validation
 test57_IO_validation
 test58_IO_validation
-# test6_encoding_execution_times
-# test7_decoding_execution_times
 
 header "Test suite ended."
 

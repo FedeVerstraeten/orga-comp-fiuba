@@ -75,11 +75,11 @@ base64_decode:
 	sw	zero,bytesRead($fp)
 	sw	zero,nbytes($fp)
 
-  # Set bytes counters.
+# Set bytes counters.
 	li	v0,SIZEOF_UCHAR
 	sw	v0,nbytes($fp)
 
-  # Set 'outputBuffer' fields.
+# Set 'outputBuffer' fields.
 	lw	v0,outfd($fp)
 	sw	v0,(outputBuffer+BUFFER_FILE_DESCRIPTOR_OFFSET)($fp)
 	sw	zero,(outputBuffer+BUFFER_IDX_OFFSET)($fp)
@@ -105,7 +105,7 @@ for1_loop:
   # Store the syscall return value.
   sw	  v0,bytesRead($fp)
 
-  # Check if there were write errors.
+# Check if there were write errors.
   lw  t0,errno
   sw	t0,errsv($fp)
 	beq	t0,zero,no_read_errors

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:24:29 am
- @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 4:06:33 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:50:11 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+Function declarations for 'b256To64.c'
 
 ----------------------------------------------------------- */
 #ifndef B256TO64__H

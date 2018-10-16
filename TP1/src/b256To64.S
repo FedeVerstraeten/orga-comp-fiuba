@@ -140,7 +140,7 @@ no_shift_6:
 # We only need the LSB.
   sb	   t0,0(t1)
 
-  # Call 'addPadding'
+# Call 'addPadding'
   lw	   a0,outBlock($fp)
   li	   a1,PADDING_ASCII
   li	   a2,2
@@ -246,6 +246,7 @@ exit_function:
 
 .end	b256To64
 
+# Definition of static variables.
 .data
     shiftRightBit: .word 2
     tailByte:      .byte 0

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:52:00 am
- @Last modified by:   santiago
- @Last modified time: 15-Oct-2018 11:35:59 pm
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:49:45 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+File header for 'b64To256.c'
 
 ----------------------------------------------------------- */
 #ifndef B64TO256__H

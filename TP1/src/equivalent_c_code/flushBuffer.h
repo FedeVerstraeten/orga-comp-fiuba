@@ -2,7 +2,7 @@
  @Title:   FIUBA - 66.20 Organización de Computadoras.
  @Project: TP1 - Conjunto de instrucciones MIPS.
 --------------------------------------------------------------
- @Filename: addPadding.h
+ @Filename: flushBuffer.h
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -12,9 +12,9 @@
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
- @Date:               17-Oct-2007 3:57:55 am
+ @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 16-Oct-2018 3:49:13 pm
+ @Last modified time: 16-Oct-2018 3:57:46 pm
 
  @Copyright(C):
      This file is part of
@@ -23,12 +23,17 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-Functions declarations for 'addPadding.c'
+Header file for function to flush a given buffer.
 
 ----------------------------------------------------------- */
-#ifndef ADDPADDING__H
-#define ADDPADDING__H
+#ifndef FLUSHBUFFER__H
+#define FLUSHBUFFER__H
 
-void addPadding(char *outBlock, const char pad, int numberPad);
+#include <errno.h>
+#include <unistd.h>
+#include "buffer_t.h"
+#include "messages.h"
+
+int flushBuffer(buffer_t* buffer);
 
 #endif

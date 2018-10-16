@@ -2,7 +2,7 @@
  @Title:   FIUBA - 66.20 Organización de Computadoras.
  @Project: TP1 - Conjunto de instrucciones MIPS.
 --------------------------------------------------------------
- @Filename: addPadding.h
+ @Filename: buffer_t.h
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -12,9 +12,9 @@
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
 
- @Date:               17-Oct-2007 3:57:55 am
+ @Date:               07-Oct-2018 10:19:49 pm
  @Last modified by:   Ignacio Santiago Husain
- @Last modified time: 16-Oct-2018 3:49:13 pm
+ @Last modified time: 16-Oct-2018 3:58:05 pm
 
  @Copyright(C):
      This file is part of
@@ -23,12 +23,28 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-Functions declarations for 'addPadding.c'
+Generic char buffer definition.
 
 ----------------------------------------------------------- */
-#ifndef ADDPADDING__H
-#define ADDPADDING__H
+#ifndef BUFFER_T__H
+#define BUFFER_T__H
 
-void addPadding(char *outBlock, const char pad, int numberPad);
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BUFFER_IDX_OFFSET 0
+#define BUFFER_SIZE_OFFSET 4
+#define BUFFER_FILE_DESCRIPTOR_OFFSET 8
+#define BUFFER_ARRAY_OFFSET 12
+
+#define BUFFER_SIZE 1024
+
+typedef struct buffer_t
+{
+  int index;
+  int size;
+  int fd;
+  unsigned char buffer[BUFFER_SIZE];
+} buffer_t;
 
 #endif

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               17-Oct-2007 3:59:08 am
- @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 4:00:19 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:48:52 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+Function to add padding characters to the output block.
 
 ----------------------------------------------------------- */
 #include "addPadding.h"

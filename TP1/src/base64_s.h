@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               07-Oct-2018 10:19:49 pm
- @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 8:25:59 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:30:00 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-Header file for codec implementation.
+Header file for ASM part of codec implementation.
 
 ----------------------------------------------------------- */
 #ifndef BASE64_S__H
@@ -33,12 +33,7 @@ Header file for codec implementation.
 #include <sys/syscall.h>
 #include <sys/errno.h>
 
-#define ASCII_NULL 0
-#define ASCII_LF 10
-#define ASCII_TAB 9
-#define ASCII_SPACE 32
-
-#define SIZEOF_UCHAR 1
+# ------- Codec constants -------
 
 #define DECODER_MASK 0xFF000000
 #define B64_CHARS_PER_BLOCK 4
@@ -52,18 +47,25 @@ Header file for codec implementation.
 #define MAX_LINE_LENGHT 76
 
 #define PADDING '='
-#define PADDING_CHAR '='
-#define PADDING_STR "="
 #define PADDING_ASCII 61
 #define SIZETABLEB64 64
 
+# ------- Buffer structure definitions -------
 #define BUFFER_IDX_OFFSET 0
 #define BUFFER_SIZE_OFFSET 4
 #define BUFFER_FILE_DESCRIPTOR_OFFSET 8
 #define BUFFER_ARRAY_OFFSET 12
-
 #define BUFFER_SIZE 1024
 
+# ------- Misc. constants -------
+#define ASCII_NULL 0
+#define ASCII_LF 10
+#define ASCII_TAB 9
+#define ASCII_SPACE 32
+
+#define SIZEOF_UCHAR 1
+
+# ------- Messages definitions -------
 #ifndef ERROR_OUTPUT_STREAM_WRITING_MSG
 #define ERROR_OUTPUT_STREAM_WRITING_MSG                                        \
   "ERROR: Output error when writing stream.\n"

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:51:56 am
- @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 3:20:03 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:49:31 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+Function to convert from base64 to base256.
 
 ----------------------------------------------------------- */
 #include "base64.h"

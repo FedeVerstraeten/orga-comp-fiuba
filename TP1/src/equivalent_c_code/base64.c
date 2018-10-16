@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               12-Sep-2018 11:21:30 am
- @Last modified by:   santiago
- @Last modified time: 15-Oct-2018 11:36:45 pm
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:51:59 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,7 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-Codec implementation.
+Error messages definitions.
 
 ----------------------------------------------------------- */
 #include "base64.h"

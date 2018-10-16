@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:11:01 am
- @Last modified by:   santiago
- @Last modified time: 15-Oct-2018 11:35:53 pm
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:51:22 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,8 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+Functions which encodes an input stream in base256 dictionary
+to an output stream in base64.
 
 ----------------------------------------------------------- */
 #include "base64.h"

@@ -13,8 +13,8 @@
           federico.verstraeten at gmail dot com
 
  @Date:               15-Oct-2007 12:51:25 am
- @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 3:01:29 am
+ @Last modified by:   Ignacio Santiago Husain
+ @Last modified time: 16-Oct-2018 3:50:38 pm
 
  @Copyright(C):
      This file is part of
@@ -23,7 +23,8 @@
      strictly prohibited.
 --------------------------------------------------------------
 
-PUT DESCRIPTION HERE.
+Function which decodes an input strem in base 64 to an
+output stream in base256.
 
 ----------------------------------------------------------- */
 #include "base64.h"
