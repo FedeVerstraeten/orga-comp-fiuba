@@ -1,8 +1,8 @@
 /* -----------------------------------------------------------
  @Title:   FIUBA - 66.20 Organización de Computadoras.
- @Project: TP1 - Conjunto de instrucciones MIPS.
+ @Project: TP0 - Infraestructura básica.
 --------------------------------------------------------------
- @Filename: b256To64.c
+ @Filename: base256ToBase64.c
 --------------------------------------------------------------
  @Authors:
     Husain, Ignacio Santiago.
@@ -11,22 +11,17 @@
           xxx at xxx dot xxx
     Verstraeten, Federico.
           federico.verstraeten at gmail dot com
-
  @Date:               15-Oct-2007 12:24:22 am
  @Last modified by:   santiago
- @Last modified time: 16-Oct-2018 3:37:50 am
-
+ @Last modified time: 16-Oct-2018 3:37:27 am
  @Copyright(C):
-     This file is part of
-     'TP1 - Conjunto de instrucciones MIPS'. Unauthorized
-     copying or use of this file via any medium is
-     strictly prohibited.
+    This file is part of 'TP0 - Infraestructura básica.'.
+    Unauthorized copying or use of this file via any medium
+    is strictly prohibited.
 --------------------------------------------------------------
-
 PUT DESCRIPTION HERE.
-
 ----------------------------------------------------------- */
-#include "b256To64.h"
+#include "base256ToBase64.h"
 
 void addPadding(char *outBlock, const char pad, int numberPad) {
   int i = 0;
